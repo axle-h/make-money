@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id Int @id @default(autoincrement())
+  accountType String @default("CURRENT_ACCOUNT")
+  bankName String
+  sortCode String?
+  accountNumber String
+  statements Statement[]
+  transactions Transaction[]
+
+  @@unique([sortCode, accountNumber])
+}
+
+model Statement {
+  id Int @id @default(autoincrement())
+  dateUploaded DateTime
+  startDate DateTime
+  endDate DateTime
+  accountId Int
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  externalId String
+  type String
+  date DateTime
+  amount Decimal
+  name String
+  description String
+
+  accountId Int
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  statementId Int
+  statement Statement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+
+  notes String?
+  categories TransactionCategory[]
+
+  @@unique([accountId, externalId])
+  @@index(type)
+  @@index(date(sort: Desc))
+  @@index(name)
+  @@index(description)
+}
+
+model TransactionCategory {
+  id Int @id @default(autoincrement())
+  fraction Float
+  transactionId Int
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  categoryId Int
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String @unique
+  report Boolean @default(true)
+  type String @default("EXPENSE")
+  subCategory Boolean @default(false)
+  transactions TransactionCategory[]
+  rules CategoryRule[]
+}
+
+model CategoryRule {
+  id Int @id @default(autoincrement())
+  name String @unique
+  predicate String
+  categoryId Int
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}

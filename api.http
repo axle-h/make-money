@@ -1,0 +1,91 @@
+### Create new account
+POST http://localhost:3000/api/accounts
+Content-Type: application/json
+
+{
+  "bankName": "HSBC",
+  "sortCode": "123456",
+  "accountNumber": "11111111"
+}
+
+### List accounts
+GET http://localhost:3000/api/accounts
+
+### Delete account
+DELETE http://localhost:3000/api/accounts/1
+
+### Create new statement
+POST http://localhost:3000/api/statements
+Content-Type: application/json
+
+{
+  "dateUploaded": "2024-06-24T12:30:00.000Z",
+  "startDate": "2024-01-01T00:00:00.000Z",
+  "endDate": "2024-02-01T00:00:00.000Z",
+  "sortCode": "123456",
+  "accountNumber": "11111111",
+  "transactions": [
+    {
+      "externalId": "2024061902",
+      "type": "OTHER",
+      "date": "2024-06-19T00:00:00.000Z",
+      "amount": "-4.95",
+      "name": "CO-OP GROUP FOOD",
+      "description": "CHESTERFIELD )))"
+    },
+    {
+      "externalId": "2024061901",
+      "type": "OTHER",
+      "date": "2024-06-19T00:00:00.000Z",
+      "amount": "-149.12",
+      "name": "LIDL GB CHESTERFIE",
+      "description": "CHESTERFIELD )))"
+    }
+  ]
+}
+
+### List statements
+GET http://localhost:3000/api/statements?page=1&limit=2&orderBy=dateUploaded
+
+### List statement lookups
+GET http://localhost:3000/api/statements/lookups
+
+### Get transaction
+GET http://localhost:3000/api/transactions/1
+
+### Update transaction
+PUT http://localhost:3000/api/transactions/1
+Content-Type: application/json
+
+{
+  "categories": [
+    {
+      "id": 1,
+      "fraction": 1
+    }
+  ]
+}
+
+
+### List transactions
+GET http://localhost:3000/api/transactions?page=1&limit=10&orderBy=amount&orderByDesc=true&amount.lt=0&categoryId=2
+
+### List transactions categorized
+GET http://localhost:3000/api/transactions/categorized?dateFrom=2024-06-18&subCategories=true
+
+### Transaction meta
+GET http://localhost:3000/api/transactions/meta
+
+### List categories
+GET http://localhost:3000/api/categories
+
+### List category stats
+GET http://localhost:3000/api/categories/stats
+
+### Create category
+POST http://localhost:3000/api/categories
+Content-Type: application/json
+
+{ "name": "Holiday" }
+
+
