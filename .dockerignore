@@ -1,7 +1,6 @@
 .idea/
 .next/
 node_modules/
-.env
 .env.development
 Dockerfile
 README.md

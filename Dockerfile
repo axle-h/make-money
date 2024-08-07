@@ -14,7 +14,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build
+RUN  npm run prisma -- generate && npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
