@@ -3,6 +3,8 @@ import {CategoryRule} from "@/app/api/schema";
 import {NextResponse} from "next/server";
 import {db} from "@/app/api/db";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(): Promise<OkOrErrorResponse<CategoryRule[]>> {
     try {
         return NextResponse.json(await db.rules.list())

@@ -3,6 +3,7 @@ import {notFound, OkOrErrorResponse, toApiError} from "@/app/api/api-error";
 import {db} from "@/app/api/db";
 import {Category} from "@/app/api/schema";
 
+export const dynamic = 'force-dynamic'
 
 export async function DELETE(
     request: Request,

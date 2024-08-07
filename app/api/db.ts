@@ -505,10 +505,14 @@ export class Categories {
     }
 
     async update(id: number, request: NewCategory) {
-        return prisma.category.update({
+        const { type, ...category } = await prisma.category.update({
             data: Schema.NewCategory.parse(request),
             where: { id }
         })
+        return {
+            ...category,
+            type: type as CategoryType,
+        }
     }
 }
 

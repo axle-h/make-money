@@ -5,6 +5,8 @@ import {Transaction, PaginatedTransactionQuery} from "@/app/api/schema";
 import {parseSearchParams} from "@/app/api/query";
 import {db} from "@/app/api/db";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest): Promise<OkOrErrorResponse<Paginated<Transaction>>> {
     try {
         const query = parseSearchParams(request.nextUrl.searchParams)

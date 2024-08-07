@@ -2,6 +2,8 @@ import {NextResponse} from "next/server";
 import {notFound, toApiError} from "@/app/api/api-error";
 import {db} from "@/app/api/db";
 
+export const dynamic = 'force-dynamic'
+
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } }

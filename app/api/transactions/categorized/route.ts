@@ -7,6 +7,8 @@ import {
 import {parseSearchParams} from "@/app/api/query";
 import {db} from "@/app/api/db";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest): Promise<OkOrErrorResponse<CategorizedTransaction[]>> {
     try {
         const query = parseSearchParams(request.nextUrl.searchParams)

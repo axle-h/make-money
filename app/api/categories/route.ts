@@ -3,6 +3,8 @@ import { OkOrErrorResponse, toApiError} from "@/app/api/api-error";
 import {Category} from "@/app/api/schema";
 import {db} from "@/app/api/db";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(): Promise<OkOrErrorResponse<Category[]>> {
     try {
         return NextResponse.json(await db.categories.list())

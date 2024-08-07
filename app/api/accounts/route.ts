@@ -3,7 +3,7 @@ import { db} from "@/app/api/db"
 import {Account, NewAccount} from "@/app/api/schema"
 import { OkOrErrorResponse, toApiError} from "@/app/api/api-error";
 
-// export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic'
 
 export async function GET(): Promise<OkOrErrorResponse<Account[]>> {
     try {

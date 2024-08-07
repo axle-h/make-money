@@ -3,6 +3,8 @@ import {notFound, OkOrErrorResponse, toApiError} from "@/app/api/api-error";
 import {db} from "@/app/api/db";
 import {Transaction} from "@/app/api/schema";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
     request: Request,
     { params }: { params: { id: string } }
