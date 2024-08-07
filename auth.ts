@@ -1,4 +1,4 @@
-import NextAuth, {NextAuthConfig, Session} from "next-auth"
+import NextAuth, {NextAuthConfig, Session, User} from "next-auth"
 import type {OAuthConfig} from "next-auth/providers";
 import {
     userInfoRequest,
@@ -15,17 +15,12 @@ interface Profile {
 }
 
 function ssoConfig() {
-    const issuer = process.env.SSO_ISSUER
-    const clientId = process.env.SSO_CLIENT_ID
-    const clientSecret = process.env.SSO_CLIENT_SECRET
-
-    if (!issuer || !clientId || !clientSecret) {
-        throw new Error('SSO_ISSUER, SSO_CLIENT_ID and SSO_CLIENT_SECRET are required')
+    return {
+        issuer: process.env.SSO_ISSUER,
+        client_id: process.env.SSO_CLIENT_ID,
+        client_secret: process.env.SSO_CLIENT_SECRET
     }
-
-    return { issuer, clientId, clientSecret }
 }
-const SSO_CONFIG = ssoConfig()
 
 function AxhSso(): OAuthConfig<Profile> {
     return {
@@ -40,7 +35,7 @@ function AxhSso(): OAuthConfig<Profile> {
         profile(profile) {
             return profile
         },
-        ...SSO_CONFIG
+        ...ssoConfig()
     }
 }
 
@@ -51,12 +46,17 @@ export async function discover(): Promise<AuthorizationServer> {
         return server
     }
 
-    const issuerUrl = new URL(SSO_CONFIG.issuer)
+    const { issuer } = ssoConfig()
+    if (!issuer) {
+        throw new Error('issuer is required for discovery')
+    }
+
+    console.log(`discovery issuer=${issuer}`)
+    const issuerUrl = new URL(issuer)
     const response = await discoveryRequest(issuerUrl, {})
     server = await processDiscoveryResponse(issuerUrl, response)
     return server
 }
-discover().catch(e => console.error(e))
 
 export async function ssoEndSessionUrl(): Promise<string | null> {
     const server = await discover()
@@ -65,21 +65,21 @@ export async function ssoEndSessionUrl(): Promise<string | null> {
 
 async function getUserInfo(subject: string, accessToken: string) {
     const server = await discover()
-    const client = { client_id: SSO_CONFIG.clientId, client_secret: SSO_CONFIG.clientSecret }
+    const { client_id, client_secret } = ssoConfig()
+    if (!client_id || !client_secret) {
+        throw new Error('issuer is required for discovery')
+    }
+    const client = { client_id, client_secret }
     const response = await userInfoRequest(server, client, accessToken)
     return await processUserInfoResponse(server, client, subject, response)
 }
 
-export function isAuthorized(session: Session | null): boolean {
-    if (!session?.user) {
+export function isAuthorized(user: User): boolean {
+    if (!('role' in user)) {
         return false
     }
 
-    if (!('role' in session.user)) {
-        return false
-    }
-
-    const roles = session.user.role as string[]
+    const roles = user.role as string[]
     return roles.includes(APP_ROLE)
 }
 
@@ -91,7 +91,12 @@ export const config: NextAuthConfig = {
         error: '/error'
     },
     callbacks: {
-        authorized: async ({ auth: session }) => isAuthorized(session),
+        authorized: async ({ auth: session }) => {
+            if (!session?.user) {
+                return false
+            }
+            return isAuthorized(session.user)
+        },
         session({ session, token }) {
             return {
                 ...session,

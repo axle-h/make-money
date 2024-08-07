@@ -7,7 +7,7 @@ export default async function PublicLayout({ children, }: { children: React.Reac
     const session = await auth()
     return (
         <Flex h="100vh" flexDirection="column">
-            {!isAuthorized(session)
+            {!!session?.user && !isAuthorized(session.user)
                 ? (
                     <Alert status='error'>
                         <AlertIcon />
