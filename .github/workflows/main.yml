@@ -1,7 +1,7 @@
 name: Build
 on: [push]
 jobs:
-  build-node:
+  build:
     runs-on: ubuntu-latest
     container: node:20
     steps:
