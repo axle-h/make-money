@@ -1,29 +1,11 @@
 import NextAuth, {NextAuthConfig, User} from "next-auth"
-import DuendeIdentityServer6 from "next-auth/providers"
-import type {OAuthConfig} from "next-auth/providers";
-import {
-    userInfoRequest,
-    processUserInfoResponse,
-    discoveryRequest,
-    processDiscoveryResponse,
-    AuthorizationServer
-} from 'oauth4webapi'
+import type {OIDCConfig} from "next-auth/providers";
 
-interface Profile {
-    email: string
-    id: string
-    name: string
+function issuer() {
+    return process.env.AUTH_AXH_SSO_ISSUER
 }
 
-function ssoConfig() {
-    return {
-        issuer: process.env.AUTH_AXH_SSO_ISSUER || undefined,
-        client_id: process.env.AUTH_AXH_SSO_ID || undefined,
-        client_secret: process.env.AUTH_AXH_SSO_SECRET || undefined
-    }
-}
-
-function AxhSso(): OAuthConfig<Profile> {
+function AxhSso(): OIDCConfig<{ sub: string }> {
     return {
         id: "axh-sso",
         name: "AxhSso",
@@ -33,48 +15,36 @@ function AxhSso(): OAuthConfig<Profile> {
                 scope: 'openid email profile roles'
             }
         },
-        profile(profile) {
-            return profile
+        async profile(profile, tokens) {
+            const userInfo = await getUserInfo(profile.sub, tokens.access_token || '')
+            return { ...userInfo, id_token: tokens.id_token }
         },
-        ...ssoConfig()
+        clientId: process.env.AUTH_AXH_SSO_ID,
+        clientSecret: process.env.AUTH_AXH_SSO_SECRET,
+        issuer: issuer()
     }
 }
 
-let server: AuthorizationServer | null = null
-
-export async function discover(): Promise<AuthorizationServer> {
-    if (server) {
-        return server
-    }
-
-    const { issuer } = ssoConfig()
-    if (!issuer) {
-        throw new Error('issuer is required for discovery')
-    }
-
-    console.log(`discovery issuer=${issuer}`)
-    const issuerUrl = new URL(issuer)
-    const response = await discoveryRequest(issuerUrl, {})
-    server = await processDiscoveryResponse(issuerUrl, response)
-    return server
-}
-
-export async function ssoEndSessionUrl(): Promise<string | null> {
-    const server = await discover()
-    return server.end_session_endpoint || null
+export function ssoEndSessionUrl(): string | null {
+    return issuer() + 'connect/endsession'
 }
 
 async function getUserInfo(subject: string, accessToken: string) {
-    const server = await discover()
-    const { client_id, client_secret } = ssoConfig()
-    if (!client_id || !client_secret) {
-        throw new Error('issuer is required for discovery')
+    const response = await fetch(issuer() + 'connect/userinfo', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Accept': 'application/json'
+        }
+    })
+    const userInfo = await response.json()
+    if (userInfo.sub !== subject) {
+        return null
     }
-    const client = { client_id, client_secret }
-    const response = await userInfoRequest(server, client, accessToken)
-    return await processUserInfoResponse(server, client, subject, response)
+    return userInfo
 }
 
+const APP_ROLE = process.env['APP_ROLE'] || 'make-money'
 export function isAuthorized(user: User): boolean {
     if (!('role' in user)) {
         return false
@@ -92,40 +62,19 @@ export const config: NextAuthConfig = {
         error: '/error'
     },
     callbacks: {
-        authorized: async ({ auth: session }) => {
+        authorized({ auth: session }) {
             if (!session?.user) {
                 return false
             }
             return isAuthorized(session.user)
         },
-        session({ session, token }) {
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    given_name: token.given_name,
-                    family_name: token.family_name,
-                    role: token.role
-                },
-                id_token: token.id_token
-            }
+        session({ session, token }){
+            return { ...session, user: { ...session.user, ...token } }
         },
-        async jwt({ token, trigger, session, account, user, profile }) {
-            if (trigger === 'signIn') {
-                // No userinfo on oidc flows for some reason... have to get it ourselves here
-                if (!profile?.sub) {
-                    throw new Error('no sub claim in token')
-                }
-                if (!account?.access_token) {
-                    throw new Error('no access token')
-                }
-                const userInfo = await getUserInfo(profile.sub, account.access_token)
-                return { ...token, ...userInfo, id_token: account.id_token }
-            }
-            return token
+        jwt({ token, user }){
+            return { ...token, ...user }
         },
     },
 }
 
-export const APP_ROLE = process.env['APP_ROLE'] || 'make-money'
 export const { handlers, signIn, signOut, auth } = NextAuth(config)

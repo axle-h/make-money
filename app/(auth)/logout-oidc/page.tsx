@@ -5,13 +5,6 @@ import {ssoEndSessionUrl} from "@/auth";
  * End sso session if configured.
  */
 export default async function LogoutPage({ searchParams }: { searchParams: { id_token_hint?: string } }) {
-    const endSessionUrl = await ssoEndSessionUrl()
-    if (!endSessionUrl) {
-        // no sso configured?
-        return redirect('/')
-    }
-
-    // end sso session
     const params = new URLSearchParams()
     const postLogoutRedirectUri = publicUrlFromEnv()
     if (postLogoutRedirectUri) {
@@ -20,7 +13,7 @@ export default async function LogoutPage({ searchParams }: { searchParams: { id_
     if (searchParams.id_token_hint) {
         params.set('id_token_hint', searchParams.id_token_hint)
     }
-    return redirect(`${endSessionUrl}?${params}`)
+    return redirect(`${ssoEndSessionUrl()}?${params}`)
 }
 
 function publicUrlFromEnv(): string | null {
