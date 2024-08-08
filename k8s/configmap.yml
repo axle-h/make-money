@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: make-money
+data:
+  AUTH_SECRET: "{your secret: openssl rand -hex 33}"
+  AUTH_AXH_SSO_ISSUER: "https://sso.ax-h.com/"
+  AUTH_AXH_SSO_ID: "make-money"
+  AUTH_AXH_SSO_SECRET: "{axh-client-secret}"
+  NEXTAUTH_URL: "https://money.ax-h.com/"
+  AUTH_TRUST_HOST: "https://money.ax-h.com/"

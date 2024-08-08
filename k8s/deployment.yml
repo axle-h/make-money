@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: make-money
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: make-money
+  template:
+    metadata:
+      labels:
+        app: make-money
+    spec:
+      volumes:
+        - name: data
+          hostPath:
+            path: /var/make-money
+            type: DirectoryOrCreate
+      containers:
+        - name: make-money
+          image: ghcr.io/axle-h/make-money:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: make-money
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          ports:
+            - name: http
+              containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http

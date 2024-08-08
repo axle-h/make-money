@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: make-money-redirect-http-https@kubernetescrd
+  name: make-money
+  labels:
+    app: make-money
+spec:
+  rules:
+    - host: money.ax-h.com
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: make-money
+                port:
+                  name : http
+  tls:
+    - hosts:
+        - money.ax-h.com
+      secretName: make-money-axh-com-tls
