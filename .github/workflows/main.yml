@@ -19,6 +19,9 @@ jobs:
       - name: Restore npm packages
         run: npm ci
 
+      - name: Regenerate prisma client
+        run: npm run prisma -- generate
+
       - name: Build
         run: npm run build
 

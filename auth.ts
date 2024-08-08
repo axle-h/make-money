@@ -1,4 +1,5 @@
-import NextAuth, {NextAuthConfig, Session, User} from "next-auth"
+import NextAuth, {NextAuthConfig, User} from "next-auth"
+import DuendeIdentityServer6 from "next-auth/providers"
 import type {OAuthConfig} from "next-auth/providers";
 import {
     userInfoRequest,
@@ -16,9 +17,9 @@ interface Profile {
 
 function ssoConfig() {
     return {
-        issuer: process.env.SSO_ISSUER,
-        client_id: process.env.SSO_CLIENT_ID,
-        client_secret: process.env.SSO_CLIENT_SECRET
+        issuer: process.env.AUTH_AXH_SSO_ISSUER || undefined,
+        client_id: process.env.AUTH_AXH_SSO_ID || undefined,
+        client_secret: process.env.AUTH_AXH_SSO_SECRET || undefined
     }
 }
 
