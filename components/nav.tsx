@@ -289,7 +289,7 @@ export default function SecureNav({ children, session }: { children: React.React
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
-        <Box minH="100vh">
+        <Box minH="100dvh">
             <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
             <Drawer
                 isOpen={isOpen}

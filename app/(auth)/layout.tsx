@@ -6,7 +6,7 @@ import {auth, isAuthorized} from "@/auth";
 export default async function PublicLayout({ children, }: { children: React.ReactNode }) {
     const session = await auth()
     return (
-        <Flex h="100vh" flexDirection="column">
+        <Flex h="100dvh" flexDirection="column">
             {!!session?.user && !isAuthorized(session.user)
                 ? (
                     <Alert status='error'>
