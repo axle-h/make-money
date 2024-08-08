@@ -219,7 +219,7 @@ function LogoutAlert({ onClose, isOpen }: { onClose(): void, isOpen: boolean }) 
                                 isLoading={isLoading}
                                 onClick={() => {
                                     setLoading(true)
-                                    router.replace('/logout-oidc');
+                                    router.replace('/logout');
                                 }}
                                 ml={3}>
                             Logout
