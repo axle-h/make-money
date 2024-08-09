@@ -10,10 +10,8 @@ import {
     FiMoreVertical,
     FiTag,
     FiUpload,
-    FiUsers,
     FiLogIn,
     FiLogOut,
-    FiAlertTriangle
 } from "react-icons/fi"
 import {RiBankLine} from "react-icons/ri"
 import {GrTransaction} from "react-icons/gr";
@@ -31,12 +29,10 @@ function toChakraIcon(type: IconType) {
 export const LoginIcon = toChakraIcon(FiLogIn)
 export const LogoutIcon = toChakraIcon(FiLogOut)
 
-export const ErrorIcon = toChakraIcon(FiAlertTriangle)
 export const UploadIcon = toChakraIcon(FiUpload)
 export const CreditCardIcon = toChakraIcon(FiCreditCard)
 export const HomeIcon = toChakraIcon(FiHome)
 export const BankIcon = toChakraIcon(RiBankLine)
-export const UsersIcon = toChakraIcon(FiUsers)
 export const TransactionIcon = toChakraIcon(GrTransaction)
 export const FilterIcon = toChakraIcon(FiFilter)
 export const CategoriesIcon = toChakraIcon(FiTag)

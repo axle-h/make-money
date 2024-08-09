@@ -110,7 +110,7 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
 
-            <NavItem NavIcon={HomeIcon} href="/">
+            <NavItem NavIcon={HomeIcon} href="/dashboard">
                 Dashboard
             </NavItem>
 

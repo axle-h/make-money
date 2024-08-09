@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import {auth, ssoEndSessionUrl, signOut} from "@/auth";
+import {auth, signOut} from "@/auth";
 
 export const dynamic = 'force-dynamic'
 

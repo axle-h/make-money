@@ -15,7 +15,7 @@ import {
     FormLabel,
     Heading,
     IconButton,
-    Input, Select,
+    Select,
     SimpleGrid,
     Stack,
     Stat, StatArrow,
