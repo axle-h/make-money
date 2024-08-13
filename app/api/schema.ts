@@ -9,7 +9,6 @@ import {
 } from '@prisma/client'
 import {z} from "zod";
 import {validatePredicate} from "@/app/api/predicate";
-import {isValid} from "date-fns";
 
 export class Schema {
     static readonly Boolean = z
@@ -132,7 +131,7 @@ export class Schema {
 
     static readonly NewCategory = z.object({
         name: z.string(),
-        emoji: z.string().regex(/^\p{Emoji_Presentation}*$/u, 'Must be a single emoji character').optional(),
+        emoji: z.string().optional(),
         report: this.Boolean,
         type: z.enum(['EXPENSE', 'BILL', 'INCOME', 'OTHER']),
         subCategory: this.Boolean
