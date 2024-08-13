@@ -44,7 +44,10 @@ export function CreateOrUpdateCategoryDrawer({isOpen, onClose, category, onSubmi
                             }
                             return result
                         }}
-                        initialValues={category}
+                        initialValues={{
+                            ...category,
+                            emoji: category?.emoji || undefined
+                        }}
                         ref={firstField}
                     />
                 </DrawerBody>
