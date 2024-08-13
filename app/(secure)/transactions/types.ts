@@ -8,7 +8,8 @@ export interface QueryParams {
     name?: string
     description?: string
     ruleId?: number
-    uncategorized?: boolean
+    uncategorized?: boolean,
+    search?: string
 }
 
 export interface PaginatedParams extends QueryParams {
@@ -33,6 +34,9 @@ export function toApiQuery(queryParams: QueryParams): TransactionQuery {
     }
     if (queryParams.uncategorized) {
         query.uncategorized = true
+    }
+    if (queryParams.search) {
+        query.name = {contains: queryParams.search}
     }
     return query
 }

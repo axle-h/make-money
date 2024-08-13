@@ -29,7 +29,7 @@ const {
     Modal,
     Code,
     Switch,
-
+    Divider
 
 } = chakraTheme.components
 
@@ -66,6 +66,7 @@ export const theme = extendBaseTheme({
         NumberInput,
         Modal,
         Code,
-        Switch
+        Switch,
+        Divider
     },
 })

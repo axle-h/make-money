@@ -10,7 +10,7 @@ metadata:
     app: make-money
 spec:
   rules:
-    - host: money.ax-h.com
+    - host: "money.ax-h.com"
       http:
         paths:
           - path: "/"

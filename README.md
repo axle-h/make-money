@@ -5,10 +5,7 @@ TODO
 * Pie chart other category not working
 * Percentage on pie chart tooltip
 * Week aggregation should start on Monday & month on the 1st
-* Transaction search
-* Transaction category filter ordering
-* Why doesnt predicate "name LIKE '%asos%'" match 'Klarna*asos.com'
-* Why doesnt predicate "name LIKE '%MYDENTIST%'" match '467 MYDENTIST CHESTERF'
+* Lint
 
 ## Getting Started
 

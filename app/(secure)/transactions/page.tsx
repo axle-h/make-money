@@ -1,6 +1,6 @@
 'use client'
 
-import {Button, ButtonGroup, Flex, Heading, Tag, useToast} from "@chakra-ui/react";
+import {Box, Button, ButtonGroup, Flex, Heading, HStack, Tag, useToast} from "@chakra-ui/react";
 import {useRouter} from "next/navigation";
 import React, {useState} from "react";
 import {PaginatedParams, QueryParams} from "./types";
@@ -14,6 +14,7 @@ import {
 } from "./actions";
 import {createCategory} from "../categories/actions";
 import {CheckIcon} from "@chakra-ui/icons";
+import {TransactionSearch} from "@/app/(secure)/transactions/transaction-search";
 
 interface TransactionsPageProps  {
     searchParams: { [P in keyof PaginatedParams]: string } & { bulkApproveName: string }
@@ -33,6 +34,7 @@ export default function TransactionsPage({ searchParams }: TransactionsPageProps
         name: searchParams.name,
         description: searchParams.description,
         uncategorized: searchParams?.uncategorized === 'true' || searchParams?.uncategorized === '1',
+        search: searchParams.search
     }
     const paginatedParams: PaginatedParams = {
         ...queryParams,
@@ -82,7 +84,11 @@ export default function TransactionsPage({ searchParams }: TransactionsPageProps
                         </>
                     ) : <></>}
                 </ButtonGroup>
-                <TransactionFilters queryParams={queryParams} onChange={updateQuery} />
+                <HStack spacing={2}>
+                    <TransactionSearch queryParams={queryParams} onChange={updateQuery} />
+                    <TransactionFilters queryParams={queryParams} onChange={updateQuery} />
+                </HStack>
+
             </Flex>
             <TransactionTable
                 queryParams={paginatedParams}

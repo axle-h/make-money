@@ -3,7 +3,7 @@ import {QueryParams, toApiQuery} from "./types";
 import {
     Avatar,
     AvatarBadge,
-    Button,
+    Button, Divider,
     Drawer,
     DrawerBody,
     DrawerCloseButton,
@@ -20,6 +20,7 @@ import {FilterIcon} from "@/components/icons";
 import React from "react";
 import {useRules, useTransactionMeta} from "@/api-client";
 import {Select as ReactSelect} from "chakra-react-select";
+import {CategorySelect} from "@/app/(secure)/categories/category-select";
 
 export function TransactionFilters({queryParams, onChange}: {
     queryParams: QueryParams,
@@ -27,7 +28,7 @@ export function TransactionFilters({queryParams, onChange}: {
 }) {
     const {isOpen, onOpen, onClose} = useDisclosure()
     const filtersApplied = Object.entries(queryParams)
-        .some(([k, v]) => k !== 'page' && !!v)
+        .some(([k, v]) => k !== 'search' && k !== 'page' && !!v)
 
     const query = toApiQuery(queryParams)
     return (
@@ -51,7 +52,7 @@ export function TransactionFilters({queryParams, onChange}: {
                 <DrawerOverlay/>
                 <DrawerContent>
                     <DrawerCloseButton/>
-                    <DrawerHeader>Statement Filters</DrawerHeader>
+                    <DrawerHeader>Transaction Filters</DrawerHeader>
 
                     <DrawerBody>
                         <Stack spacing={6}>
@@ -101,16 +102,19 @@ export function TransactionFilters({queryParams, onChange}: {
                                 name="Description"
                             />
 
-                            <TransactionFilterSelect
-                                query={query}
-                                selected={queryParams.categoryId?.toString()}
-                                onChange={categoryId => onChange({
-                                    ...queryParams,
-                                    categoryId: Number(categoryId) || undefined
-                                })}
-                                metaKey="categories"
-                                name="Category"
-                            />
+                            <Divider />
+
+                            <FormControl>
+                                <FormLabel>Category</FormLabel>
+                                <CategorySelect
+                                    placeholder="All categories"
+                                    value={queryParams.categoryId?.toString() || undefined}
+                                    onChange={event => onChange({
+                                        ...queryParams,
+                                        categoryId: Number(event.target.value) || undefined
+                                    })}
+                                />
+                            </FormControl>
 
                             <CategoryRuleSelect
                                 selected={queryParams.ruleId}
@@ -133,7 +137,10 @@ export function TransactionFilters({queryParams, onChange}: {
                             </Button>
 
                             <Button colorScheme="red" variant="outline" onClick={() => {
-                                onChange({})
+                                // clear all except search
+                                onChange({
+                                    search: queryParams.search || undefined
+                                })
                                 onClose()
                             }}>
                                 Clear
