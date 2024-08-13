@@ -46,7 +46,11 @@ export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
                     />
                     <Legend formatter={(_, { payload }) => {
                         const entry = payload as unknown as FrequencyTableEntry
-                        return `${entry.label} ${label(entry)}`
+                        return [
+                            entry.label,
+                            entry.emoji,
+                            label(entry)
+                        ].filter(x => x).join(' ')
                     }} />
                 </PieChart>
             </ResponsiveContainer>
