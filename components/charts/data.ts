@@ -15,6 +15,7 @@ export function* generateColors(): Generator<string> {
 }
 
 const OTHER_LABEL = 'Other'
+const OTHER_EMOJI = '❔'
 export const OTHER_COLOR_CSS = 'var(--chakra-colors-gray-400)'
 
 export const CREDIT_COLOR = 'green.500'
@@ -92,7 +93,7 @@ export function aggregateByCategory(
         const otherData = decimalData.splice(limit - 1)
         decimalData.push({
             label: OTHER_LABEL,
-            emoji: null, // TODO
+            emoji: OTHER_EMOJI,
             value: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
             percent: otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0)),
             color: OTHER_COLOR_CSS

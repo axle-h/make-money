@@ -133,7 +133,7 @@ describe('data', () => {
                 },
                 {
                     label: 'Other',
-                    emoji: null,
+                    emoji: '❔',
                     color: 'var(--chakra-colors-gray-400)',
                     value: 405.44,
                     percent: 5
