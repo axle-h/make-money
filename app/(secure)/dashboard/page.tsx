@@ -161,6 +161,7 @@ function Report({ query, period }: { query: CategorizedTransactionQuery, period:
             .map(({ categoryType, ...transaction }) => ({
                 ...transaction,
                 categoryType,
+                emoji: null,
                 category: categoryTypeName(categoryType)
             }))
     )
