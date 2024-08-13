@@ -132,6 +132,7 @@ export class Schema {
 
     static readonly NewCategory = z.object({
         name: z.string(),
+        emoji: z.string().regex(/^\p{Emoji_Presentation}*$/u, 'Must be a single emoji character').optional(),
         report: this.Boolean,
         type: z.enum(['EXPENSE', 'BILL', 'INCOME', 'OTHER']),
         subCategory: this.Boolean
@@ -199,6 +200,7 @@ export interface Transaction extends DbTransaction {
 export interface CategorizedTransaction {
     date: Date
     category: string
+    emoji: string | null
     categoryType: CategoryType
     debit: Prisma.Decimal
     credit: Prisma.Decimal

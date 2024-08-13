@@ -66,6 +66,7 @@ model TransactionCategory {
 model Category {
   id Int @id @default(autoincrement())
   name String @unique
+  emoji String? @unique
   report Boolean @default(true)
   type String @default("EXPENSE")
   subCategory Boolean @default(false)

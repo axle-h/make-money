@@ -12,6 +12,7 @@ import {
     FiUpload,
     FiLogIn,
     FiLogOut,
+    FiSmile
 } from "react-icons/fi"
 import {RiBankLine} from "react-icons/ri"
 import {GrTransaction} from "react-icons/gr";
@@ -40,6 +41,7 @@ export const ListIcon = toChakraIcon(FiList)
 export const MoreVerticalIcon = toChakraIcon(FiMoreVertical)
 export const CodeIcon = toChakraIcon(FiCode)
 export const DollarIcon = toChakraIcon(FiDollarSign)
+export const EmojiIcon = toChakraIcon(FiSmile)
 
 export function AppIcon(props: Omit<ImageProps, 'src' | 'alt'>) {
     return <Image {...props} src="/assets/icon.png" alt="make-money" width={10} height={10} unoptimized />

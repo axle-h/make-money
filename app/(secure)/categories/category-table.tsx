@@ -21,7 +21,7 @@ import {MoreVerticalIcon} from "@/components/icons";
 import {useCategoryStats} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
 import {CreateOrUpdateCategoryDrawer} from "./create-or-update-category-drawer";
-import {Category, categoryTypeName, NewCategory} from "@/app/api/schema";
+import {Category, NewCategory} from "@/app/api/schema";
 import {CategoryTypeTag} from "./category-type-tag";
 import {CashFlow} from "../transactions/transaction-summary";
 
@@ -47,9 +47,11 @@ export function CategoryTable({onDelete, onUpdate, onViewTransactions}: Category
     }
 
     const rows = categories.map(category => {
-        const {id, name, report, type, subCategory, transactions, totalDebits, totalCredits} = category
+        const {id, name, emoji, report, type, subCategory, transactions, totalDebits, totalCredits} = category
         return (<Tr key={id}>
-            <Td>{name}</Td>
+            <Td>
+                {name} {emoji}
+            </Td>
             <Td><CategoryTypeTag type={type} /></Td>
             <Td>{report ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Td>
             <Td>{subCategory ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Td>

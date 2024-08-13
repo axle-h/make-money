@@ -281,12 +281,13 @@ export class Transactions {
                         return ({
                             date,
                             category: categoryName,
+                            emoji: category.category.emoji,
                             categoryType: category.category.type as CategoryType,
                             amount: amount.mul(category.fraction)
                         });
                     })
             )
-            .reduce((agg, { date, amount, category, categoryType }) => {
+            .reduce((agg, { date, amount, category, emoji, categoryType }) => {
                 const key = `${category}:${formatDateIso(date)}`
                 const prop: keyof CategorizedTransaction = amount.gte(0) ? 'credit' : 'debit'
                 const other = key in agg
@@ -294,6 +295,7 @@ export class Transactions {
                     : agg[key] = {
                         date,
                         category,
+                        emoji,
                         categoryType,
                         debit: new Prisma.Decimal(0),
                         credit: new Prisma.Decimal(0)
@@ -467,6 +469,7 @@ export class Categories {
             select: {
                 id: true,
                 name: true,
+                emoji: true,
                 report: true,
                 type: true,
                 subCategory: true,

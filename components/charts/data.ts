@@ -34,6 +34,7 @@ export function sumTotal(
 
 export interface FrequencyTableEntry {
     label: string
+    emoji: string | null
     value: number
     percent: number
     color: string
@@ -44,8 +45,9 @@ export function aggregateByCategory(
     limit: number = 8,
 ): FrequencyTableEntry[] {
     const flatTransactions = transactions
-        .map(({ category, credit, debit }) => ({
+        .map(({ category, emoji, credit, debit }) => ({
             category,
+            emoji,
             amount: credit.plus(debit)
         }))
         .filter(({ amount }) => !amount.eq(0))
@@ -59,11 +61,12 @@ export function aggregateByCategory(
     }
 
     const byCategory = flatTransactions
-        .reduce((agg, { category, amount }) => {
-                if (category in agg) {
-                    agg[category] = agg[category].add(amount.abs())
+        .reduce((agg, { category, emoji, amount }) => {
+            const key = `${category}:${emoji || ''}`
+                if (key in agg) {
+                    agg[key] = agg[key].add(amount.abs())
                 } else {
-                    agg[category] = amount.abs()
+                    agg[key] = amount.abs()
                 }
                 return agg
             },
@@ -72,12 +75,16 @@ export function aggregateByCategory(
 
     const colors = generateColors()
     const decimalData = Object.entries(byCategory)
-        .map(([label, value]) => ({
-            label,
-            value,
-            percent: value.div(total).mul(100),
-            color: colors.next().value
-        }))
+        .map(([key, value]) => {
+            const [label, emoji] = key.split(':')
+            return {
+                label,
+                emoji: emoji || null,
+                value,
+                percent: value.div(total).mul(100),
+                color: colors.next().value
+            }
+        })
         .sort((a, b) => b.value.cmp(a.value))
 
 
@@ -85,6 +92,7 @@ export function aggregateByCategory(
         const otherData = decimalData.splice(limit - 1)
         decimalData.push({
             label: OTHER_LABEL,
+            emoji: null, // TODO
             value: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
             percent: otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0)),
             color: OTHER_COLOR_CSS

@@ -24,7 +24,7 @@ export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
                         data={data}
                         outerRadius={150}
                         dataKey="value"
-                        label={entry => entry.label}
+                        label={entry => entry.emoji || entry.label}
                         stroke={strokeAlt}
                     >
                         {data.map((entry, index) => (

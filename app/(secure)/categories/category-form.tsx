@@ -11,6 +11,7 @@ import {
     Switch
 } from "@chakra-ui/react";
 import {FieldProps} from "formik/dist/Field";
+import {EmojiPicker} from "@/components/emoji-picker";
 
 export interface NewCategoryFormProps {
     initialValues?: Partial<NewCategory>
@@ -20,6 +21,7 @@ export interface NewCategoryFormProps {
 export const CategoryForm = React.forwardRef(({initialValues, onSubmit}: NewCategoryFormProps, firstField) => {
     const formInitialValues: NewCategory = {
         name: initialValues?.name || '',
+        emoji: initialValues?.emoji || '',
         type: initialValues?.type || 'EXPENSE',
         report: initialValues?.report === undefined || initialValues.report,
         subCategory: initialValues?.subCategory === true
@@ -47,6 +49,16 @@ export const CategoryForm = React.forwardRef(({initialValues, onSubmit}: NewCate
                                     <FormLabel>Name</FormLabel>
                                     <Input {...field} ref={firstField as any} placeholder="Enter category name"/>
                                     <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                                </FormControl>
+                            )}
+                        </Field>
+
+                        <Field name='emoji'>
+                            {({field, form}: FieldProps<string, NewCategory>) => (
+                                <FormControl isInvalid={!!form.errors.emoji && !!form.touched.emoji}>
+                                    <FormLabel>Emoji</FormLabel>
+                                    <EmojiPicker value={field.value} onChange={e => form.setFieldValue('emoji', e)} />
+                                    <FormErrorMessage>{form.errors.emoji}</FormErrorMessage>
                                 </FormControl>
                             )}
                         </Field>
