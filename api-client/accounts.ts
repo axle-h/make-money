@@ -1,12 +1,9 @@
 import useSWR, {mutate} from "swr";
 import {Account, NewAccount} from "@/app/api/schema";
 import {assertOk} from "@/api-client/error";
-import {ApiRequest, isApiKey} from "@/api-client/request";
-import {mutateTransactions} from "@/api-client/transactions";
+import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import {mutateStatements} from "@/api-client/statements";
 import {parseIsoUtcDate} from "@/components/dates";
-
-export type ListAccountsRequest = ApiRequest<'list-accounts'>
 
 export class AccountApi {
     async all(): Promise<Account[]> {
@@ -42,7 +39,7 @@ export class AccountApi {
 export const accountApi = new AccountApi()
 
 export function useAccounts() {
-    const key: ListAccountsRequest = {api: 'list-accounts'}
+    const key = apiQuery('list-accounts', {})
     const {data: accounts, ...rest} = useSWR(key, () => accountApi.all())
     return {accounts, ...rest}
 }

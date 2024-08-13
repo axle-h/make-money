@@ -2,8 +2,6 @@
 
 TODO
 
-* Pie chart other category not working
-* Percentage on pie chart tooltip
 * Week aggregation should start on Monday & month on the 1st
 * Lint
 

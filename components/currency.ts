@@ -14,7 +14,16 @@ export function currency(value: Prisma.Decimal | number | string, decimalPlaces:
 }
 
 export function currencyShort(value: Prisma.Decimal | number | string): string {
-    return currency(value, 0).replace(/,000$/, 'k')
+    if (typeof value === 'string') {
+        value = new Prisma.Decimal(value)
+    }
+    const isSmall = typeof value === 'number' ? value < 1000 : value.lt(1000)
+    if (isSmall) {
+        return currency(value, 0)
+    }
+
+    const thousands = typeof value === 'number' ? value / 1000 : value.div(1000)
+    return currency(thousands, 1) + 'k'
 }
 
 function numberWithCommas(x: string) {

@@ -1,4 +1,4 @@
-import {ApiRequest, isApiKey} from "@/api-client/request";
+import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import {
     Transaction,
     TransactionMeta,
@@ -11,12 +11,7 @@ import {Paginated} from "@/app/api/paginated";
 import {stringifySearchParams} from "@/app/api/query";
 import useSWR, {mutate} from "swr";
 import { Prisma } from '@prisma/client'
-import {UTCDate} from "@date-fns/utc";
 import {parseIsoUtcDate} from "@/components/dates";
-
-export type ListTransactionsRequest = ApiRequest<'list-transactions'> & PaginatedTransactionQuery
-export type ListCategorizedTransactionsRequest = ApiRequest<'list-transactions-categorized'> & CategorizedTransactionQuery
-export type GetTransactionMetaRequest = ApiRequest<'get-transaction-meta'> & TransactionQuery
 
 export class TransactionApi {
     async list(query: PaginatedTransactionQuery): Promise<Paginated<Transaction>> {
@@ -59,7 +54,7 @@ export class TransactionApi {
 export const transactionApi = new TransactionApi()
 
 export function useTransactions(query: PaginatedTransactionQuery) {
-    const key: ListTransactionsRequest = {api: 'list-transactions', ...query}
+    const key = apiQuery('list-transactions', query)
     const {data: transactions, ...rest} = useSWR(key, () => transactionApi.list(query))
     return {transactions, ...rest}
 }
@@ -70,13 +65,13 @@ export function useUncategorizedTransactionCount() {
 }
 
 export function useCategorizedTransactions(query: CategorizedTransactionQuery) {
-    const key: ListCategorizedTransactionsRequest = {api: 'list-transactions-categorized', ...query}
+    const key = apiQuery('list-transactions-categorized', query)
     const {data: transactions, ...rest} = useSWR(key, () => transactionApi.listCategorized(query))
     return {transactions, ...rest}
 }
 
 export function useTransactionMeta(query: TransactionQuery) {
-    const key: GetTransactionMetaRequest = { api: 'get-transaction-meta', ...query }
+    const key = apiQuery('get-transaction-meta', query)
     const {data: transactionMeta, ...rest} = useSWR(key, () => transactionApi.meta(query))
     return {transactionMeta, ...rest}
 }

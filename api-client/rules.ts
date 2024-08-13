@@ -1,6 +1,6 @@
 import {CategoryRule, NewCategoryRule} from "@/app/api/schema";
 import {assertOk} from "@/api-client/error";
-import {ApiRequest, isApiKey} from "@/api-client/request";
+import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import useSWR, {mutate} from "swr";
 import {Predicate} from "@/app/api/predicate";
 import {mutateTransactions} from "@/api-client/transactions";
@@ -40,13 +40,13 @@ export class RulesApi {
 export const ruleApi = new RulesApi()
 
 export function useRules() {
-    const key: ApiRequest<'list-rules'> = {api: 'list-rules'}
+    const key = apiQuery('list-rules', {})
     const {data: rules, ...rest} = useSWR(key, () => ruleApi.list())
     return {rules, ...rest}
 }
 
 export function useRulePredicates() {
-    const key: ApiRequest<'list-rule-predicates'> = {api: 'list-rule-predicates'}
+    const key = apiQuery('list-rule-predicates', {})
     const {data: rules, ...rest} = useSWR(key, async () => {
         const rules = await ruleApi.list()
         return rules.map(({ predicate, ...rule }) => ({

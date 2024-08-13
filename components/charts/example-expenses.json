@@ -1,0 +1,534 @@
+[
+  {
+    "date": "2024-06-09T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-19.45",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-10T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-12.5",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-10T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-10.2",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-10T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-7.99",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-10T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-10.9",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-10T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-40",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-11T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-325",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-11T00:00:00.000Z",
+    "category": "Cleaning",
+    "categoryType": "EXPENSE",
+    "debit": "-58.71",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-11T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-44",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-12T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-174.93",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-12T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-5.8",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-12T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-22.9",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-12T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-37.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-14T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-264.81",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-14T00:00:00.000Z",
+    "category": "Gambling",
+    "categoryType": "EXPENSE",
+    "debit": "-4.34",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-15T00:00:00.000Z",
+    "category": "Eating Out",
+    "categoryType": "EXPENSE",
+    "debit": "-4",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-17T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-395.2",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-17T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-45.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-17T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-22.5",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-17T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-108.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-17T00:00:00.000Z",
+    "category": "Cleaning",
+    "categoryType": "EXPENSE",
+    "debit": "-42.41",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-18T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-33.33",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-19T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-173.21",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-19T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-171.1",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-19T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-51.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-19T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-18.5",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-20T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-10.68",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-21T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-47.42",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-21T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-1.8",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-21T00:00:00.000Z",
+    "category": "Cleaning",
+    "categoryType": "EXPENSE",
+    "debit": "-33.44",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-21T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-78",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-24T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-225.02",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-24T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-42.75",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-24T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-10.75",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-24T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-8.22",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-24T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-38.18",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-25T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-18.79",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-25T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-121.65",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-25T00:00:00.000Z",
+    "category": "Interest",
+    "categoryType": "EXPENSE",
+    "debit": "-0.66",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-26T00:00:00.000Z",
+    "category": "Eating Out",
+    "categoryType": "EXPENSE",
+    "debit": "-85.4",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-26T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-4.2",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-27T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-6.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-27T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-14.88",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-27T00:00:00.000Z",
+    "category": "Cash",
+    "categoryType": "EXPENSE",
+    "debit": "-10",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-28T00:00:00.000Z",
+    "category": "Takeaways",
+    "categoryType": "EXPENSE",
+    "debit": "0",
+    "credit": "12"
+  },
+  {
+    "date": "2024-06-28T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-46.44",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-28T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-46.47",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-28T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-5.3",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-29T00:00:00.000Z",
+    "category": "Takeaways",
+    "categoryType": "EXPENSE",
+    "debit": "-6.7",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-29T00:00:00.000Z",
+    "category": "Eating Out",
+    "categoryType": "EXPENSE",
+    "debit": "-9.88",
+    "credit": "0"
+  },
+  {
+    "date": "2024-06-30T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-23.1",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-01T00:00:00.000Z",
+    "category": "Eating Out",
+    "categoryType": "EXPENSE",
+    "debit": "-11.75",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-01T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-121.22",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-01T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-10.58",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-02T00:00:00.000Z",
+    "category": "Holidays",
+    "categoryType": "EXPENSE",
+    "debit": "-163.03",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-02T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-29.2",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-02T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-86.07",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-02T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-19.6",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-03T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-69.95",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-03T00:00:00.000Z",
+    "category": "Vanity",
+    "categoryType": "EXPENSE",
+    "debit": "-26.49",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-03T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-1.5",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-03T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-0.8",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-04T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-5.58",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-04T00:00:00.000Z",
+    "category": "Holidays",
+    "categoryType": "EXPENSE",
+    "debit": "-3204.5425",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-04T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-881.2375",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-04T00:00:00.000Z",
+    "category": "Things",
+    "categoryType": "EXPENSE",
+    "debit": "-1.59",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-04T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-5.31",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-05T00:00:00.000Z",
+    "category": "Home Improvement",
+    "categoryType": "EXPENSE",
+    "debit": "-209",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-05T00:00:00.000Z",
+    "category": "Lunch",
+    "categoryType": "EXPENSE",
+    "debit": "-2.8",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-06T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-10.47",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-06T00:00:00.000Z",
+    "category": "Takeaways",
+    "categoryType": "EXPENSE",
+    "debit": "-39.1",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-07T00:00:00.000Z",
+    "category": "Leisure",
+    "categoryType": "EXPENSE",
+    "debit": "-5.2",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-08T00:00:00.000Z",
+    "category": "Food",
+    "categoryType": "EXPENSE",
+    "debit": "-6.97",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-09T00:00:00.000Z",
+    "category": "Eating Out",
+    "categoryType": "EXPENSE",
+    "debit": "-11.78",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-09T00:00:00.000Z",
+    "category": "Clothing",
+    "categoryType": "EXPENSE",
+    "debit": "-54",
+    "credit": "0"
+  },
+  {
+    "date": "2024-07-09T00:00:00.000Z",
+    "category": "Cleaning",
+    "categoryType": "EXPENSE",
+    "debit": "-61.44",
+    "credit": "0"
+  }
+]

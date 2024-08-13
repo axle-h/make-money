@@ -1,7 +1,7 @@
 'use client'
 
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
-import {currency} from "@/components/currency";
+import {currency, currencyShort} from "@/components/currency";
 import {FrequencyTableEntry} from "@/components/charts/data";
 import {Box, useColorMode} from "@chakra-ui/react";
 
@@ -18,7 +18,7 @@ export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
 
     return (
         <Box mb={6} w="100%">
-            <ResponsiveContainer width="100%" height={500}>
+            <ResponsiveContainer width="100%" height={550}>
                 <PieChart>
                     <Pie
                         data={data}
@@ -42,11 +42,11 @@ export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
                         itemStyle={{
                             color: stroke
                         }}
-                        formatter={v => currency(v as number)}
+                        formatter={(_1, _2, { payload }) => label(payload as FrequencyTableEntry)}
                     />
-                    <Legend formatter={(v, { payload }) => {
+                    <Legend formatter={(_, { payload }) => {
                         const entry = payload as unknown as FrequencyTableEntry
-                        return `${entry.label}: ${currency(entry.value)} (${entry.percent}%)`
+                        return `${entry.label} ${label(entry)}`
                     }} />
                 </PieChart>
             </ResponsiveContainer>
@@ -54,3 +54,11 @@ export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
     )
 }
 
+function label(entry: FrequencyTableEntry) {
+    return `${currencyShort(entry.value)} (${formatPercent(entry.percent)})`
+}
+
+function formatPercent(percent: number): string {
+    const rounded = percent < 1 ? percent : Math.round(percent)
+    return `${rounded}%`
+}

@@ -1,7 +1,7 @@
 import {Category, CategoryStats, NewCategory} from "@/app/api/schema";
 import {assertOk} from "@/api-client/error";
 import useSWR, {mutate} from "swr";
-import {ApiRequest, isApiKey} from "@/api-client/request";
+import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import {Prisma} from "@prisma/client";
 
 export class CategoriesApi {
@@ -44,13 +44,13 @@ export class CategoriesApi {
 export const categoriesApi = new CategoriesApi()
 
 export function useCategories() {
-    const key: ApiRequest<'list-categories'> = {api: 'list-categories'}
+    const key = apiQuery('list-categories', {})
     const {data: categories, ...rest} = useSWR(key, () => categoriesApi.list())
     return {categories, ...rest}
 }
 
 export function useCategoryStats() {
-    const key: ApiRequest<'list-category-stats'> = {api: 'list-category-stats'}
+    const key = apiQuery('list-category-stats', {})
     const {data: categories, ...rest} = useSWR(key, () => categoriesApi.stats())
     return {categories, ...rest}
 }

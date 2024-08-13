@@ -1,5 +1,9 @@
 export function stringifySearchParams(searchParams: any): URLSearchParams {
-    const result = new URLSearchParams()
+    return new URLSearchParams(flattenObject(searchParams))
+}
+
+export function flattenObject(searchParams: any): Record<string, string> {
+    const result: Record<string, string> = {}
     const toVisit = Object.entries(searchParams)
     let current = toVisit.shift()
     while (current) {
@@ -7,7 +11,7 @@ export function stringifySearchParams(searchParams: any): URLSearchParams {
         if (value !== undefined && value !== null) {
             if (typeof value === 'object') {
                 if (value instanceof Date) {
-                    result.set(key, value.toISOString())
+                    result[key] = value.toISOString()
                 } else if (Array.isArray(value)) {
                     for (let [index, item] of value.entries()) {
                         toVisit.push([`${key}[${index}]`, item])
@@ -18,7 +22,7 @@ export function stringifySearchParams(searchParams: any): URLSearchParams {
                     }
                 }
             } else {
-                result.set(key, value.toString())
+                result[key] = value.toString()
             }
         }
 

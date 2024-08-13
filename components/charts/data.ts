@@ -41,8 +41,7 @@ export interface FrequencyTableEntry {
 
 export function aggregateByCategory(
     transactions: CategorizedTransaction[],
-    minCategories: number = 10,
-    otherCategoryThresholdPercent: number = 5
+    limit: number = 8,
 ): FrequencyTableEntry[] {
     const flatTransactions = transactions
         .map(({ category, credit, debit }) => ({
@@ -81,13 +80,13 @@ export function aggregateByCategory(
         }))
         .sort((a, b) => b.value.cmp(a.value))
 
-    const otherIndex = decimalData.findIndex(x => x.percent.lt(otherCategoryThresholdPercent))
-    if (otherIndex >= minCategories) {
-        const otherData = decimalData.splice(otherIndex)
+
+    if (decimalData.length > limit) {
+        const otherData = decimalData.splice(limit - 1)
         decimalData.push({
             label: OTHER_LABEL,
             value: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
-            percent: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
+            percent: otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0)),
             color: OTHER_COLOR_CSS
         })
     }

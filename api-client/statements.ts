@@ -1,4 +1,4 @@
-import {ApiRequest, isApiKey} from "@/api-client/request";
+import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import {NewStatement, Statement, StatementQuery} from "@/app/api/schema";
 import {assertOk} from "@/api-client/error";
 import {Paginated} from "@/app/api/paginated";
@@ -43,7 +43,7 @@ export class StatementApi {
 export const statementApi = new StatementApi()
 
 export function useStatements(query: StatementQuery) {
-    const key: ListStatementsRequest = {api: 'list-statements', ...query}
+    const key = apiQuery('list-statements', query)
     const {data: statements, ...rest} = useSWR(key, () => statementApi.list(query))
     return {statements, ...rest}
 }
