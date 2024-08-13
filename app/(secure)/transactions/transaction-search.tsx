@@ -49,11 +49,7 @@ export function TransactionSearch({queryParams, onChange}: {
                     </Avatar>
                 }
                 aria-label="filter"
-                onClick={() => {
-                    console.log('open, isOpen=', isOpen)
-                    onOpen()
-                    console.log('open, isOpen=', isOpen)
-                }}
+                onClick={onOpen}
                 variant="ghost"
             />
             <Modal isOpen={isOpen} onClose={onClose} size="xl">
