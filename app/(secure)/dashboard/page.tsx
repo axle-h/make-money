@@ -29,11 +29,10 @@ import {CategorizedTransactionQuery, categoryTypeName} from "@/app/api/schema";
 import {useAccounts, useCategorizedTransactions} from "@/api-client";
 import {ErrorAlert, Loading, NoData, StatementAlerts} from "@/components/alert";
 import {CurrencyPieChart} from "@/components/charts/currency-pie-chart";
-import {aggregateByCategory, timeSeries} from "@/components/charts/data";
+import {aggregateByCategory, keyStats, outgoings, timeSeries} from "@/components/charts/data";
 import {CurrencyBarChart} from "@/components/charts/currency-bar-chart";
 import {currency} from "@/components/currency";
-import {differenceInDays, DurationUnit} from 'date-fns'
-import { Prisma } from "@prisma/client";
+import {DurationUnit} from 'date-fns'
 import {formatDateShort, getRangeMonthsToNow} from "@/components/dates";
 
 interface ReportFiltersState {
@@ -141,75 +140,50 @@ function Report({ query, period }: { query: CategorizedTransactionQuery, period:
         return <ErrorAlert error={error} />
     }
 
-    if (transactions.length === 0) {
-        return <NoData />
-    }
-
     if (!query.dateFrom || !query.dateTo) {
         // TODO
         return <NoData />
     }
 
-    const totalIncome = transactions
-        .filter(t => t.categoryType === 'INCOME')
-        .reduce((a, b) => a.plus(b.credit).plus(b.debit), new Prisma.Decimal(0))
-        .toNumber()
-
-    const outgoings = aggregateByCategory(
-        transactions
-            .filter(t => t.categoryType !== 'INCOME')
-            .map(({ categoryType, ...transaction }) => ({
-                ...transaction,
-                categoryType,
-                emoji: null,
-                category: categoryTypeName(categoryType)
-            }))
-    )
-
-    const totalBills = outgoings
-        .find(x => x.label === categoryTypeName('BILL'))
-        ?.value || 0
-    const totalExpenses = outgoings
-        .find(x => x.label === categoryTypeName('EXPENSE'))
-        ?.value || 0
-
-    const weeklyDisposableIncome = 7 * (totalIncome - totalBills) / differenceInDays(query.dateTo, query.dateFrom)
-    const totalBalance = totalIncome - totalBills - totalExpenses
+    const stats = keyStats(transactions)
+    if (!stats) {
+        return <NoData />
+    }
 
     return (
         <>
             <SimpleGrid columns={{ base: 2, sm: 3, xl: 6 }} gridRowGap={4} mb={4} bg="gray.300" _dark={{ bg: "gray.700" }} p={6}>
                 <Stat textAlign="center">
                     <StatLabel>Income</StatLabel>
-                    <StatNumber>{currency(totalIncome, 0)}</StatNumber>
+                    <StatNumber>{currency(stats.totalIncome, 0)}</StatNumber>
                 </Stat>
 
                 <Stat textAlign="center">
                     <StatLabel>Bills</StatLabel>
-                    <StatNumber>{currency(totalBills, 0)}</StatNumber>
+                    <StatNumber>{currency(stats.totalBills, 0)}</StatNumber>
                 </Stat>
 
                 <Stat textAlign="center">
                     <StatLabel>Expenses</StatLabel>
-                    <StatNumber>{currency(totalExpenses, 0)}</StatNumber>
+                    <StatNumber>{currency(stats.totalExpenses, 0)}</StatNumber>
                 </Stat>
 
                 <Stat textAlign="center">
                     <StatLabel>Outgoing</StatLabel>
-                    <StatNumber>{currency(totalExpenses + totalBills, 0)}</StatNumber>
+                    <StatNumber>{currency(stats.totalOutgoings, 0)}</StatNumber>
                 </Stat>
 
                 <Stat textAlign="center">
                     <StatLabel>Balance</StatLabel>
                     <StatNumber>
-                        <StatArrow type={totalBalance >= 0 ? 'increase' : 'decrease'} />
-                        {currency(totalBalance, 0)}
+                        <StatArrow type={stats.totalBalance.gte(0) ? 'increase' : 'decrease'} />
+                        {currency(stats.totalBalance, 0)}
                     </StatNumber>
                 </Stat>
 
                 <Stat textAlign="center">
                     <StatLabel>Disposable/Wk</StatLabel>
-                    <StatNumber>{currency(weeklyDisposableIncome, 0)}</StatNumber>
+                    <StatNumber>{currency(stats.weeklyDisposableIncome, 0)}</StatNumber>
                 </Stat>
             </SimpleGrid>
 
@@ -232,7 +206,7 @@ function Report({ query, period }: { query: CategorizedTransactionQuery, period:
                 </Box>
                 <Box>
                     <Heading size="md" mb={4}>Outgoings</Heading>
-                    <CurrencyPieChart data={outgoings} />
+                    <CurrencyPieChart data={outgoings(transactions)} />
                 </Box>
             </SimpleGrid>
         </>

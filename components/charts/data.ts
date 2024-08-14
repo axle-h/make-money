@@ -1,6 +1,15 @@
-import {CategorizedTransaction} from "@/app/api/schema";
+import {CategorizedTransaction, CategoryType, categoryTypeName} from "@/app/api/schema";
 import {Prisma} from "@prisma/client";
-import {compareAsc, isEqual, add as addDuration, Duration, DurationUnit, isBefore, startOfDay} from "date-fns";
+import {
+    compareAsc,
+    isEqual,
+    add as addDuration,
+    Duration,
+    DurationUnit,
+    isBefore,
+    startOfDay,
+    differenceInDays
+} from "date-fns";
 import {addAmount, startOf} from "@/components/dates";
 
 export function* generateColors(): Generator<string> {
@@ -215,4 +224,63 @@ function toNumberEntry(entry: TimeSeriesEntry<Prisma.Decimal>): TimeSeriesEntry 
         credit: entry.credit.toNumber(),
         debit: entry.debit.toNumber()
     }
+}
+
+export function outgoings(transactions: CategorizedTransaction[]): FrequencyTableEntry[] {
+    return aggregateByCategory(
+        transactions
+            .filter(t => t.categoryType !== 'INCOME')
+            .map(({ categoryType, ...transaction }) => ({
+                ...transaction,
+                categoryType,
+                emoji: null,
+                // overwrite the category with the category type
+                category: categoryTypeName(categoryType)
+            }))
+    )
+}
+
+export interface KeyStats {
+    totalIncome: Prisma.Decimal,
+    totalBills: Prisma.Decimal,
+    totalExpenses: Prisma.Decimal,
+    weeklyDisposableIncome: Prisma.Decimal,
+    totalBalance: Prisma.Decimal,
+    totalOutgoings: Prisma.Decimal,
+}
+
+export function keyStats(transactions: CategorizedTransaction[]): KeyStats | null {
+    if (transactions.length === 0) {
+        return null
+    }
+
+    const totalIncome = sumByType(transactions, 'INCOME')
+    const totalBills = sumByType(transactions, 'BILL')
+    const totalExpenses = sumByType(transactions, 'EXPENSE')
+
+    const dates = transactions.map(t => t.date)
+        .sort((a, b) => compareAsc(a, b))
+    const dateFrom = dates[0]
+    const dateTo = dates[dates.length - 1]
+
+    const weeklyDisposableIncome = totalIncome.sub(totalBills)
+        .div(differenceInDays(dateTo, dateFrom) + 1)
+        .mul(7)
+    const totalBalance = totalIncome.sub(totalBills).sub(totalExpenses)
+    const totalOutgoings = totalBills.plus(totalExpenses)
+
+    return {
+        totalIncome,
+        totalBills,
+        totalExpenses,
+        weeklyDisposableIncome,
+        totalBalance,
+        totalOutgoings
+    }
+}
+
+function sumByType(transactions: CategorizedTransaction[], categoryType: CategoryType): Prisma.Decimal {
+    return transactions
+        .filter(t => t.categoryType === categoryType)
+        .reduce((a, b) => a.plus(b.credit).plus(b.debit), new Prisma.Decimal(0))
 }
