@@ -11,7 +11,7 @@ import {Paginated} from "@/app/api/paginated";
 import {stringifySearchParams} from "@/app/api/query";
 import useSWR, {mutate} from "swr";
 import { Prisma } from '@prisma/client'
-import {parseIsoUtcDate} from "@/components/dates";
+import {parseIsoUtcDatetime} from "@/components/dates";
 
 export class TransactionApi {
     async list(query: PaginatedTransactionQuery): Promise<Paginated<Transaction>> {
@@ -19,7 +19,7 @@ export class TransactionApi {
         await assertOk(response, 'list transactions')
         const result: Paginated<Transaction> = await response.json()
         for (let item of result.data) {
-            item.date = parseIsoUtcDate(item.date)
+            item.date = parseIsoUtcDatetime(item.date)
             item.amount = new Prisma.Decimal(item.amount)
         }
         return result
@@ -30,7 +30,7 @@ export class TransactionApi {
         await assertOk(response, 'list categorized transactions')
         const result: CategorizedTransaction[] = await response.json()
         for (let item of result) {
-            item.date = parseIsoUtcDate(item.date)
+            item.date = parseIsoUtcDatetime(item.date)
             item.credit = new Prisma.Decimal(item.credit)
             item.debit = new Prisma.Decimal(item.debit)
         }

@@ -1,6 +1,7 @@
 import {CategorizedTransaction} from "@/app/api/schema";
 import {Prisma} from "@prisma/client";
-import {compareAsc, addDays, isEqual, add as addDuration, Duration, DurationUnit, isBefore, startOfDay} from "date-fns";
+import {compareAsc, isEqual, add as addDuration, Duration, DurationUnit, isBefore, startOfDay} from "date-fns";
+import {addAmount, startOf} from "@/components/dates";
 
 export function* generateColors(): Generator<string> {
     const colors = ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'cyan', 'purple', 'pink']
@@ -123,9 +124,10 @@ export function timeSeriesDecimal(
         return []
     }
 
-    const endDateExclusive = addDays(startOfDay(endDate), 1)
+    const startDateInclusive = startOf(startDate, period)
+    const endDateExclusive = addAmount(startOf(endDate, period), 1, period)
     const data: TimeSeriesEntry<Prisma.Decimal>[] = transactions
-        .filter(x => x.date >= startDate && x.date < endDateExclusive)
+        .filter(x => x.date >= startDateInclusive && x.date < endDateExclusive)
         .map(({ date, credit, debit }) => ({ date, credit, debit }))
         .sort((a, b) => compareAsc(a.date, b.date))
         .reduce((agg, current) => {
@@ -147,7 +149,7 @@ export function timeSeriesDecimal(
 
     function* flatten(): Generator<TimeSeriesEntry<Prisma.Decimal>> {
         let index = 0
-        let date = startDate
+        let date = startDateInclusive
         let prev: TimeSeriesEntry<Prisma.Decimal> | null = null
 
         while (date <= endDate) {

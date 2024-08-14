@@ -3,7 +3,7 @@ import {Account, NewAccount} from "@/app/api/schema";
 import {assertOk} from "@/api-client/error";
 import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
 import {mutateStatements} from "@/api-client/statements";
-import {parseIsoUtcDate} from "@/components/dates";
+import {parseIsoUtcDatetime} from "@/components/dates";
 
 export class AccountApi {
     async all(): Promise<Account[]> {
@@ -13,8 +13,8 @@ export class AccountApi {
         const accounts: Account[] = await response.json()
 
         return accounts.map(({ statementsFrom, statementsTo, ...acc }) => ({
-            statementsFrom: statementsFrom ? parseIsoUtcDate(statementsFrom) : null,
-            statementsTo: statementsTo ? parseIsoUtcDate(statementsTo) : null,
+            statementsFrom: statementsFrom ? parseIsoUtcDatetime(statementsFrom) : null,
+            statementsTo: statementsTo ? parseIsoUtcDatetime(statementsTo) : null,
             ...acc
         }))
     }

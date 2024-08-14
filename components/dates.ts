@@ -2,18 +2,22 @@ import {
     format,
     formatISO,
     addMonths,
-    subMonths,
-    addDays,
     differenceInMonths,
     startOfToday,
-    startOfMonth,
     getYear,
     differenceInDays,
     parse as parseDate,
     parseISO,
-    isBefore,
     isAfter,
-    isEqual, startOfDay
+    startOfDay,
+    DurationUnit,
+    startOfYear,
+    startOfMonth,
+    startOfWeek,
+    startOfHour,
+    startOfMinute,
+    startOfSecond,
+    addYears, addWeeks, addDays, addHours, addMinutes, addSeconds,
 } from "date-fns"
 import { UTCDate } from "@date-fns/utc"
 import { enGB } from 'date-fns/locale/en-GB'
@@ -116,7 +120,10 @@ export function formatDateRange(start: Date, end: Date): string {
 const TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 const REFERENCE_UTC = fromZonedTime(new UTCDate(0), TIME_ZONE)
 
-export function parseIsoUtcDate(dateString: string | Date): Date {
+export function parseIsoUtcDatetime(dateString: string | Date): Date {
+    if (typeof dateString === 'string' && dateString.length === 10) {
+        return parseUtcDateShort(dateString)
+    }
     const zoned = dateString instanceof Date ? dateString : parseISO(dateString)
     return new UTCDate(fromZonedTime(zoned, TIME_ZONE))
 }
@@ -126,10 +133,56 @@ export function parseUtcDate(dateString: string, formatString: string) {
     return new UTCDate(fromZonedTime(zoned, 'Etc/UTC'))
 }
 
+export function parseUtcDateShort(dateString: string) {
+    return parseUtcDate(dateString, 'yyyy-MM-dd')
+}
+
 export function getRangeMonthsToNow(months: number, now: Date = utcNow()): DateRange {
     const nowMidnight = startOfDay(now)
     return {
         dateFrom: addMonths(nowMidnight, -months),
         dateTo: nowMidnight
+    }
+}
+
+export function startOf(date: Date, period: DurationUnit): Date {
+    switch (period) {
+        case "years":
+            return startOfYear(date)
+        case "months":
+            return startOfMonth(date)
+        case "weeks":
+            // week starts on monday
+            return startOfWeek(date, { weekStartsOn: 1 })
+        case "days":
+            return startOfDay(date)
+        case "hours":
+            return startOfHour(date)
+        case "minutes":
+            return startOfMinute(date)
+        case "seconds":
+            return startOfSecond(date)
+
+    }
+}
+
+export function addAmount(date: Date, amount: number, period: DurationUnit): Date {
+    switch (period) {
+        case "years":
+            return addYears(date, amount)
+        case "months":
+            return addMonths(date, amount)
+        case "weeks":
+            // week starts on monday
+            return addWeeks(date, 1)
+        case "days":
+            return addDays(date, 1)
+        case "hours":
+            return addHours(date, 1)
+        case "minutes":
+            return addMinutes(date, 1)
+        case "seconds":
+            return addSeconds(date, 1)
+
     }
 }

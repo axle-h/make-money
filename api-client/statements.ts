@@ -6,7 +6,7 @@ import {stringifySearchParams} from "@/app/api/query";
 import useSWR, {mutate} from "swr";
 import {mutateTransactions} from "@/api-client/transactions";
 import { UTCDate } from '@date-fns/utc'
-import {parseIsoUtcDate} from "@/components/dates";
+import {parseIsoUtcDatetime} from "@/components/dates";
 
 export type ListStatementsRequest = ApiRequest<'list-statements'> & StatementQuery
 
@@ -16,9 +16,9 @@ export class StatementApi {
         await assertOk(response, 'list statements')
         const result: Paginated<Statement> = await response.json()
         for (let item of result.data) {
-            item.dateUploaded = parseIsoUtcDate(item.dateUploaded)
-            item.startDate = parseIsoUtcDate(item.startDate)
-            item.endDate = parseIsoUtcDate(item.endDate)
+            item.dateUploaded = parseIsoUtcDatetime(item.dateUploaded)
+            item.startDate = parseIsoUtcDatetime(item.startDate)
+            item.endDate = parseIsoUtcDatetime(item.endDate)
         }
         return result
     }

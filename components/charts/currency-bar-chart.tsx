@@ -7,12 +7,12 @@ import {
     Tooltip,
     Legend,
     ReferenceLine,
-    ResponsiveContainer, Brush,
+    ResponsiveContainer,
 } from 'recharts'
 import {CREDIT_COLOR_CSS, DEBIT_COLOR_CSS, TimeSeriesEntry} from "@/components/charts/data";
 import {Box, useColorMode} from "@chakra-ui/react";
 import {formatDateShort} from "@/components/dates";
-import {currency} from "@/components/currency";
+import {currency, currencyShort} from "@/components/currency";
 
 export function CurrencyBarChart({ data }: { data: TimeSeriesEntry[] }) {
     const { colorMode } = useColorMode()
@@ -56,7 +56,7 @@ export function CurrencyBarChart({ data }: { data: TimeSeriesEntry[] }) {
                 >
                     <CartesianGrid strokeDasharray="3 3" stroke={strokeSubtle} />
                     <XAxis dataKey="date" stroke={stroke} interval={interval} angle={-45} textAnchor="end" />
-                    <YAxis stroke={stroke} tickFormatter={value => currency(value, 0)} />
+                    <YAxis stroke={stroke} tickFormatter={value => currencyShort(value)} />
                     <Tooltip
                         contentStyle={{
                             backgroundColor: colorMode === 'dark' ? 'var(--chakra-colors-gray-800)' : 'var(--chakra-colors-gray-100)'

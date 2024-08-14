@@ -307,6 +307,11 @@ export class Transactions {
 
         return Object.entries(categorized)
             .map(([,v]) => v)
+            .map(({ debit, credit, ...v }) => ({
+                debit: debit.toDecimalPlaces(2),
+                credit: credit.toDecimalPlaces(2),
+                ...v
+            }))
             .sort((a, b) => compareAsc(a.date, b.date))
     }
 
