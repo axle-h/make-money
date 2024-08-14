@@ -254,7 +254,7 @@ export function MobileNav({ onOpen, session, ...rest }: MobileNavProps) {
                         <IconButton
                             display={{ base: 'flex', md: 'none' }}
                             onClick={onOpen}
-                            variant="outline"
+                            variant="ghost"
                             aria-label="open menu"
                             icon={<HamburgerIcon />}
                         />
@@ -271,13 +271,13 @@ export function MobileNav({ onOpen, session, ...rest }: MobileNavProps) {
                     </>
                 )}
 
-            <HStack spacing={{ base: '0', md: '3' }}>
+            <HStack spacing={{ base: '1', md: '3' }}>
                 {!!session ? <UserMenu session={session} /> : <></>}
 
                 <IconButton
                     onClick={toggleColorMode}
                     variant="ghost"
-                    aria-label="chnage colour mode"
+                    aria-label="change colour mode"
                     icon={colorMode === 'light' ? <MoonIcon  /> : <SunIcon />}
                 />
             </HStack>
