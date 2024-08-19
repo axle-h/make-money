@@ -85,6 +85,7 @@ async function parseQifFile(text: string): Promise<PartialParsedStatement> {
             const ddMatch = name.match(/DIRECT\s+DEBIT\s+PAYMENT\s+TO\s+(.+)\s+REF\s+([^,]+)[\s,]+MANDATE\s+NO\s+([^,]+)/i)
             const cashMatch = name.match(/CASH\s+WITHDRAWAL\s+AT\s+(.+)\s+ATM\s+([^,]+)[,\s]+([^,]+)/i)
             const giroCreditMatch = name.match(/BANK\s+GIRO\s+CREDIT\s+REF\s+([^,]+), ([^,]+)/i)
+            const interestMatch = name.match(/^INTEREST /i)
 
             if (cardPaymentMatch) {
                 name = cardPaymentMatch[1].trim()
@@ -115,6 +116,9 @@ async function parseQifFile(text: string): Promise<PartialParsedStatement> {
                 name = giroCreditMatch[1].trim()
                 description = giroCreditMatch[2].trim()
                 type = 'OTHER'
+            } else if (interestMatch) {
+                description = `Interest payment on ${isCreditCard ? 'credit card' : 'overdraft'}`
+                type = 'OTHER'
             } else {
                 type = 'OTHER'
             }
@@ -133,23 +137,21 @@ async function parseQifFile(text: string): Promise<PartialParsedStatement> {
                     externalId: reference
                 }
             }
-            if (!reference && isCreditCard && (amount || 0) > 0) {
+
+            if (isCreditCard && (amount || 0) > 0) {
+                // transfers into credit card
                 return {
                     ...partial,
                     externalId: `XFER-${date}-${amount}`,
                     type: 'XFER',
-                };
+                }
             }
 
-            if (qif.type === QifType.Liability) {
-                // Liability statements have no reference, so we need to create one
-                return {
-                    ...partial,
-                    externalId: await sha256(`${partial.date.toISOString()}:${partial.amount}:${partial.type}:${partial.name}:${partial.description}`)
-                };
+            // Generate a reference
+            return {
+                ...partial,
+                externalId: await sha256(`${partial.date.toISOString()}:${partial.amount}:${partial.type}:${partial.name}:${partial.description}`)
             }
-
-            throw new Error(`cannot parse qif transaction ${JSON.stringify(t, undefined, 2)}`)
         })
     )).sort((a, b) => compareDesc(a.date, b.date))
 
