@@ -28,7 +28,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^11.2.11",
     "next": "14.2.4",
-    "next-auth": "^5.0.0-beta.19",
+    "next-auth": "^5.0.0-beta.23",
     "ofx-js": "^0.2.0",
     "qif-ts": "^1.0.0",
     "qs": "^6.12.1",
