@@ -1,21 +1,17 @@
 import {CategoryRule, Transaction} from "@/app/api/schema";
-import {Box, BoxProps, Flex, HStack, Stat, StatArrow, StatNumber, Tag} from "@chakra-ui/react";
+import {Box, BoxProps, Flex, FlexProps, HStack, Tag} from "@chakra-ui/react";
 import {formatDateShort} from "@/components/dates";
-import {currency} from "@/components/currency";
 import React from "react";
-import {Prisma} from "@prisma/client";
+import {CashFlow} from "@/components/cash-flow";
 
-export interface TransactionSummaryProps {
+export interface TransactionSummaryProps extends FlexProps {
     transaction: Transaction
     ruleMatch?: Pick<CategoryRule, 'name' | 'categoryName'>
 }
 
-export function TransactionSummary({
-                                       transaction,
-                                       ruleMatch
-                                   }: TransactionSummaryProps) {
+export function TransactionSummary({ transaction, ruleMatch, ...props }: TransactionSummaryProps) {
     return (
-        <Flex as='span' justifyContent="space-between" alignItems="center" w="100%" h="100%">
+        <Flex as='span' justifyContent="space-between" alignItems="center" w="100%" h="100%" {...props}>
             <Flex as="span" gap={4} alignItems="center" flex="1" textAlign='left'>
                 <Box as="span" fontWeight={600}>{formatDateShort(transaction.date)}</Box>
                 <TransactionName transaction={transaction} ruleMatch={ruleMatch} />
@@ -40,31 +36,15 @@ export function TransactionName({
             {!!notes ? <Mute as="span">{notes}</Mute> : <></>}
             {!!ruleMatch ? (
                 <HStack as="span">
-                    <Tag colorScheme="teal">{ruleMatch.name}</Tag>
-                    <Tag colorScheme="purple">{ruleMatch.categoryName}</Tag>
+                    <Tag.Root colorPalette="teal">
+                        <Tag.Label>{ruleMatch.name}</Tag.Label>
+                    </Tag.Root>
+                    <Tag.Root colorPalette="purple">
+                        <Tag.Label>{ruleMatch.categoryName}</Tag.Label>
+                    </Tag.Root>
                 </HStack>
             ) : <></>}
         </Flex>
-    )
-}
-
-export function CashFlow({ amount }: { amount: Prisma.Decimal | number }) {
-
-    const [absAmount, isPos, isZero] = amount instanceof Prisma.Decimal
-        ? [amount.abs(), amount.isPos(), amount.isZero()]
-        : [Math.abs(amount), amount > 0, amount === 0]
-
-    if (isZero) {
-        return <></>
-    }
-
-    return (
-        <Stat size="sm">
-            <StatNumber fontWeight="300">
-                <StatArrow type={isPos ? 'increase' : 'decrease'} />
-                {currency(absAmount)}
-            </StatNumber>
-        </Stat>
     )
 }
 

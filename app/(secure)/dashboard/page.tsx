@@ -1,31 +1,21 @@
 'use client'
 
 import {
-    Avatar,
-    AvatarBadge,
     Box,
-    Button,
     Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay, Flex,
-    FormControl,
-    FormLabel,
+    Flex,
+    Field,
     Heading,
     IconButton,
-    Select,
+    NativeSelect,
     SimpleGrid,
     Stack,
-    Stat, StatArrow,
-    StatLabel,
-    StatNumber, Switch,
-    useDisclosure
+    Stat,
+    Switch,
 } from "@chakra-ui/react";
 import React, {useState} from "react";
-import {FilterIcon} from "@/components/icons";
-import {CategorizedTransactionQuery, categoryTypeName} from "@/app/api/schema";
+import {FilterIcon, FiltersAppliedBadge} from "@/components/icons";
+import {CategorizedTransactionQuery} from "@/app/api/schema";
 import {useAccounts, useCategorizedTransactions} from "@/api-client";
 import {ErrorAlert, Loading, NoData, StatementAlerts} from "@/components/alert";
 import {CurrencyPieChart} from "@/components/charts/currency-pie-chart";
@@ -34,6 +24,8 @@ import {CurrencyBarChart} from "@/components/charts/currency-bar-chart";
 import {currency} from "@/components/currency";
 import {DurationUnit} from 'date-fns'
 import {formatDateShort, getRangeMonthsToNow} from "@/components/dates";
+import {Button} from "@/components/ui/button";
+import {Avatar} from "@/components/ui/avatar";
 
 interface ReportFiltersState {
     monthsToNow: number
@@ -153,38 +145,38 @@ function Report({ query, period }: { query: CategorizedTransactionQuery, period:
     return (
         <>
             <SimpleGrid columns={{ base: 2, sm: 3, xl: 6 }} gridRowGap={4} mb={4} bg="gray.300" _dark={{ bg: "gray.700" }} p={6}>
-                <Stat textAlign="center">
-                    <StatLabel>Income</StatLabel>
-                    <StatNumber>{currency(stats.totalIncome, 0)}</StatNumber>
-                </Stat>
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Income</Stat.Label>
+                    <Stat.ValueText>{currency(stats.totalIncome, 0)}</Stat.ValueText>
+                </Stat.Root>
 
-                <Stat textAlign="center">
-                    <StatLabel>Bills</StatLabel>
-                    <StatNumber>{currency(stats.totalBills, 0)}</StatNumber>
-                </Stat>
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Bills</Stat.Label>
+                    <Stat.ValueText>{currency(stats.totalBills, 0)}</Stat.ValueText>
+                </Stat.Root>
 
-                <Stat textAlign="center">
-                    <StatLabel>Expenses</StatLabel>
-                    <StatNumber>{currency(stats.totalExpenses, 0)}</StatNumber>
-                </Stat>
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Expenses</Stat.Label>
+                    <Stat.ValueText>{currency(stats.totalExpenses, 0)}</Stat.ValueText>
+                </Stat.Root>
 
-                <Stat textAlign="center">
-                    <StatLabel>Outgoing</StatLabel>
-                    <StatNumber>{currency(stats.totalOutgoings, 0)}</StatNumber>
-                </Stat>
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Outgoing</Stat.Label>
+                    <Stat.ValueText>{currency(stats.totalOutgoings, 0)}</Stat.ValueText>
+                </Stat.Root>
 
-                <Stat textAlign="center">
-                    <StatLabel>Balance</StatLabel>
-                    <StatNumber>
-                        <StatArrow type={stats.totalBalance.gte(0) ? 'increase' : 'decrease'} />
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Balance</Stat.Label>
+                    <Stat.ValueText>
                         {currency(stats.totalBalance, 0)}
-                    </StatNumber>
-                </Stat>
+                    </Stat.ValueText>
 
-                <Stat textAlign="center">
-                    <StatLabel>Disposable/Wk</StatLabel>
-                    <StatNumber>{currency(stats.weeklyDisposableIncome, 0)}</StatNumber>
-                </Stat>
+                </Stat.Root>
+
+                <Stat.Root textAlign="center">
+                    <Stat.Label>Disposable/Wk</Stat.Label>
+                    <Stat.ValueText>{currency(stats.weeklyDisposableIncome, 0)}</Stat.ValueText>
+                </Stat.Root>
             </SimpleGrid>
 
             <Heading size="md" mb={4}>Cash Flow ({periodLabel(period)})</Heading>
@@ -214,68 +206,72 @@ function Report({ query, period }: { query: CategorizedTransactionQuery, period:
 }
 
 function ReportFilters({ query, onChange }: { query: ReportFiltersState, onChange(query: ReportFiltersState): void }) {
-    const {isOpen, onOpen, onClose} = useDisclosure()
+    const [open, setOpen] = useState(false)
 
     const filtersApplied = Object.entries(query).some(([, v]) => !!v)
 
     return (
         <>
             <IconButton
-                icon={(
-                    <Avatar bg="yellow.500" size="md" icon={<FilterIcon/>}>
-                        {filtersApplied ? <AvatarBadge boxSize='1.25em' bg='green.500'></AvatarBadge> : <></>}
-                    </Avatar>
-                )}
                 aria-label="filter"
-                onClick={onOpen}
+                onClick={() => setOpen(true)}
                 variant="ghost"
-            />
-            <Drawer
-                isOpen={isOpen}
-                placement='right'
-                onClose={onClose}
+            >
+                <Avatar bg="yellow.500" size="md" icon={<FilterIcon/>}>
+                    {filtersApplied ? <FiltersAppliedBadge /> : <></>}
+                </Avatar>
+            </IconButton>
+            <Drawer.Root
+                open={open}
+                placement='end'
+                onOpenChange={(e) => setOpen(e.open)}
                 size="sm"
             >
-                <DrawerOverlay/>
-                <DrawerContent>
-                    <DrawerCloseButton/>
-                    <DrawerHeader>Report Filters</DrawerHeader>
-                    <DrawerBody>
-                        <Stack spacing={6}>
-                            <FormControl>
-                                <FormLabel>Dates</FormLabel>
-                                <Select
-                                    defaultValue={query.monthsToNow}
-                                    onChange={ev => onChange({ ...query, monthsToNow: Number(ev.target.value) })}
+                <Drawer.Backdrop />
+                <Drawer.Positioner>
+                    <Drawer.Content>
+                        <Drawer.CloseTrigger />
+                        <Drawer.Header>Report Filters</Drawer.Header>
+                        <Drawer.Body>
+                            <Stack gap={6}>
+                                <Field.Root>
+                                    <Field.Label>Dates</Field.Label>
+                                    <NativeSelect.Root>
+                                        <NativeSelect.Field
+                                            value={query.monthsToNow}
+                                            onChange={ev => onChange({ ...query, monthsToNow: Number(ev.target.value) })}
+                                        >
+                                            {[1, 2, 3, 6, 12].map(m =>
+                                                <option key={`months-${m}`} value={m}>{monthsToNowLabel(m)}</option>)}
+                                        </NativeSelect.Field>
+                                        <NativeSelect.Indicator />
+                                    </NativeSelect.Root>
+                                </Field.Root>
+
+                                <Switch.Root
+                                    checked={query.subCategories}
+                                    onCheckedChange={e => onChange({ ...query, subCategories: e.checked })}
                                 >
-                                    {[1, 2, 3, 6, 12].map(m =>
-                                        <option key={`months-${m}`} value={m}>{monthsToNowLabel(m)}</option>)}
-                                </Select>
-                            </FormControl>
+                                    <Switch.HiddenInput />
+                                    <Switch.Label>Include sub categories?</Switch.Label>
+                                    <Switch.Control />
+                                </Switch.Root>
 
-                            <FormControl as={SimpleGrid} columns={2}>
-                                <FormLabel htmlFor='subCategories'>Include sub categories?</FormLabel>
-                                <Switch
-                                    defaultChecked={query.subCategories}
-                                    id='subCategories'
-                                    onChange={e => onChange({ ...query, subCategories: e.target.checked })}
-                                />
-                            </FormControl>
+                                <Button mt={4} colorPalette="teal" variant="outline" onClick={() => setOpen(false)}>
+                                    Apply
+                                </Button>
 
-                            <Button mt={4} colorScheme="teal" variant="outline" onClick={onClose}>
-                                Apply
-                            </Button>
-
-                            <Button colorScheme="red" variant="outline" onClick={() => {
-                                onChange(DEFAULT_QUERY)
-                                onClose()
-                            }}>
-                                Clear
-                            </Button>
-                        </Stack>
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
+                                <Button colorPalette="red" variant="outline" onClick={() => {
+                                    onChange(DEFAULT_QUERY)
+                                    setOpen(false)
+                                }}>
+                                    Clear
+                                </Button>
+                            </Stack>
+                        </Drawer.Body>
+                    </Drawer.Content>
+                </Drawer.Positioner>
+            </Drawer.Root>
 
         </>
     )

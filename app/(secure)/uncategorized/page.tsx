@@ -1,6 +1,6 @@
 'use client'
 
-import {Heading, useToast,} from "@chakra-ui/react";
+import {Heading} from "@chakra-ui/react";
 import React from "react";
 import {
     UncategorizedTransactionTableGroup
@@ -10,15 +10,14 @@ import {approveTransaction, buildRuleUrl} from "../transactions/actions";
 import {createCategory} from "../categories/actions";
 
 export default function UncategorizedPage() {
-    const toast = useToast({ position: 'top' })
     const router = useRouter()
     return (
         <>
-            <Heading mb={6}>Uncategorized</Heading>
+            <Heading size="4xl" mb={6}>Uncategorized</Heading>
             <UncategorizedTransactionTableGroup
                 onBuildRule={transaction => router.push(buildRuleUrl(transaction))}
-                onApprove={(id, values) => approveTransaction(toast, id, values)}
-                onCreateCategory={category => createCategory(toast, category)}
+                onApprove={(id, values) => approveTransaction(id, values)}
+                onCreateCategory={category => createCategory(category)}
             />
         </>
     )

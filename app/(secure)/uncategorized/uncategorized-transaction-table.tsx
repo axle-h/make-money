@@ -1,18 +1,9 @@
 import {Account, accountTypeName, NewCategory, Transaction, UpdateTransactionRequest} from "@/app/api/schema";
 import {CategoryRulePredicate, useAccounts, useRulePredicates, useTransactions} from "@/api-client";
 import {ErrorAlert, Loading, NoData, UpToDate} from "@/components/alert";
-import {
-    Accordion,
-    AccordionButton,
-    AccordionItem,
-    AccordionPanel,
-    Badge,
-    Box, Flex,
-    Heading, Stack,
-    useDisclosure
-} from "@chakra-ui/react";
+import { Accordion, Badge, Box, Flex } from "@chakra-ui/react";
 import {TransactionApproveForm} from "../transactions/transaction-approve-form";
-import React from "react";
+import React, {useState} from "react";
 import {TransactionSummary} from "../transactions/transaction-summary";
 import {CreateOrUpdateCategoryDrawer} from "../categories/create-or-update-category-drawer";
 
@@ -25,7 +16,7 @@ export interface UncategorizedTransactionTableGroupProps {
 export function UncategorizedTransactionTableGroup({ onCreateCategory, ...props }: UncategorizedTransactionTableGroupProps) {
     const { accounts = [], isLoading: loadingAccounts, error: accountError } = useAccounts()
     const { rules = [], isLoading: loadingRules, error: ruleError } = useRulePredicates()
-    const createCategoryDisclosure = useDisclosure()
+    const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
 
     if (loadingAccounts || loadingRules) {
         return <Loading/>
@@ -45,18 +36,18 @@ export function UncategorizedTransactionTableGroup({ onCreateCategory, ...props 
 
     return (
         <>
-            <Accordion allowToggle>
+            <Accordion.Root collapsible lazyMount>
                 {accounts.map(account => (
                     <UncategorizedTransactionAccountSection
                         key={`account-${account.id}`}
                         {...props}
                         rules={rules}
                         account={account}
-                        onCreateCategory={createCategoryDisclosure.onOpen}
+                        onCreateCategory={() => setCreateCategoryOpen(true)}
                     />
                 ))}
-            </Accordion>
-            <CreateOrUpdateCategoryDrawer {...createCategoryDisclosure} onSubmit={onCreateCategory} />
+            </Accordion.Root>
+            <CreateOrUpdateCategoryDrawer open={createCategoryOpen} setOpen={setCreateCategoryOpen} onSubmit={onCreateCategory} />
         </>
     )
 }
@@ -80,9 +71,9 @@ function UncategorizedTransactionAccountSection({account, ...props}: Uncategoriz
     })
 
     return (
-        <AccordionItem key={`account-${account.id}`}>
-            <AccordionButton>
-                <Flex as="span" flex={1}>
+        <Accordion.Item value={`account-${account.id}`} key={`account-${account.id}`}>
+            <Accordion.ItemTrigger>
+                <Flex as="span" flex={1} cursor="pointer">
                     <Flex as="span" flexDirection="column" textAlign="left">
                         <Box as="span">
                             {account.bankName} {account.accountName}
@@ -98,20 +89,20 @@ function UncategorizedTransactionAccountSection({account, ...props}: Uncategoriz
                     </Flex>
                 </Flex>
 
-                {transactions.count > 0 ? <Badge ml={2} colorScheme="red" variant="solid">{transactions.count}</Badge> : <></>}
-            </AccordionButton>
-            <AccordionPanel pb={4}>
+                {transactions.count > 0 ? <Badge ml={2} colorPalette="red" variant="solid">{transactions.count}</Badge> : <></>}
+            </Accordion.ItemTrigger>
+            <Accordion.ItemContent pb={4}>
                 {isLoading
                     ? <Loading />
                     : error
                         ? <ErrorAlert error={error}/>
                         : <UncategorizedTransactionTable {...props} account={account} transactions={transactions.data} />}
-            </AccordionPanel>
-        </AccordionItem>
+            </Accordion.ItemContent>
+        </Accordion.Item>
     )
 }
 
-function UncategorizedTransactionTable({account, rules, onApprove, onBuildRule, onCreateCategory, transactions}: UncategorizedTransactionTableProps & { transactions: Transaction[] }) {
+function UncategorizedTransactionTable({rules, onApprove, onBuildRule, onCreateCategory, transactions}: UncategorizedTransactionTableProps & { transactions: Transaction[] }) {
     if (transactions.length === 0) {
         return <UpToDate/>
     }
@@ -120,11 +111,11 @@ function UncategorizedTransactionTable({account, rules, onApprove, onBuildRule, 
         const {id, date, type, name, description, amount} = transaction
         const ruleMatch= rules.find(rule => rule.predicate.evaluate(transaction))
         return (
-            <AccordionItem key={id} py={3}>
-                <AccordionButton>
-                    <TransactionSummary transaction={transaction} ruleMatch={ruleMatch} />
-                </AccordionButton>
-                <AccordionPanel pb={4}>
+            <Accordion.Item value={id.toString()} key={id} py={3}>
+                <Accordion.ItemTrigger>
+                    <TransactionSummary cursor="pointer" transaction={transaction} ruleMatch={ruleMatch} />
+                </Accordion.ItemTrigger>
+                <Accordion.ItemContent pb={4}>
                     <TransactionApproveForm
                         onSubmit={values => onApprove(id, values)}
                         transaction={transaction}
@@ -132,15 +123,15 @@ function UncategorizedTransactionTable({account, rules, onApprove, onBuildRule, 
                         onBuildRule={() => onBuildRule(transaction)}
                         onCreateNewCategory={onCreateCategory}
                     />
-                </AccordionPanel>
-            </AccordionItem>
+                </Accordion.ItemContent>
+            </Accordion.Item>
         );
     })
 
     return (
-        <Accordion allowToggle mb={6}>
+        <Accordion.Root collapsible mb={6}>
             {items}
-        </Accordion>
+        </Accordion.Root>
     )
 }
 

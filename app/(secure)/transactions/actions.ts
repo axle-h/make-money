@@ -1,18 +1,18 @@
-import {CreateToastFnReturn} from "@chakra-ui/react";
 import {mutateTransactions, ruleApi, transactionApi} from "@/api-client";
 import {Transaction, UpdateTransactionRequest} from "@/app/api/schema";
 import {CategoryRule} from "@prisma/client";
+import {toaster} from "@/components/ui/toaster";
 
-export async function resetTransactionCategories(toast: CreateToastFnReturn, id: number) {
+export async function resetTransactionCategories(id: number) {
     try {
         await transactionApi.update(id, {categories: []})
         await mutateTransactions()
-        toast({
+        toaster.create({
             title: 'Success',
             description: `Reset categories.`,
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -23,19 +23,19 @@ export async function resetTransactionCategories(toast: CreateToastFnReturn, id:
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to reset categories',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 }
 
 
-export async function approveAllTransactionsForRule(toast: CreateToastFnReturn, ruleId: number) {
+export async function approveAllTransactionsForRule(ruleId: number) {
     let lastError: string | null = null
 
     let rule: CategoryRule | null
@@ -49,23 +49,23 @@ export async function approveAllTransactionsForRule(toast: CreateToastFnReturn, 
             description = e?.toString() || 'an unknown error'
         }
         console.error(description)
-        toast({
+        toaster.create({
             title: 'Failed to retrieve category rule',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 
     if (!rule) {
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Category rule does not exist",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
@@ -82,23 +82,23 @@ export async function approveAllTransactionsForRule(toast: CreateToastFnReturn, 
             description = e?.toString() || 'an unknown error'
         }
         console.error(description)
-        toast({
+        toaster.create({
             title: 'Failed to retrieve uncategorized transactions',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 
     if (ids.length === 0) {
-        toast({
+        toaster.create({
             title: 'Success',
             description: "No uncategorized transactions found for this rule",
-            status: 'error',
+            type: 'error',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     }
@@ -125,36 +125,36 @@ export async function approveAllTransactionsForRule(toast: CreateToastFnReturn, 
     await mutateTransactions()
 
     if (lastError) {
-        toast({
+        toaster.create({
             title: 'Failed to approve transactions',
             description: lastError,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 
-    toast({
+    toaster.create({
         title: 'Success',
         description: "Approved transactions.",
-        status: 'success',
+        type: 'success',
         duration: 2000,
-        isClosable: true,
+        closable: true,
     })
     return true
 }
 
-export async function approveTransaction(toast: CreateToastFnReturn, id: number, values: UpdateTransactionRequest) {
+export async function approveTransaction(id: number, values: UpdateTransactionRequest) {
     try {
         await transactionApi.update(id, values)
         await mutateTransactions()
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Approved transaction.",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -165,12 +165,12 @@ export async function approveTransaction(toast: CreateToastFnReturn, id: number,
             description = e?.toString() || 'an unknown error'
         }
         console.error(description)
-        toast({
+        toaster.create({
             title: 'Failed to approve transaction',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }

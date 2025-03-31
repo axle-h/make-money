@@ -1,23 +1,22 @@
 'use client'
 
 import {
-    chakra, Button, ButtonProps,
+    chakra,
 } from '@chakra-ui/react';
-import React, {useRef} from 'react'
-import {UploadIcon} from "@/components/icons";
+import React from 'react'
+import {Button, ButtonProps} from "@/components/ui/button";
 
 export interface FileUploadProps extends ButtonProps {
     onUpload: (file: File) => void
 }
 
-export function FileUpload({ onUpload, ...props }: FileUploadProps) {
+export function FileUpload({ onUpload, children, ...props }: FileUploadProps) {
     return (<>
-        <Button
-            as={chakra.label}
-            htmlFor="file"
-            cursor="pointer"
-            {...props}
-         />
+        <Button asChild {...props}>
+            <chakra.label htmlFor="file" cursor="pointer">
+                {children}
+            </chakra.label>
+        </Button>
 
         <chakra.input
             required
@@ -38,4 +37,4 @@ export function FileUpload({ onUpload, ...props }: FileUploadProps) {
             }}
         />
     </>)
-};
+}

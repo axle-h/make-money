@@ -1,52 +1,47 @@
-import {
-    Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay,
-} from "@chakra-ui/react";
+import { Drawer } from "@chakra-ui/react";
 import React from "react";
 import { CategoryRule, NewCategoryRule} from "@/app/api/schema";
-import {FocusableElement} from "@chakra-ui/utils";
 import {NewRuleForm} from "./new-rule-form";
 
 export interface UpdateRuleDrawerProps {
-    isOpen: boolean
-    onClose(): void
+    open: boolean
+    setOpen(open: boolean): void
     rule: CategoryRule
     onSubmit(values: NewCategoryRule): Promise<boolean>,
 }
 
-export function UpdateRuleDrawer({isOpen, onClose, rule, onSubmit}: UpdateRuleDrawerProps) {
-    const firstField = React.useRef<FocusableElement>(null)
+export function UpdateRuleDrawer({open, setOpen, rule, onSubmit}: UpdateRuleDrawerProps) {
+    const firstField = React.useRef<HTMLInputElement>(null)
     return (
-        <Drawer
-            isOpen={isOpen}
-            placement='right'
-            onClose={onClose}
+        <Drawer.Root
+            lazyMount
+            open={open}
+            onOpenChange={(e) => setOpen(e.open)}
+            placement='end'
             size="md"
-            initialFocusRef={firstField}
+            initialFocusEl={() => firstField.current}
         >
-            <DrawerOverlay/>
-            <DrawerContent>
-                <DrawerCloseButton/>
-                <DrawerHeader>Update Rule</DrawerHeader>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+                <Drawer.Content>
+                    <Drawer.CloseTrigger />
+                    <Drawer.Header>Update Rule</Drawer.Header>
 
-                <DrawerBody>
-                    <NewRuleForm
-                        onSubmit={async values => {
-                            const result = await onSubmit(values)
-                            if (result) {
-                                onClose()
-                            }
-                            return result
-                        }}
-                        initialValues={{ name: rule.name, predicate: rule.predicate, categoryId: rule.categoryId }}
-                        ref={firstField}
-                    />
-                </DrawerBody>
-            </DrawerContent>
-        </Drawer>
+                    <Drawer.Body>
+                        <NewRuleForm
+                            onSubmit={async values => {
+                                const result = await onSubmit(values)
+                                if (result) {
+                                    setOpen(false)
+                                }
+                                return result
+                            }}
+                            initialValues={{ name: rule.name, predicate: rule.predicate, categoryId: rule.categoryId }}
+                            ref={firstField}
+                        />
+                    </Drawer.Body>
+                </Drawer.Content>
+            </Drawer.Positioner>
+        </Drawer.Root>
     )
 }

@@ -1,23 +1,10 @@
 import {useRules, useTransactions} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
-import {CategoryRule, NewCategoryRule, Statement} from "@/app/api/schema";
-import {
-    Code, IconButton,
-    Menu,
-    MenuButton, MenuItem, MenuList,
-    Table,
-    TableContainer,
-    Tag,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
-    useDisclosure
-} from "@chakra-ui/react";
+import {CategoryRule, NewCategoryRule} from "@/app/api/schema";
+import { Code, IconButton, Menu, Table, Tag, useDisclosure } from "@chakra-ui/react";
 import React, {useState} from "react";
 import {ListIcon, MoreVerticalIcon} from "@/components/icons";
-import {DeleteIcon, EditIcon, ViewIcon} from "@chakra-ui/icons";
+import {DeleteIcon, EditIcon, ViewIcon} from "@/components/icons";
 import {UpdateRuleDrawer} from "./update-rule-drawer";
 import {Predicate} from "@/app/api/predicate";
 
@@ -57,20 +44,22 @@ export function RuleTable({ onDelete, onViewTransactions, onUpdate }: RuleTableP
         const hasUncategorizedTransactions = uncategorizedCount !== null && uncategorizedCount > 0
 
         return (
-            <Tr>
-                <Td>{rule.name}</Td>
-                <Td whiteSpace="initial">
+            <Table.Row>
+                <Table.Cell>{rule.name}</Table.Cell>
+                <Table.Cell whiteSpace="initial">
                     <Code bgColor="transparent">
                         {rule.predicate}
                     </Code>
-                </Td>
-                <Td>
-                    <Tag colorScheme="purple">{rule.categoryName}</Tag>
-                </Td>
-                <Td isNumeric color={hasUncategorizedTransactions ? 'red.500' : 'initial'}>
+                </Table.Cell>
+                <Table.Cell>
+                    <Tag.Root colorPalette="purple">
+                        <Tag.Label>{rule.categoryName}</Tag.Label>
+                    </Tag.Root>
+                </Table.Cell>
+                <Table.Cell textAlign="end" color={hasUncategorizedTransactions ? 'red.500' : 'initial'}>
                     {uncategorizedCount === null ? <Loading /> : <>{uncategorizedCount}</>}
-                </Td>
-                <Td px={0}>
+                </Table.Cell>
+                <Table.Cell px={0}>
                     <RuleMenu
                         rule={rule}
                         onDelete={() => onDelete(rule.id)}
@@ -78,28 +67,26 @@ export function RuleTable({ onDelete, onViewTransactions, onUpdate }: RuleTableP
                         onUpdate={values => onUpdate(rule.id, values)}
                         hasUncategorizedTransactions={hasUncategorizedTransactions}
                     />
-                </Td>
-            </Tr>
+                </Table.Cell>
+            </Table.Row>
         )
     }
 
     return (
-        <TableContainer>
-            <Table variant='simple'>
-                <Thead>
-                    <Tr>
-                        <Th>Name</Th>
-                        <Th>Rule</Th>
-                        <Th>Category</Th>
-                        <Th isNumeric>Uncategorized</Th>
-                        <Th px={0}></Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {rules.map(rule => <RuleRow key={rule.id} rule={rule}/>)}
-                </Tbody>
-            </Table>
-        </TableContainer>
+        <Table.Root variant='line'>
+            <Table.Header>
+                <Table.Row>
+                    <Table.ColumnHeader>Name</Table.ColumnHeader>
+                    <Table.ColumnHeader>Rule</Table.ColumnHeader>
+                    <Table.ColumnHeader>Category</Table.ColumnHeader>
+                    <Table.ColumnHeader textAlign="end">Uncategorized</Table.ColumnHeader>
+                    <Table.ColumnHeader px={0}></Table.ColumnHeader>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {rules.map(rule => <RuleRow key={rule.id} rule={rule}/>)}
+            </Table.Body>
+        </Table.Root>
     )
 }
 
@@ -113,46 +100,45 @@ interface RuleMenuProps {
 
 function RuleMenu({ rule, onDelete, onViewTransactions, onUpdate, hasUncategorizedTransactions }: RuleMenuProps) {
     const [isDeleting, setIsDeleting] = useState(false)
-    const updateDisclosure = useDisclosure()
+    const [updateOpen, setUpdateOpen] = useState(false)
 
     return (
         <>
-            <Menu isLazy>
-                <MenuButton as={IconButton} aria-label='Options' icon={<MoreVerticalIcon/>} variant="ghost"/>
-                <MenuList>
-                    <MenuItem
-                        icon={<ViewIcon/>}
-                        onClick={() => onViewTransactions(false)}
-                    >
-                        View transactions
-                    </MenuItem>
-                    <MenuItem
-                        icon={<ListIcon/>}
-                        onClick={() => onViewTransactions(true)}
-                        isDisabled={!hasUncategorizedTransactions}
-                    >
-                        Approve all uncategorized
-                    </MenuItem>
-                    <MenuItem icon={<EditIcon />} onClick={updateDisclosure.onOpen}>
-                        Edit
-                    </MenuItem>
-                    <MenuItem
-                        icon={<DeleteIcon/>}
-                        isDisabled={isDeleting}
-                        onClick={async () => {
-                            setIsDeleting(true)
-                            try {
-                                await onDelete()
-                            } finally {
-                                setIsDeleting(false)
-                            }
-                        }}
-                    >
-                        Delete
-                    </MenuItem>
-                </MenuList>
-            </Menu>
-            <UpdateRuleDrawer {...updateDisclosure} rule={rule} onSubmit={onUpdate} />
+            <Menu.Root>
+                <Menu.Trigger asChild>
+                    <IconButton variant="ghost">
+                        <MoreVerticalIcon/>
+                    </IconButton>
+                </Menu.Trigger>
+                <Menu.Positioner>
+                    <Menu.Content>
+                        <Menu.Item value="view-transactions" onClick={() => onViewTransactions(false)}>
+                            <ViewIcon/> View transactions
+                        </Menu.Item>
+                        <Menu.Item value="approve-all" onClick={() => onViewTransactions(true)} disabled={!hasUncategorizedTransactions}>
+                            <ListIcon/> Approve all uncategorized
+                        </Menu.Item>
+                        <Menu.Item value="edit-rule" onClick={() => setUpdateOpen(true)}>
+                            <EditIcon /> Edit
+                        </Menu.Item>
+                        <Menu.Item
+                            value="delete-rule"
+                            disabled={isDeleting}
+                            onClick={async () => {
+                                setIsDeleting(true)
+                                try {
+                                    await onDelete()
+                                } finally {
+                                    setIsDeleting(false)
+                                }
+                            }}
+                        >
+                            <DeleteIcon/> Delete
+                        </Menu.Item>
+                    </Menu.Content>
+                </Menu.Positioner>
+            </Menu.Root>
+            <UpdateRuleDrawer open={updateOpen} setOpen={setUpdateOpen} rule={rule} onSubmit={onUpdate} />
         </>
     )
 }

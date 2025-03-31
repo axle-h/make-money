@@ -10,9 +10,10 @@ import {
     ResponsiveContainer,
 } from 'recharts'
 import {CREDIT_COLOR_CSS, DEBIT_COLOR_CSS, TimeSeriesEntry} from "@/components/charts/data";
-import {Box, useColorMode} from "@chakra-ui/react";
+import {Box} from "@chakra-ui/react";
 import {formatDateShort} from "@/components/dates";
 import {currency, currencyShort} from "@/components/currency";
+import {useColorMode} from "@/components/ui/color-mode";
 
 export function CurrencyBarChart({ data }: { data: TimeSeriesEntry[] }) {
     const { colorMode } = useColorMode()

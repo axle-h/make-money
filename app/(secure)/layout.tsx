@@ -2,6 +2,7 @@ import React from "react"
 import SecureNav from "@/components/nav";
 import {auth} from "@/auth";
 import { redirect } from 'next/navigation'
+import { Toaster } from "@/components/ui/toaster"
 
 export default async function SecureLayout({ children }: { children: React.ReactNode }) {
 
@@ -9,6 +10,10 @@ export default async function SecureLayout({ children }: { children: React.React
     if (!session) {
         redirect('/login')
     } else {
-        return <SecureNav session={session}>{children}</SecureNav>
+        return (
+            <SecureNav session={session}>
+                <Toaster />
+                {children}
+            </SecureNav>)
     }
 }

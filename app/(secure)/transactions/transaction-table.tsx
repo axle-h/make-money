@@ -6,26 +6,9 @@ import {
     UpdateTransactionRequest
 } from "@/app/api/schema";
 import {PaginatedParams, toApiQuery} from "./types";
-import {
-    Box,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList, Stack,
-    Table,
-    TableColumnHeaderProps,
-    TableContainer,
-    Tag,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr, useDisclosure, Wrap, WrapItem
-} from "@chakra-ui/react";
-import {CheckIcon, EditIcon, TriangleDownIcon, TriangleUpIcon} from "@chakra-ui/icons";
+import { Box, IconButton, Menu, Stack, Tag, Table, Wrap, WrapItem } from "@chakra-ui/react";
 import React, {useEffect, useState} from "react";
-import {CodeIcon, MoreVerticalIcon} from "@/components/icons";
+import {CodeIcon, MoreVerticalIcon, CheckIcon, EditIcon, TriangleDownIcon, TriangleUpIcon} from "@/components/icons";
 import {useTransactions} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
 import {formatDateShort} from "@/components/dates";
@@ -33,7 +16,8 @@ import {Pagination} from "@/components/pagination";
 import {TransactionApproveDrawer} from "../transactions/transaction-approve-drawer";
 import {CreateOrUpdateCategoryDrawer} from "../categories/create-or-update-category-drawer";
 import {AccountSummary} from "../accounts/account-summary";
-import {CashFlow, TransactionName} from "../transactions/transaction-summary";
+import {TransactionName} from "../transactions/transaction-summary";
+import {CashFlow} from "@/components/cash-flow";
 
 type OrderByField = Required<PaginatedTransactionQuery>['orderBy']
 
@@ -65,13 +49,12 @@ export function TransactionTable({queryParams, updatePage, updateSort, onCategor
     }
 
     const {transactions, isLoading, error} = useTransactions(query)
-    const createCategoryDisclosure = useDisclosure()
+    const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
     const transactionCount = transactions?.count || null
 
     useEffect(() => {
         if (transactionCount) {
             updatePageCount(Math.ceil(transactionCount / limit))
-
         }
     }, [transactionCount, limit])
 
@@ -88,72 +71,72 @@ export function TransactionTable({queryParams, updatePage, updateSort, onCategor
     }
 
     const rows = transactions.data.map(transaction => {
-        return (<Tr key={transaction.id}>
-            <Td>{formatDateShort(transaction.date)}</Td>
-            <Td whiteSpace="initial">
-                <Stack spacing={1}>
-                    <TransactionName transaction={transaction} />
-                    <Wrap>
-                        {transaction.categories.map(category =>
-                            <WrapItem key={category.id}><TransactionCategoryTag category={category}/></WrapItem>
-                        )}
-                    </Wrap>
-                </Stack>
-            </Td>
-            <Td>
-                <AccountSummary {...transaction} />
-            </Td>
-            <Td isNumeric={true}>
-                <CashFlow amount={transaction.amount} />
-            </Td>
-            <Td mx={0}>
-                <TransactionMenu
-                    transaction={transaction}
-                    onCategoryReset={() => onCategoryReset(transaction.id)}
-                    onBuildRule={() => onBuildRule(transaction)}
-                    onUpdate={values => onUpdate(transaction.id, values)}
-                    onCreateNewCategory={createCategoryDisclosure.onOpen}
-                />
-            </Td>
-        </Tr>);
+        return (
+            <Table.Row key={transaction.id}>
+                <Table.Cell>{formatDateShort(transaction.date)}</Table.Cell>
+                <Table.Cell whiteSpace="initial">
+                    <Stack gap={1}>
+                        <TransactionName transaction={transaction} />
+                        <Wrap>
+                            {transaction.categories.map(category =>
+                                <WrapItem key={category.id}><TransactionCategoryTag category={category}/></WrapItem>
+                            )}
+                        </Wrap>
+                    </Stack>
+                </Table.Cell>
+                <Table.Cell>
+                    <AccountSummary {...transaction} />
+                </Table.Cell>
+                <Table.Cell textAlign="end">
+                    <CashFlow amount={transaction.amount} />
+                </Table.Cell>
+                <Table.Cell mx={0}>
+                    <TransactionMenu
+                        transaction={transaction}
+                        onCategoryReset={() => onCategoryReset(transaction.id)}
+                        onBuildRule={() => onBuildRule(transaction)}
+                        onUpdate={values => onUpdate(transaction.id, values)}
+                        onCreateNewCategory={() => setCreateCategoryOpen(true)}
+                    />
+                </Table.Cell>
+            </Table.Row>
+        )
     })
 
-    function SortableHeader({title, field, ...props}: TableColumnHeaderProps & { title: string, field: OrderByField }) {
+    function SortableHeader({title, field, ...props}: Table.ColumnHeaderProps & { title: string, field: OrderByField }) {
         const sorted = queryParams.orderBy === field
             ? (queryParams.orderByDescending ? 'desc' : 'asc')
             : null
         return (
-            <Th {...props} onClick={() => {
+            <Table.ColumnHeader {...props} onClick={() => {
                 const nextSorted = sorted === null || sorted === 'desc' ? 'asc' : 'desc'
                 return updateSort(field, nextSorted === 'desc')
             }} cursor="pointer">
                 {title}
                 <SortChevron sorted={sorted}/>
-            </Th>
+            </Table.ColumnHeader>
         )
     }
 
     return (
         <>
-            <TableContainer>
-                <Table variant='simple'>
-                    <Thead>
-                        <Tr>
-                            <SortableHeader title="Date" field="date"/>
-                            <SortableHeader title="Name" field="name"/>
-                            <SortableHeader title="Account" field="accountId"/>
-                            <SortableHeader isNumeric={true} title="Amount" field="amount"/>
-                            <Th mx={0}></Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {rows}
-                    </Tbody>
-                </Table>
-            </TableContainer>
+            <Table.Root variant='line'>
+                <Table.Header>
+                    <Table.Row>
+                        <SortableHeader title="Date" field="date"/>
+                        <SortableHeader title="Name" field="name"/>
+                        <SortableHeader title="Account" field="accountId"/>
+                        <SortableHeader textAlign="end" title="Amount" field="amount"/>
+                        <Table.ColumnHeader mx={0}></Table.ColumnHeader>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {rows}
+                </Table.Body>
+            </Table.Root>
             {pageCount ? <Pagination current={queryParams.page} count={pageCount} onPaginate={updatePage}/> : <></>}
 
-            <CreateOrUpdateCategoryDrawer {...createCategoryDisclosure} onSubmit={onCreateCategory} />
+            <CreateOrUpdateCategoryDrawer open={createCategoryOpen} setOpen={setCreateCategoryOpen} onSubmit={onCreateCategory} />
         </>
     )
 }
@@ -168,41 +151,49 @@ interface TransactionMenuProps {
 
 function TransactionMenu({transaction, onCategoryReset, onBuildRule, onUpdate, onCreateNewCategory}: TransactionMenuProps) {
     const [isCategoryReset, setCategoryReset] = useState(false)
-    const approveDisclosure = useDisclosure()
+    const [approveOpen, setApproveOpen] = useState(false)
 
     return (
-        <Menu isLazy>
-            <MenuButton as={IconButton} icon={<MoreVerticalIcon/>} aria-label="Options" variant="ghost"/>
-            <MenuList>
-                <MenuItem icon={<CheckIcon />} onClick={approveDisclosure.onOpen}>
-                    Approve
-                </MenuItem>
-                <MenuItem icon={<CodeIcon/>} onClick={onBuildRule}>
-                    Create rule
-                </MenuItem>
-                <MenuItem
-                    icon={<EditIcon/>}
-                    disabled={isCategoryReset}
-                    onClick={async () => {
-                        setCategoryReset(true)
-                        try {
-                            await onCategoryReset()
-                        } finally {
-                            setCategoryReset(false)
-                        }
-                    }}
-                >
-                    Reset categories
-                </MenuItem>
-            </MenuList>
+        <Menu.Root>
+            <Menu.Trigger asChild>
+                <IconButton variant="ghost">
+                    <MoreVerticalIcon/>
+                </IconButton>
+            </Menu.Trigger>
+            <Menu.Positioner>
+                <Menu.Content>
+                    <Menu.Item value="approve" onClick={() => setApproveOpen(true)}>
+                        <CheckIcon /> Approve
+                    </Menu.Item>
+                    <Menu.Item value="create-rule" onClick={onBuildRule}>
+                        <CodeIcon/> Create rule
+                    </Menu.Item>
+                    <Menu.Item
+                        value="reset-categories"
+                        disabled={isCategoryReset}
+                        onClick={async () => {
+                            setCategoryReset(true)
+                            try {
+                                await onCategoryReset()
+                            } finally {
+                                setCategoryReset(false)
+                            }
+                        }}
+                    >
+                        <EditIcon/> Reset categories
+                    </Menu.Item>
+                </Menu.Content>
+            </Menu.Positioner>
+
             <TransactionApproveDrawer
-                {...approveDisclosure}
+                open={approveOpen}
+                setOpen={setApproveOpen}
                 transaction={transaction}
                 onSubmit={onUpdate}
                 onBuildRule={onBuildRule}
                 onCreateNewCategory={onCreateNewCategory}
             />
-        </Menu>
+        </Menu.Root>
     )
 }
 
@@ -220,5 +211,9 @@ function SortChevron({sorted}: { sorted: 'desc' | 'asc' | null }) {
 }
 
 function TransactionCategoryTag({category: {name, fraction}}: { category: TransactionCategory }) {
-    return <Tag colorScheme="purple">{name} {fraction === 1 ? <></> : <>{fraction * 100}%</>}</Tag>
+    return (
+        <Tag.Root colorPalette="purple">
+            <Tag.Label>{name} {fraction === 1 ? <></> : <>{fraction * 100}%</>}</Tag.Label>
+        </Tag.Root>
+    )
 }

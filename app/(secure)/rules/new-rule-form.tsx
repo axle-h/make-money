@@ -1,22 +1,12 @@
 import {NewCategoryRule, Schema} from "@/app/api/schema";
-import {
-    Button,
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    IconButton,
-    Input,
-    InputGroup,
-    InputRightElement,
-    Stack,
-    useDisclosure
-} from "@chakra-ui/react";
-import {Field, Form, Formik} from "formik";
+import { Field, IconButton, Input, InputGroup, Stack } from "@chakra-ui/react";
+import {Field as FormikField, Form, Formik} from "formik";
 import {FieldProps} from "formik/dist/Field";
-import {InfoIcon} from "@chakra-ui/icons";
+import {InfoIcon} from "@/components/icons";
 import {PredicateInfoDrawer} from "./predicate-info";
-import React from "react";
+import React, {useState} from "react";
 import {CategorySelect} from "../categories/category-select";
+import {Button} from "@/components/ui/button";
 
 export interface NewRuleFormProps {
     onSubmit(rule: NewCategoryRule): Promise<boolean>
@@ -24,8 +14,8 @@ export interface NewRuleFormProps {
 }
 
 
-export const NewRuleForm = React.forwardRef(({onSubmit, initialValues}: NewRuleFormProps, firstField) => {
-    const predicateInfoDisclosure = useDisclosure()
+export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(({onSubmit, initialValues}, firstField) => {
+    const [predicateInfoOpen, setPredicateInfoOpen] = useState(false)
 
     return (
         <>
@@ -48,61 +38,60 @@ export const NewRuleForm = React.forwardRef(({onSubmit, initialValues}: NewRuleF
             >
                 {(props) => (
                     <Form>
-                        <Stack spacing={4} mb={4}>
-                            <Field name="name">
+                        <Stack gap={4} mb={4}>
+                            <FormikField name="name">
                                 {({form, field}: FieldProps<string, NewCategoryRule>) => (
-                                    <FormControl isInvalid={!!form.errors.name && !!form.touched.name} isRequired>
-                                        <FormLabel>Name</FormLabel>
+                                    <Field.Root invalid={!!form.errors.name && !!form.touched.name} required>
+                                        <Field.Label>Name</Field.Label>
                                         <Input {...field} ref={firstField as any} />
-                                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-                                    </FormControl>
+                                        <Field.ErrorText>{form.errors.name}</Field.ErrorText>
+                                    </Field.Root>
                                 )}
-                            </Field>
+                            </FormikField>
 
-                            <Field name="predicate">
+                            <FormikField name="predicate">
                                 {({form, field}: FieldProps<string, NewCategoryRule>) => (
-                                    <FormControl isInvalid={!!form.errors.predicate && !!form.touched.predicate} isRequired>
-                                        <FormLabel>Predicate</FormLabel>
-                                        <InputGroup>
+                                    <Field.Root invalid={!!form.errors.predicate && !!form.touched.predicate} required>
+                                        <Field.Label>Predicate</Field.Label>
+                                        <InputGroup endAddon={
+                                            <IconButton
+                                                colorPalette="blue"
+                                                size='sm'
+                                                aria-label="info"
+                                                variant="ghost"
+                                                onClick={() => setPredicateInfoOpen(true)}
+                                            >
+                                                <InfoIcon/>
+                                            </IconButton>
+                                        }>
                                             <Input {...field} />
-                                            <InputRightElement>
-                                                <IconButton
-                                                    colorScheme="blue"
-                                                    size='sm'
-                                                    aria-label="info"
-                                                    variant="ghost"
-                                                    icon={<InfoIcon/>}
-                                                    onClick={predicateInfoDisclosure.onOpen}
-                                                />
-                                            </InputRightElement>
                                         </InputGroup>
-                                        <FormErrorMessage>{form.errors.predicate}</FormErrorMessage>
-                                    </FormControl>
+                                        <Field.ErrorText>{form.errors.predicate}</Field.ErrorText>
+                                    </Field.Root>
                                 )}
-                            </Field>
+                            </FormikField>
 
-                            <Field name="categoryId">
+                            <FormikField name="categoryId">
                                 {({form, field}: FieldProps<string, NewCategoryRule>) => (
-                                    <FormControl isInvalid={!!form.errors.categoryId && !!form.touched.categoryId} isRequired>
-                                        <FormLabel>Category</FormLabel>
+                                    <Field.Root invalid={!!form.errors.categoryId && !!form.touched.categoryId} required>
+                                        <Field.Label>Category</Field.Label>
                                         <CategorySelect
-                                            isRequired
                                             {...field}
                                             onChange={event => {
                                                 const id = Number(event.target.value) || 0
                                                 return form.setFieldValue('categoryId', id)
                                             }}
                                         />
-                                        <FormErrorMessage>{form.errors.categoryId}</FormErrorMessage>
-                                    </FormControl>
+                                        <Field.ErrorText>{form.errors.categoryId}</Field.ErrorText>
+                                    </Field.Root>
                                 )}
-                            </Field>
+                            </FormikField>
                         </Stack>
 
                         <Button
                             mt={4}
-                            colorScheme="teal"
-                            isLoading={props.isSubmitting}
+                            colorPalette="teal"
+                            loading={props.isSubmitting}
                             variant="outline"
                             type="submit"
                         >
@@ -111,7 +100,7 @@ export const NewRuleForm = React.forwardRef(({onSubmit, initialValues}: NewRuleF
                     </Form>
                 )}
             </Formik>
-            <PredicateInfoDrawer {...predicateInfoDisclosure} />
+            <PredicateInfoDrawer open={predicateInfoOpen} setOpen={setPredicateInfoOpen} />
         </>
     )
 })

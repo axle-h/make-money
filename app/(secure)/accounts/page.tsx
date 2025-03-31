@@ -1,94 +1,85 @@
 'use client'
 
-import {
-    Button,
-    ButtonGroup,
-    CreateToastFnReturn,
-    Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay,
-    Heading,
-    useDisclosure,
-    useToast,
-} from "@chakra-ui/react";
+import { Button, ButtonGroup, Drawer, Heading } from "@chakra-ui/react";
 import {ApiError} from "@/api-client/error";
-import {AddIcon} from "@chakra-ui/icons";
-import React from "react";
-import {FocusableElement} from "@chakra-ui/utils";
+import {AddIcon} from "@/components/icons";
+import React, {useState} from "react";
 import {Account, NewAccount} from "@/app/api/schema";
 import {accountApi, mutateAccounts} from "@/api-client";
 import {mutateAll} from "@/api-client/request";
 import {AccountTable} from "./account-table";
 import {NewAccountForm} from "./new-account-form";
 import {useRouter} from "next/navigation";
+import {toaster} from "@/components/ui/toaster";
 
 export default function AccountsPage() {
-    const toast = useToast({ position: 'top' })
     const router = useRouter()
     return (<>
-        <Heading mb={6}>Accounts</Heading>
+        <Heading size="4xl" mb={6}>Accounts</Heading>
         <AccountControls
-            onCreate={account => createAccount(toast, account)}
+            onCreate={account => createAccount(account)}
         />
         <AccountTable
             onViewTransactions={account => router.push(`transactions?accountId=${account.id}`)}
-            onDelete={account => deleteAccount(toast, account)}
+            onDelete={account => deleteAccount(account)}
         />
     </>)
 }
 
 function AccountControls({ onCreate }: { onCreate(account: NewAccount): Promise<boolean> }) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const firstField = React.useRef<FocusableElement>(null)
+    const [open, setOpen] = useState(false)
+    const firstField = React.useRef<HTMLInputElement>(null)
 
     return (
         <>
             <ButtonGroup variant='outline' mb={4}>
-                <Button colorScheme='teal' leftIcon={<AddIcon />} onClick={onOpen}>New Account</Button>
+                <Button colorPalette='teal' onClick={() => setOpen(true)}>
+                    <AddIcon /> New Account
+                </Button>
             </ButtonGroup>
-            <Drawer
-                isOpen={isOpen}
-                placement='right'
-                initialFocusRef={firstField}
-                onClose={onClose}
+            <Drawer.Root
+                open={open}
+                placement='end'
+                initialFocusEl={() => firstField.current}
+                onOpenChange={(e) => setOpen(e.open)}
                 size="md"
             >
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
+                <Drawer.Backdrop />
 
-                    <DrawerHeader>
-                        Create a new account
-                    </DrawerHeader>
+                <Drawer.Positioner>
+                    <Drawer.Content>
+                        <Drawer.CloseTrigger />
 
-                    <DrawerBody>
-                        <NewAccountForm ref={firstField} onSubmit={async account => {
-                            const result = await onCreate(account)
-                            if (result) {
-                                onClose()
-                            }
-                            return result
-                        }} />
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
+                        <Drawer.Header>
+                            Create a new account
+                        </Drawer.Header>
+
+                        <Drawer.Body>
+                            <NewAccountForm ref={firstField} onSubmit={async account => {
+                                const result = await onCreate(account)
+                                if (result) {
+                                    setOpen(false)
+                                }
+                                return result
+                            }} />
+                        </Drawer.Body>
+                    </Drawer.Content>
+                </Drawer.Positioner>
+            </Drawer.Root>
         </>
     )
 }
 
-async function createAccount(toast: CreateToastFnReturn, newAccount: NewAccount) {
+async function createAccount(newAccount: NewAccount) {
     try {
         await accountApi.create(newAccount)
         await mutateAccounts()
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Created new account.",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -101,27 +92,27 @@ async function createAccount(toast: CreateToastFnReturn, newAccount: NewAccount)
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to create new account',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 }
 
-async function deleteAccount(toast: CreateToastFnReturn, account: Account) {
+async function deleteAccount(account: Account) {
     try {
         await accountApi.delete(account.id)
         await mutateAll()
-        toast({
+        toaster.create({
             title: 'Success',
             description: `Deleted account ${account.bankName} ${account.sortCode} ${account.accountNumber}.`,
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
     } catch(e) {
         let description: string
@@ -131,12 +122,12 @@ async function deleteAccount(toast: CreateToastFnReturn, account: Account) {
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to delete account',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
     }
 }

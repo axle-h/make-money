@@ -1,18 +1,19 @@
-import {CreateToastFnReturn} from "@chakra-ui/react";
+
 import {categoriesApi, mutateCategories} from "@/api-client";
 import {NewCategory} from "@/app/api/schema";
 import {ApiError} from "@/api-client/error";
+import {toaster} from "@/components/ui/toaster";
 
-export async function createCategory(toast: CreateToastFnReturn, newCategory: NewCategory) {
+export async function createCategory(newCategory: NewCategory) {
     try {
         await categoriesApi.create(newCategory)
         await mutateCategories()
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Created new category.",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -25,27 +26,27 @@ export async function createCategory(toast: CreateToastFnReturn, newCategory: Ne
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to create new category',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 }
 
-export async function updateCategory(toast: CreateToastFnReturn, id: number, values: NewCategory): Promise<boolean> {
+export async function updateCategory(id: number, values: NewCategory): Promise<boolean> {
     try {
         await categoriesApi.update(id, values)
         await mutateCategories()
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Updated category.",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -58,27 +59,27 @@ export async function updateCategory(toast: CreateToastFnReturn, id: number, val
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to update category',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }
 }
 
-export async function deleteCategory(toast: CreateToastFnReturn, id: number): Promise<boolean> {
+export async function deleteCategory(id: number): Promise<boolean> {
     try {
         await categoriesApi.delete(id)
         await mutateCategories()
-        toast({
+        toaster.create({
             title: 'Success',
             description: "Deleted category.",
-            status: 'success',
+            type: 'success',
             duration: 2000,
-            isClosable: true,
+            closable: true,
         })
         return true
     } catch (e) {
@@ -89,12 +90,12 @@ export async function deleteCategory(toast: CreateToastFnReturn, id: number): Pr
             description = e?.toString() || 'an unknown error'
         }
         console.error(description);
-        toast({
+        toaster.create({
             title: 'Failed to delete category',
             description,
-            status: 'error',
+            type: 'error',
             duration: 5000,
-            isClosable: true,
+            closable: true,
         })
         return false
     }

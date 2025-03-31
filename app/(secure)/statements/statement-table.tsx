@@ -1,34 +1,13 @@
-import {accountTypeName, Statement} from "@/app/api/schema";
+import { Statement } from "@/app/api/schema";
 import React, {useEffect, useState} from "react";
 import {useStatements} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
-import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay, Box,
-    Button,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList, Stack,
-    Table,
-    TableContainer, Tag,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
-    useDisclosure
-} from "@chakra-ui/react";
-import {formatDateLong, formatDateRange, formatDateTimeLong} from "@/components/dates";
+import { Dialog, IconButton, Menu, Table } from "@chakra-ui/react";
+import {formatDateRange, formatDateTimeLong} from "@/components/dates";
 import {Pagination} from "@/components/pagination";
-import {MoreVerticalIcon} from "@/components/icons";
-import {DeleteIcon, ViewIcon} from "@chakra-ui/icons";
+import {MoreVerticalIcon, DeleteIcon, ViewIcon} from "@/components/icons";
 import {AccountSummary} from "../accounts/account-summary";
+import {Button} from "@/components/ui/button";
 
 interface StatementTableProps {
     page: number
@@ -69,38 +48,36 @@ export function StatementTable({page, updatePage, onDelete, onViewTransactions}:
     }
 
     const rows = statements.data.map(statement =>
-        (<Tr key={statement.id}>
-            <Td>{formatDateTimeLong(statement.dateUploaded)}</Td>
-            <Td>
+        (<Table.Row key={statement.id}>
+            <Table.Cell>{formatDateTimeLong(statement.dateUploaded)}</Table.Cell>
+            <Table.Cell>
                 {formatDateRange(statement.startDate, statement.endDate)}
-            </Td>
-            <Td>{statement.transactionCount}</Td>
-            <Td>
+            </Table.Cell>
+            <Table.Cell>{statement.transactionCount}</Table.Cell>
+            <Table.Cell>
                 <AccountSummary {...statement} />
-            </Td>
-            <Td mx={0}>
+            </Table.Cell>
+            <Table.Cell mx={0}>
                 <StatementMenu statement={statement} onDelete={onDelete} onViewTransactions={onViewTransactions}/>
-            </Td>
-        </Tr>))
+            </Table.Cell>
+        </Table.Row>))
 
     return (
         <>
-            <TableContainer>
-                <Table variant='simple'>
-                    <Thead>
-                        <Tr>
-                            <Th>Uploaded</Th>
-                            <Th>Date Range</Th>
-                            <Th>Transactions</Th>
-                            <Th>Account</Th>
-                            <Th mx={0}></Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {rows}
-                    </Tbody>
-                </Table>
-            </TableContainer>
+            <Table.Root variant='line'>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.ColumnHeader>Uploaded</Table.ColumnHeader>
+                        <Table.ColumnHeader>Date Range</Table.ColumnHeader>
+                        <Table.ColumnHeader>Transactions</Table.ColumnHeader>
+                        <Table.ColumnHeader>Account</Table.ColumnHeader>
+                        <Table.ColumnHeader mx={0}></Table.ColumnHeader>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {rows}
+                </Table.Body>
+            </Table.Root>
             {pageCount ? <Pagination current={page} count={pageCount} onPaginate={updatePage}/> : <></>}
         </>
     )
@@ -112,8 +89,7 @@ interface StatementMenuProps extends Pick<StatementTableProps, 'onDelete' | 'onV
 
 function StatementMenu({onDelete, onViewTransactions, statement}: StatementMenuProps) {
     const [isDeleting, setIsDeleting] = useState(false)
-    const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose} = useDisclosure()
-    const cancelDeleteRef = React.useRef()
+    const [deleteOpen, setDeleteOpen] = useState(false)
 
     async function statefulOnDelete() {
         setIsDeleting(true)
@@ -126,63 +102,70 @@ function StatementMenu({onDelete, onViewTransactions, statement}: StatementMenuP
 
     return (
         <>
-            <Menu isLazy>
-                <MenuButton as={IconButton} aria-label='Options' icon={<MoreVerticalIcon/>} variant="ghost"/>
-                <MenuList>
-                    <MenuItem
-                        icon={<ViewIcon/>}
-                        onClick={() => onViewTransactions(statement)}
-                    >
-                        View transactions
-                    </MenuItem>
-                    <MenuItem
-                        icon={<DeleteIcon/>}
-                        isDisabled={isDeleting}
-                        onClick={() => {
-                            if (statement.transactionCount > 0) {
-                                onDeleteOpen()
-                            } else {
-                                return statefulOnDelete()
-                            }
-                        }}
-                    >
-                        Delete
-                    </MenuItem>
-                </MenuList>
-            </Menu>
+            <Menu.Root>
+                <Menu.Trigger asChild>
+                    <IconButton variant="ghost">
+                        <MoreVerticalIcon/>
+                    </IconButton>
+                </Menu.Trigger>
+                <Menu.Positioner>
+                    <Menu.Content>
+                        <Menu.Item
+                            value="view-transactions"
+                            onClick={() => onViewTransactions(statement)}
+                        >
+                            <ViewIcon/> View transactions
+                        </Menu.Item>
+                        <Menu.Item
+                            value="delete-statement"
+                            disabled={isDeleting}
+                            onClick={() => {
+                                if (statement.transactionCount > 0) {
+                                    setDeleteOpen(true)
+                                } else {
+                                    return statefulOnDelete()
+                                }
+                            }}
+                        >
+                            <DeleteIcon/> Delete
+                        </Menu.Item>
+                    </Menu.Content>
+                </Menu.Positioner>
+            </Menu.Root>
 
             {statement.transactionCount > 0 ? (
-                <AlertDialog
-                    isOpen={isDeleteOpen}
-                    leastDestructiveRef={cancelDeleteRef as any}
-                    onClose={onDeleteClose}
+                <Dialog.Root
+                    role="alertdialog"
+                    open={deleteOpen}
+                    onOpenChange={(e) => setDeleteOpen(e.open)}
                 >
-                    <AlertDialogOverlay>
-                        <AlertDialogContent>
-                            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                        <Dialog.Content>
+                            <Dialog.Header fontSize='lg' fontWeight='bold'>
                                 Delete Account
-                            </AlertDialogHeader>
+                            </Dialog.Header>
 
-                            <AlertDialogBody>
+                            <Dialog.Body>
                                 This will delete all transactions attached to this statement.
-                            </AlertDialogBody>
+                            </Dialog.Body>
 
-                            <AlertDialogFooter>
-                                <Button ref={cancelDeleteRef as any} isDisabled={isDeleting} onClick={onDeleteClose}>
+                            <Dialog.Footer>
+                                <Button disabled={isDeleting} onClick={() => setDeleteOpen(false)}>
                                     Cancel
                                 </Button>
-                                <Button colorScheme='red' isLoading={isDeleting} onClick={async () => {
+                                <Button colorPalette='red' loading={isDeleting} onClick={async () => {
                                     await statefulOnDelete()
-                                    onDeleteClose()
+                                    setDeleteOpen(false)
                                 }} ml={3}>
                                     Delete
                                 </Button>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialogOverlay>
-                </AlertDialog>
-            ) : <></>}
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </Dialog.Positioner>
 
+                </Dialog.Root>
+            ) : <></>}
         </>
     )
 }

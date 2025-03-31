@@ -1,72 +1,13 @@
-import {extendBaseTheme, theme as chakraTheme} from "@chakra-ui/react";
+import { createSystem, defaultConfig } from "@chakra-ui/react"
 
-const {
-    Accordion,
-    Avatar,
-    Alert,
-    Button,
-    Container,
-    Heading,
-    Drawer,
-    CloseButton,
-    Card,
-    Spinner,
-    Table,
-    Input,
-    Form,
-    Select,
-    Tag,
-    Badge,
-    Checkbox,
-    FormError,
-    FormLabel,
-    Link,
-    List,
-    Tooltip,
-    Menu,
-    Stat,
-    NumberInput,
-    Modal,
-    Code,
-    Switch,
-    Divider
-
-} = chakraTheme.components
-
-export const theme = extendBaseTheme({
-    fonts: {
-        heading: 'var(--font-rubik)',
-        body: 'var(--font-rubik)',
-    },
-    components: {
-        Accordion,
-        Avatar,
-        Alert,
-        Heading,
-        Button,
-        Container,
-        Drawer,
-        CloseButton,
-        Card,
-        Spinner,
-        Table,
-        Input,
-        Form,
-        Select,
-        Tag,
-        Badge,
-        Checkbox,
-        FormError,
-        FormLabel,
-        Link,
-        List,
-        Tooltip,
-        Menu,
-        Stat,
-        NumberInput,
-        Modal,
-        Code,
-        Switch,
-        Divider
+// TODO cherry pick components
+export const system = createSystem(defaultConfig, {
+    theme: {
+        tokens: {
+            fonts: {
+                heading: { value: `var(--font-rubik)` },
+                body: { value: `var(--font-rubik)` },
+            },
+        },
     },
 })

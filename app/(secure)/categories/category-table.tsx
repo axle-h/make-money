@@ -1,29 +1,14 @@
 import React, {useState} from "react";
-import {
-    Box,
-    HStack,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList, Stack, Stat, StatArrow, StatNumber,
-    Table,
-    TableContainer,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tooltip,
-    Tr, useDisclosure
-} from "@chakra-ui/react";
-import {CheckIcon, DeleteIcon, EditIcon, MinusIcon, ViewIcon} from "@chakra-ui/icons";
+import { Box, HStack, IconButton, Menu, Stack, Table } from "@chakra-ui/react";
+import {CheckIcon, DeleteIcon, EditIcon, MinusIcon, ViewIcon} from "@/components/icons";
 import {MoreVerticalIcon} from "@/components/icons";
 import {useCategoryStats} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
 import {CreateOrUpdateCategoryDrawer} from "./create-or-update-category-drawer";
 import {Category, NewCategory} from "@/app/api/schema";
 import {CategoryTypeTag} from "./category-type-tag";
-import {CashFlow} from "../transactions/transaction-summary";
+import {Tooltip} from "@/components/ui/tooltip";
+import {CashFlow} from "@/components/cash-flow";
 
 export interface CategoryTableProps {
     onDelete(id: number): Promise<boolean>
@@ -48,15 +33,15 @@ export function CategoryTable({onDelete, onUpdate, onViewTransactions}: Category
 
     const rows = categories.map(category => {
         const {id, name, emoji, report, type, subCategory, transactions, totalDebits, totalCredits} = category
-        return (<Tr key={id}>
-            <Td>
+        return (<Table.Row key={id}>
+            <Table.Cell>
                 {name} {emoji}
-            </Td>
-            <Td><CategoryTypeTag type={type} /></Td>
-            <Td>{report ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Td>
-            <Td>{subCategory ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Td>
-            <Td>
-                <HStack spacing={2}>
+            </Table.Cell>
+            <Table.Cell><CategoryTypeTag type={type} /></Table.Cell>
+            <Table.Cell>{report ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Table.Cell>
+            <Table.Cell>{subCategory ? <CheckIcon color="green" /> : <MinusIcon color="red" />}</Table.Cell>
+            <Table.Cell>
+                <HStack gap={2}>
                     <Box fontWeight={500}>{transactions}</Box>
                     <Stack>
                         <CashFlow amount={totalCredits} />
@@ -64,38 +49,34 @@ export function CategoryTable({onDelete, onUpdate, onViewTransactions}: Category
                     </Stack>
                 </HStack>
 
-            </Td>
-            <Td mx={0}>
+            </Table.Cell>
+            <Table.Cell mx={0}>
                 <CategoryMenu
                     category={category}
                     onDelete={transactions > 0 ? undefined : () => onDelete(id)}
                     onUpdate={values => onUpdate(id, values)}
                     onViewTransactions={() => onViewTransactions(id)}
                 />
-            </Td>
-        </Tr>);
+            </Table.Cell>
+        </Table.Row>);
     })
 
     return (
-        <>
-            <TableContainer>
-                <Table variant='simple'>
-                    <Thead>
-                        <Tr>
-                            <Th>Name</Th>
-                            <Th>Type</Th>
-                            <Th>Report</Th>
-                            <Th>Sub-Categorize</Th>
-                            <Th>Transactions</Th>
-                            <Th mx={0}></Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {rows}
-                    </Tbody>
-                </Table>
-            </TableContainer>
-        </>
+        <Table.Root variant='line'>
+            <Table.Header>
+                <Table.Row>
+                    <Table.ColumnHeader>Name</Table.ColumnHeader>
+                    <Table.ColumnHeader>Type</Table.ColumnHeader>
+                    <Table.ColumnHeader>Report</Table.ColumnHeader>
+                    <Table.ColumnHeader>Sub-Categorize</Table.ColumnHeader>
+                    <Table.ColumnHeader>Transactions</Table.ColumnHeader>
+                    <Table.ColumnHeader mx={0}></Table.ColumnHeader>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {rows}
+            </Table.Body>
+        </Table.Root>
     )
 }
 
@@ -108,12 +89,12 @@ interface CategoryMenuProps {
 
 function CategoryMenu({onDelete, onUpdate, category, onViewTransactions}: CategoryMenuProps) {
     const [isDeleting, setIsDeleting] = useState(false)
-    const updateDisclosure = useDisclosure()
+    const [openUpdate, setOpenUpdate] = useState(false)
 
     const DeleteMenuItem = (
-        <MenuItem
-            icon={<DeleteIcon/>}
-            isDisabled={!onDelete || isDeleting}
+        <Menu.Item
+            value="delete-category"
+            disabled={!onDelete || isDeleting}
             onClick={async () => {
                 setIsDeleting(true)
                 try {
@@ -125,32 +106,36 @@ function CategoryMenu({onDelete, onUpdate, category, onViewTransactions}: Catego
                 }
             }}
         >
-            Delete
-        </MenuItem>
+            <DeleteIcon/> Delete
+        </Menu.Item>
     )
 
     return (
         <>
-            <Menu isLazy>
-                <MenuButton as={IconButton} aria-label='Options' icon={<MoreVerticalIcon/>} variant="ghost"/>
-                <MenuList>
-                    <MenuItem
-                        icon={<ViewIcon/>}
-                        onClick={() => onViewTransactions()}
-                    >
-                        View transactions
-                    </MenuItem>
-                    <MenuItem icon={<EditIcon />} onClick={updateDisclosure.onOpen}>
-                        Edit
-                    </MenuItem>
-                    {!!onDelete ? DeleteMenuItem : (
-                        <Tooltip hasArrow label="Cannot delete a category with transactions">
-                            {DeleteMenuItem}
-                        </Tooltip>
-                    )}
-                </MenuList>
-            </Menu>
-            <CreateOrUpdateCategoryDrawer {...updateDisclosure} category={category} onSubmit={onUpdate} />
+            <Menu.Root>
+                <Menu.Trigger asChild>
+                    <IconButton variant="ghost">
+                        <MoreVerticalIcon />
+                    </IconButton>
+                </Menu.Trigger>
+
+                <Menu.Positioner>
+                    <Menu.Content>
+                        <Menu.Item value="view-transactions" onClick={() => onViewTransactions()}>
+                            <ViewIcon/> View transactions
+                        </Menu.Item>
+                        <Menu.Item value="edit-category" onClick={() => setOpenUpdate(true)}>
+                            <EditIcon /> Edit
+                        </Menu.Item>
+                        {!!onDelete ? DeleteMenuItem : (
+                            <Tooltip showArrow content="Cannot delete a category with transactions">
+                                {DeleteMenuItem}
+                            </Tooltip>
+                        )}
+                    </Menu.Content>
+                </Menu.Positioner>
+            </Menu.Root>
+            <CreateOrUpdateCategoryDrawer open={openUpdate} setOpen={setOpenUpdate} category={category} onSubmit={onUpdate} />
         </>
     )
 }

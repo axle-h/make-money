@@ -1,15 +1,6 @@
-import {
-    Box,
-    Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay, HStack, Stack, Tag,
-} from "@chakra-ui/react";
+import { Box, Drawer, Stack } from "@chakra-ui/react";
 import React from "react";
 import {Transaction, UpdateTransactionRequest} from "@/app/api/schema";
-import {FocusableElement} from "@chakra-ui/utils";
 import {TransactionApproveForm} from "./transaction-approve-form";
 
 import {TransactionSummary} from "./transaction-summary";
@@ -17,20 +8,20 @@ import {useRulePredicates} from "@/api-client";
 import {ErrorAlert, Loading} from "@/components/alert";
 
 export interface TransactionApproveDrawerProps {
-    isOpen: boolean
-    onClose(): void
+    open: boolean
+    setOpen(open: boolean): void
     transaction: Transaction
     onSubmit(values: UpdateTransactionRequest): Promise<boolean>
     onCreateNewCategory(): void
     onBuildRule(): void
 }
 
-export function TransactionApproveDrawer({isOpen, onClose, transaction, onSubmit, onBuildRule, onCreateNewCategory}: TransactionApproveDrawerProps) {
+export function TransactionApproveDrawer({open, setOpen, transaction, onSubmit, onBuildRule, onCreateNewCategory}: TransactionApproveDrawerProps) {
     const { rules = [], isLoading: loadingRules, error: ruleError } = useRulePredicates()
-    const firstField = React.useRef<FocusableElement>(null)
+    const firstField = React.useRef<HTMLInputElement>(null)
 
     if (loadingRules) {
-        return <Loading/>
+        return <></>
     }
 
     if (ruleError) {
@@ -40,44 +31,46 @@ export function TransactionApproveDrawer({isOpen, onClose, transaction, onSubmit
     const ruleMatch= rules.find(rule => rule.predicate.evaluate(transaction))
 
     return (
-        <Drawer
-            isOpen={isOpen}
-            placement='right'
-            onClose={onClose}
+        <Drawer.Root
+            open={open}
+            placement='end'
+            onOpenChange={(e) => setOpen(e.open)}
             size="lg"
-            initialFocusRef={firstField}
+            initialFocusEl={() => firstField.current}
         >
-            <DrawerOverlay/>
-            <DrawerContent>
-                <DrawerCloseButton/>
-                <DrawerHeader>
-                    Approve Transaction
-                </DrawerHeader>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+                <Drawer.Content>
+                    <Drawer.CloseTrigger />
+                    <Drawer.Header>
+                        Approve Transaction
+                    </Drawer.Header>
 
-                <DrawerBody>
-                    <Stack spacing={8}>
-                        <Box w="100%">
-                            <TransactionSummary transaction={transaction} ruleMatch={ruleMatch} />
-                        </Box>
-                        <TransactionApproveForm
-                            transaction={transaction}
-                            onSubmit={async values => {
-                                const result = await onSubmit(values)
-                                if (result) {
-                                    onClose()
-                                }
-                                return result
-                            }}
-                            ref={firstField}
-                            ruleMatch={ruleMatch}
-                            onBuildRule={onBuildRule}
-                            onCreateNewCategory={onCreateNewCategory}
-                        />
-                    </Stack>
+                    <Drawer.Body>
+                        <Stack gap={8}>
+                            <Box w="100%">
+                                <TransactionSummary transaction={transaction} ruleMatch={ruleMatch} />
+                            </Box>
+                            <TransactionApproveForm
+                                transaction={transaction}
+                                onSubmit={async values => {
+                                    const result = await onSubmit(values)
+                                    if (result) {
+                                        setOpen(false)
+                                    }
+                                    return result
+                                }}
+                                ref={firstField}
+                                ruleMatch={ruleMatch}
+                                onBuildRule={onBuildRule}
+                                onCreateNewCategory={onCreateNewCategory}
+                            />
+                        </Stack>
 
 
-                </DrawerBody>
-            </DrawerContent>
-        </Drawer>
+                    </Drawer.Body>
+                </Drawer.Content>
+            </Drawer.Positioner>
+        </Drawer.Root>
     )
 }

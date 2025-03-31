@@ -1,25 +1,27 @@
 'use client'
 
 import {
-    AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
-    Avatar,
+    Dialog,
     Badge,
     Box,
-    BoxProps, Button,
+    BoxProps,
     CloseButton,
     Container,
     Drawer,
-    DrawerContent,
     Flex,
     FlexProps,
     HStack,
-    IconButton, Menu, MenuButton, MenuItem, MenuList,
-    useColorMode,
-    useDisclosure,
+    IconButton,
+    Menu,
+    IconProps,
+    Text,
+    Portal
 } from '@chakra-ui/react'
-import {Link} from '@chakra-ui/next-js'
-import {HamburgerIcon, IconProps, MoonIcon, SunIcon} from '@chakra-ui/icons'
-import {usePathname, useRouter} from "next/navigation";
+import { useColorMode } from "@/components/ui/color-mode"
+import { Button } from "@/components/ui/button"
+import { Avatar } from "@/components/ui/avatar"
+import { Link } from '@/components/link'
+import { usePathname, useRouter } from "next/navigation";
 import {
     AppIcon, AppName,
     BankIcon,
@@ -29,7 +31,8 @@ import {
     DollarIcon,
     HomeIcon,
     ListIcon, LogoutIcon,
-    TransactionIcon
+    TransactionIcon,
+    MenuIcon, MoonIcon, SunIcon
 } from "@/components/icons";
 import {useUncategorizedTransactionCount} from "@/api-client/transactions";
 import React, {useState} from "react";
@@ -55,7 +58,9 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
             <Link
                 href={href}
                 style={{ textDecoration: 'none' }}
-                _focus={{ boxShadow: 'none' }}>
+                _focus={{ boxShadow: 'none' }}
+                w="100%"
+            >
                 <Flex
                     align="center"
                     p="4"
@@ -73,7 +78,9 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
                         bg: current ? 'gray.700' : undefined
                     }}
                     onClick={onClose}
-                    {...rest}>
+                    {...rest}
+                    w="100%"
+                >
                     <NavIcon
                         mr="4"
                         fontSize="16"
@@ -140,20 +147,13 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
 
             <NavItem NavIcon={ListIcon} href="/uncategorized">
                 Uncategorized
-                {todoTransactionCount > 0 ? <Badge ml={2} colorScheme="red" variant="solid">{todoTransactionCount}</Badge> : <></>}
+                {todoTransactionCount > 0 ? <Badge ml={2} colorPalette="red" variant="solid">{todoTransactionCount}</Badge> : <></>}
             </NavItem>
         </Box>
     )
 }
 
-export interface MobileNavProps extends FlexProps {
-    session?: Session
-    onOpen?(): void
-}
-
 function UserMenu({ session }: { session: Session }) {
-    const logoutDisclosure = useDisclosure()
-
     if (!session.user) {
         return <></>
     }
@@ -171,64 +171,75 @@ function UserMenu({ session }: { session: Session }) {
     }
 
     return (
-        <>
-            <Menu>
-                <MenuButton
-                    as={Button}
+        <Menu.Root>
+            <Menu.Trigger asChild>
+                <Button
                     rounded={'full'}
-                    variant={'link'}
+                    variant={'plain'}
                     cursor={'pointer'}
                     minW={0}>
-                    <Avatar size={'sm'} name={displayName} />
-                </MenuButton>
-                <MenuList>
-                    <MenuItem icon={<LogoutIcon />} onClick={logoutDisclosure.onOpen}>Logout</MenuItem>
-                </MenuList>
-            </Menu>
-            <LogoutAlert {...logoutDisclosure} />
-        </>
+                    <Avatar size={'sm'} name={displayName} colorPalette={"blue"} />
+                </Button>
+            </Menu.Trigger>
+            <Menu.Content>
+                <Menu.Item value="logout" asChild>
+                    <LogoutButton />
+                </Menu.Item>
+            </Menu.Content>
+        </Menu.Root>
     )
 }
 
-function LogoutAlert({ onClose, isOpen }: { onClose(): void, isOpen: boolean }) {
+
+function LogoutButton() {
     const router = useRouter()
     const [isLoading, setLoading] = useState(false)
-    const cancelRef = React.useRef()
 
     return (
-        <AlertDialog
-            isOpen={isOpen}
-            leastDestructiveRef={cancelRef as any}
-            onClose={onClose}
-        >
-            <AlertDialogOverlay>
-                <AlertDialogContent>
-                    <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                        Logout
-                    </AlertDialogHeader>
+        <Dialog.Root role="alertdialog">
+            <Dialog.Trigger asChild>
+                <Button variant="plain">
+                    <LogoutIcon /> Logout
+                </Button>
+            </Dialog.Trigger>
+            <Dialog.Content>
+                <Dialog.Header>
+                    <Dialog.Title fontSize='lg' fontWeight='bold'>Logout</Dialog.Title>
+                </Dialog.Header>
 
-                    <AlertDialogBody>
+                <Dialog.Body>
+                    <Text>
                         Are you sure you want to logout?
-                    </AlertDialogBody>
+                    </Text>
+                </Dialog.Body>
 
-                    <AlertDialogFooter>
-                        <Button ref={cancelRef as any} onClick={onClose}>
+                <Dialog.Footer>
+                    <Dialog.ActionTrigger asChild>
+                        <Button>
                             Cancel
                         </Button>
-                        <Button colorScheme='red'
-                                isLoading={isLoading}
-                                onClick={() => {
-                                    setLoading(true)
-                                    router.replace('/logout');
-                                }}
-                                ml={3}>
-                            Logout
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialogOverlay>
-        </AlertDialog>
+                    </Dialog.ActionTrigger>
+                    <Button colorPalette="red"
+                            loading={isLoading}
+                            loadingText="Logging out..."
+                            onClick={() => {
+                                setLoading(true)
+                                router.replace('/logout');
+                            }}
+                            ml={3}>
+                        <LogoutIcon />
+                        Logout
+                    </Button>
+                </Dialog.Footer>
+                <Dialog.CloseTrigger />
+            </Dialog.Content>
+        </Dialog.Root>
     )
+}
+
+export interface MobileNavProps extends FlexProps {
+    session?: Session
+    onOpen?(): void
 }
 
 export function MobileNav({ onOpen, session, ...rest }: MobileNavProps) {
@@ -256,8 +267,9 @@ export function MobileNav({ onOpen, session, ...rest }: MobileNavProps) {
                             onClick={onOpen}
                             variant="ghost"
                             aria-label="open menu"
-                            icon={<HamburgerIcon />}
-                        />
+                        >
+                            <MenuIcon />
+                        </IconButton>
                         <AppIcon display={{ base: 'flex', md: 'none' }} />
                     </>
                 )
@@ -271,42 +283,48 @@ export function MobileNav({ onOpen, session, ...rest }: MobileNavProps) {
                     </>
                 )}
 
-            <HStack spacing={{ base: '1', md: '3' }}>
+            <HStack gap={{ base: '1', md: '3' }}>
                 {!!session ? <UserMenu session={session} /> : <></>}
 
                 <IconButton
                     onClick={toggleColorMode}
                     variant="ghost"
                     aria-label="change colour mode"
-                    icon={colorMode === 'light' ? <MoonIcon  /> : <SunIcon />}
-                />
+                >
+                    {colorMode === 'light' ? <MoonIcon  /> : <SunIcon />}
+                </IconButton>
             </HStack>
         </Flex>
     )
 }
 
 export default function SecureNav({ children, session }: { children: React.ReactNode, session: Session }) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [open, setOpen] = useState(false)
+    const onClose = () => setOpen(false)
 
     return (
         <Box minH="100dvh">
-            <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
-            <Drawer
-                isOpen={isOpen}
-                placement="left"
-                onClose={onClose}
-                returnFocusOnClose={false}
-                onOverlayClick={onClose}
-                size="full">
-                <DrawerContent>
-                    <SidebarContent onClose={onClose} />
-                </DrawerContent>
-            </Drawer>
+            <SidebarContent onClose={onClose} display={{ base: 'none', md: 'block' }} />
+
+            <Drawer.Root
+                open={open}
+                onOpenChange={(e) => setOpen(e.open)}
+                placement="start"
+                size="full"
+            >
+                <Portal>
+                    <Drawer.Positioner>
+                        <Drawer.Content>
+                            <SidebarContent onClose={onClose} />
+                        </Drawer.Content>
+                    </Drawer.Positioner>
+                </Portal>
+            </Drawer.Root>
 
             <MobileNav
                 ml={{ base: 0, md: 60 }}
                 justifyContent={{ base: 'space-between', md: 'flex-end' }}
-                onOpen={onOpen}
+                onOpen={() => setOpen(true)}
                 session={session}
             />
 

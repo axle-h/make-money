@@ -12,8 +12,9 @@ import {CREDIT_COLOR_CSS, OTHER_COLOR_CSS, TimeSeriesEntry} from "@/components/c
 import {formatMonthAndYear, utcNow} from "@/components/dates";
 import { isBefore } from 'date-fns'
 import { Prisma } from '@prisma/client';
-import {useBreakpointValue, useColorMode} from "@chakra-ui/react";
+import {useBreakpointValue} from "@chakra-ui/react";
 import {currency, currencyShort} from "@/components/currency";
+import {useColorMode} from "@/components/ui/color-mode";
 
 export interface CurrencyBenchmarkLineChartProps {
     data: TimeSeriesEntry[]

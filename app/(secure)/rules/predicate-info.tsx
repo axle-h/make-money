@@ -1,136 +1,122 @@
-import {
-    Button,
-    Code,
-    Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-    Table,
-    Tbody,
-    Td,
-    Text,
-    Th,
-    Thead,
-    Tr
-} from "@chakra-ui/react";
+import { Code, Drawer, Table, Text } from "@chakra-ui/react";
 import React from "react";
+import {Button} from "@/components/ui/button";
 
-export function PredicateInfoDrawer({isOpen, onClose}: { isOpen: boolean, onClose(): void }) {
+export function PredicateInfoDrawer({open, setOpen}: { open: boolean, setOpen(open: boolean): void }) {
     return (
-        <Drawer
-            isOpen={isOpen}
-            placement='right'
-            onClose={onClose}
+        <Drawer.Root
+            open={open}
+            placement='end'
+            onOpenChange={(e) => setOpen(e.open)}
             size="md"
         >
-            <DrawerOverlay/>
-            <DrawerContent>
-                <DrawerCloseButton/>
-                <DrawerHeader>Transaction Predicate</DrawerHeader>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+                <Drawer.Content>
+                    <Drawer.CloseTrigger />
+                    <Drawer.Header>Transaction Predicate</Drawer.Header>
 
-                <DrawerBody>
-                    <Text mb={3}>
-                        Transaction predicates use a SQL-like WHERE clause syntax e.g.
-                    </Text>
+                    <Drawer.Body>
+                        <Text mb={3}>
+                            Transaction predicates use a SQL-like WHERE clause syntax e.g.
+                        </Text>
 
-                    <Code mb={3}>
-                        name LIKE &apos;LIDL%&apos; AND (amount &lt; 0 OR type == &apos;OTHER&apos;)
-                    </Code>
+                        <Code mb={3}>
+                            name LIKE &apos;LIDL%&apos; AND (amount &lt; 0 OR type == &apos;OTHER&apos;)
+                        </Code>
 
-                    <Text mb={3}>
-                        Will match all transactions whose name starts with `LIDL` and amount is less than 0 or the type
-                        is equal to `OTHER`.
-                    </Text>
+                        <Text mb={3}>
+                            Will match all transactions whose name starts with `LIDL` and amount is less than 0 or the type
+                            is equal to `OTHER`.
+                        </Text>
 
-                    <Text mb={3}>
-                        Available operators:
-                    </Text>
+                        <Text mb={3}>
+                            Available operators:
+                        </Text>
 
-                    <Table>
-                        <Thead>
-                            <Tr>
-                                <Th>Operator</Th>
-                                <Th>Description</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            <Tr>
-                                <Td><Code>==</Code></Td>
-                                <Td>Equal to</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>!=</Code></Td>
-                                <Td>Not equal to</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>&gt;</Code></Td>
-                                <Td>Greater than</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>&gt;=</Code></Td>
-                                <Td>Greater than or equal to</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>&lt;</Code></Td>
-                                <Td>Less than</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>&lt;=</Code></Td>
-                                <Td>Less than or equal to</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>LIKE</Code></Td>
-                                <Td>Matches string pattern</Td>
-                            </Tr>
-                        </Tbody>
-                    </Table>
+                        <Table.Root>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.ColumnHeader>Operator</Table.ColumnHeader>
+                                    <Table.ColumnHeader>Description</Table.ColumnHeader>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                <Table.Row>
+                                    <Table.Cell><Code>==</Code></Table.Cell>
+                                    <Table.Cell>Equal to</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>!=</Code></Table.Cell>
+                                    <Table.Cell>Not equal to</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>&gt;</Code></Table.Cell>
+                                    <Table.Cell>Greater than</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>&gt;=</Code></Table.Cell>
+                                    <Table.Cell>Greater than or equal to</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>&lt;</Code></Table.Cell>
+                                    <Table.Cell>Less than</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>&lt;=</Code></Table.Cell>
+                                    <Table.Cell>Less than or equal to</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>LIKE</Code></Table.Cell>
+                                    <Table.Cell>Matches string pattern</Table.Cell>
+                                </Table.Row>
+                            </Table.Body>
+                        </Table.Root>
 
-                    <Text mb={3}>
-                        Transaction field names:
-                    </Text>
+                        <Text mb={3}>
+                            Transaction field names:
+                        </Text>
 
-                    <Table>
-                        <Thead>
-                            <Tr>
-                                <Th>Field</Th>
-                                <Th>Description</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            <Tr>
-                                <Td><Code>externalId</Code></Td>
-                                <Td>Bank derived ID for this transaction</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>type</Code></Td>
-                                <Td>Transaction type</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>name</Code></Td>
-                                <Td>Transaction name</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>description</Code></Td>
-                                <Td>Transaction description</Td>
-                            </Tr>
-                            <Tr>
-                                <Td><Code>amount</Code></Td>
-                                <Td>Transaction amount; debits are negative</Td>
-                            </Tr>
-                        </Tbody>
-                    </Table>
+                        <Table.Root>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.ColumnHeader>Field</Table.ColumnHeader>
+                                    <Table.ColumnHeader>Description</Table.ColumnHeader>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                <Table.Row>
+                                    <Table.Cell><Code>externalId</Code></Table.Cell>
+                                    <Table.Cell>Bank derived ID for this transaction</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>type</Code></Table.Cell>
+                                    <Table.Cell>Transaction type</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>name</Code></Table.Cell>
+                                    <Table.Cell>Transaction name</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>description</Code></Table.Cell>
+                                    <Table.Cell>Transaction description</Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell><Code>amount</Code></Table.Cell>
+                                    <Table.Cell>Transaction amount; debits are negative</Table.Cell>
+                                </Table.Row>
+                            </Table.Body>
+                        </Table.Root>
 
-                </DrawerBody>
+                    </Drawer.Body>
 
-                <DrawerFooter>
-                    <Button variant='outline' colorScheme="blue" onClick={onClose}>
-                        Close
-                    </Button>
-                </DrawerFooter>
-            </DrawerContent>
-        </Drawer>
+                    <Drawer.Footer>
+                        <Button variant='outline' colorPalette="blue" onClick={() => setOpen(false)}>
+                            Close
+                        </Button>
+                    </Drawer.Footer>
+                </Drawer.Content>
+            </Drawer.Positioner>
+        </Drawer.Root>
     )
 }

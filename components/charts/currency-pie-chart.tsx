@@ -3,7 +3,8 @@
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {currency, currencyShort} from "@/components/currency";
 import {FrequencyTableEntry} from "@/components/charts/data";
-import {Box, useColorMode} from "@chakra-ui/react";
+import {Box} from "@chakra-ui/react";
+import {useColorMode} from "@/components/ui/color-mode";
 
 export function CurrencyPieChart({data}: { data: FrequencyTableEntry[] }) {
     const { colorMode } = useColorMode()

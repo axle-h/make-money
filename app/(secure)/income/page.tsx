@@ -1,14 +1,6 @@
 'use client'
 
-import {
-    Flex,
-    FormControl,
-    Heading,
-    NumberDecrementStepper, NumberIncrementStepper,
-    NumberInput,
-    NumberInputField, NumberInputStepper,
-    Select
-} from "@chakra-ui/react";
+import { Flex, Heading, NumberInput, NativeSelect } from "@chakra-ui/react";
 import {ErrorAlert, Loading, NoData, StatementAlerts} from "@/components/alert";
 import {useAccounts, useCategorizedTransactions} from "@/api-client";
 import { getCurrentTaxYear, getTaxYears} from "@/components/dates";
@@ -28,7 +20,7 @@ export default function IncomePage() {
     return (
         <>
             <StatementAlerts />
-            <Heading mb={4}>Income</Heading>
+            <Heading size="4xl" mb={4}>Income</Heading>
             <IncomeFilters query={query} onChangeQuery={setQuery} benchmark={benchmark} onChangeBenchmark={setBenchmark} />
             <IncomeReport query={query} benchmark={benchmark} />
         </>
@@ -54,31 +46,33 @@ function IncomeFilters({ query, onChangeQuery, benchmark, onChangeBenchmark }: I
 
     return (
         <Flex mb={4} justifyContent="space-between" gap={2} flexDirection={{ base: 'column', sm: 'row' }}>
-            <FormControl>
-                <Select onChange={ev => onChangeQuery({
+            <NativeSelect.Root>
+                <NativeSelect.Field onChange={ev => onChangeQuery({
                     ...query,
                     ...taxYears.find(x => x.name === ev.target.value)?.query!
                 })}>
                     {taxYears.map(({ name }) => (
                         <option key={name} value={name}>{name}</option>
                     ))}
-                </Select>
-            </FormControl>
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+            </NativeSelect.Root>
 
-            <FormControl maxW={{ base: 'initial', sm: 200 }}>
-                <NumberInput
-                    min={1000}
-                    step={1000}
-                    value={currency(benchmark, 0)}
-                    onChange={(_, valueAsNumber) => onChangeBenchmark(valueAsNumber)}
-                >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
-            </FormControl>
+            <NumberInput.Root
+                min={1000}
+                step={1000}
+                defaultValue={benchmark.toString()}
+                formatOptions={{
+                    style: "currency",
+                    currency: "GBP",
+                    maximumSignificantDigits: 1
+                }}
+                maxW={{ base: 'initial', sm: 200 }}
+                onValueChange={(e) => onChangeBenchmark(e.valueAsNumber)}
+            >
+                <NumberInput.Input />
+                <NumberInput.Control />
+            </NumberInput.Root>
         </Flex>
     )
 }

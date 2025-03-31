@@ -1,17 +1,17 @@
 import {categoryTypeName, NewCategory, Schema} from "@/app/api/schema";
 import React from "react";
-import {Field, Form, Formik} from "formik";
+import {Field as FormikField, Form, Formik} from "formik";
 import {
-    Button,
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    Input, Select, SimpleGrid,
+    Field,
+    Input,
+    NativeSelect,
+    SimpleGrid,
     Stack,
     Switch
 } from "@chakra-ui/react";
 import {FieldProps} from "formik/dist/Field";
 import {EmojiPicker} from "@/components/emoji-picker";
+import {Button} from "@/components/ui/button";
 
 export interface NewCategoryFormProps {
     initialValues?: Partial<NewCategory>
@@ -42,65 +42,78 @@ export const CategoryForm = React.forwardRef(({initialValues, onSubmit}: NewCate
         >
             {(props) => (
                 <Form>
-                    <Stack spacing={6}>
-                        <Field name='name'>
+                    <Stack gap={6}>
+                        <FormikField name='name'>
                             {({field, form}: FieldProps<string, NewCategory>) => (
-                                <FormControl isInvalid={!!form.errors.name && !!form.touched.name} isRequired>
-                                    <FormLabel>Name</FormLabel>
+                                <Field.Root invalid={!!form.errors.name && !!form.touched.name} required>
+                                    <Field.Label>Name</Field.Label>
                                     <Input {...field} ref={firstField as any} placeholder="Enter category name"/>
-                                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-                                </FormControl>
+                                    <Field.ErrorText>{form.errors.name}</Field.ErrorText>
+                                </Field.Root>
                             )}
-                        </Field>
+                        </FormikField>
 
-                        <Field name='emoji'>
+                        <FormikField name='emoji'>
                             {({field, form}: FieldProps<string, NewCategory>) => (
-                                <FormControl isInvalid={!!form.errors.emoji && !!form.touched.emoji}>
-                                    <FormLabel>Emoji</FormLabel>
+                                <Field.Root invalid={!!form.errors.emoji && !!form.touched.emoji}>
+                                    <Field.Label>Emoji</Field.Label>
                                     <EmojiPicker value={field.value} onChange={e => form.setFieldValue('emoji', e)} />
-                                    <FormErrorMessage>{form.errors.emoji}</FormErrorMessage>
-                                </FormControl>
+                                    <Field.ErrorText>{form.errors.emoji}</Field.ErrorText>
+                                </Field.Root>
                             )}
-                        </Field>
+                        </FormikField>
 
-                        <Field name='type'>
+                        <FormikField name='type'>
                             {({field, form}: FieldProps<string, NewCategory>) => (
-                                <FormControl isInvalid={!!form.errors.type && !!form.touched.type} isRequired>
-                                    <FormLabel>Type</FormLabel>
+                                <Field.Root invalid={!!form.errors.type && !!form.touched.type} required>
+                                    <Field.Label>Type</Field.Label>
 
-                                    <Select {...field}>
-                                        <option value="EXPENSE">{categoryTypeName('EXPENSE')}</option>
-                                        <option value="BILL">{categoryTypeName('BILL')}</option>
-                                        <option value="INCOME">{categoryTypeName('INCOME')}</option>
-                                        <option value="OTHER">{categoryTypeName('OTHER')}</option>
-                                    </Select>
+                                    <NativeSelect.Root>
+                                        <NativeSelect.Field {...field}>
+                                            <option value="EXPENSE">{categoryTypeName('EXPENSE')}</option>
+                                            <option value="BILL">{categoryTypeName('BILL')}</option>
+                                            <option value="INCOME">{categoryTypeName('INCOME')}</option>
+                                            <option value="OTHER">{categoryTypeName('OTHER')}</option>
+                                        </NativeSelect.Field>
+                                        <NativeSelect.Indicator />
+                                    </NativeSelect.Root>
 
-                                    <FormErrorMessage>{form.errors.type}</FormErrorMessage>
-                                </FormControl>
+                                    <Field.ErrorText>{form.errors.type}</Field.ErrorText>
+                                </Field.Root>
                             )}
-                        </Field>
+                        </FormikField>
 
-                        <FormControl as={SimpleGrid} columns={2}>
-                            <FormLabel htmlFor='report'>Include in reports?</FormLabel>
-                            <Field name='report'>
+                        <SimpleGrid columns={2}>
+                            <FormikField name='report'>
                                 {({field}: FieldProps<string, NewCategory>) => (
-                                    <Switch defaultChecked={formInitialValues.report} {...field} id='report' />
+                                    <Switch.Root defaultChecked={formInitialValues.report} {...field}>
+                                        <Switch.HiddenInput />
+                                        <Switch.Control />
+                                        <Switch.Label>
+                                            Include in reports?
+                                        </Switch.Label>
+                                    </Switch.Root>
                                 )}
-                            </Field>
+                            </FormikField>
 
-                            <FormLabel htmlFor='subCategory'>Includes sub-category?</FormLabel>
-                            <Field name='subCategory'>
+                            <FormikField name='subCategory'>
                                 {({field}: FieldProps<string, NewCategory>) => (
-                                    <Switch defaultChecked={formInitialValues.subCategory} {...field} id='subCategory' />
+                                    <Switch.Root defaultChecked={formInitialValues.subCategory} {...field}>
+                                        <Switch.HiddenInput />
+                                        <Switch.Control />
+                                        <Switch.Label>
+                                            Includes sub-category?
+                                        </Switch.Label>
+                                    </Switch.Root>
                                 )}
-                            </Field>
-                        </FormControl>
+                            </FormikField>
+                        </SimpleGrid>
 
                         <Button
                             mt={4}
-                            colorScheme='teal'
+                            colorPalette='teal'
                             variant="outline"
-                            isLoading={props.isSubmitting}
+                            loading={props.isSubmitting}
                             type='submit'
                         >
                             Save

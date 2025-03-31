@@ -3,6 +3,8 @@ import { fonts } from '@/components/fonts'
 import {Providers} from "@/components/providers";
 import React from "react";
 
+import './global.css'
+
 export const metadata: Metadata = {
     title: 'Make Money',
     description: 'Money management for the MAKE household',
@@ -14,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fonts.rubik.variable}>
+    <html lang="en" className={fonts.rubik.variable} suppressHydrationWarning>
     <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>

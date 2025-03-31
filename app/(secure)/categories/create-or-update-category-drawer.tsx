@@ -1,57 +1,52 @@
-import {
-    Drawer,
-    DrawerBody,
-    DrawerCloseButton,
-    DrawerContent,
-    DrawerHeader,
-    DrawerOverlay,
-} from "@chakra-ui/react";
+import { Drawer } from "@chakra-ui/react";
 import React from "react";
 import {Category, NewCategory} from "@/app/api/schema";
 import {CategoryForm} from "./category-form";
-import {FocusableElement} from "@chakra-ui/utils";
 
 export interface UpdateCategoryDrawerProps {
-    isOpen: boolean
-    onClose(): void
+    open: boolean
+    setOpen(value: boolean): void
     category?: Category
     onSubmit(category: NewCategory): Promise<boolean>,
 }
 
-export function CreateOrUpdateCategoryDrawer({isOpen, onClose, category, onSubmit}: UpdateCategoryDrawerProps) {
-    const firstField = React.useRef<FocusableElement>(null)
+export function CreateOrUpdateCategoryDrawer({open, setOpen, category, onSubmit}: UpdateCategoryDrawerProps) {
+    const firstField = React.useRef(null)
     return (
-        <Drawer
-            isOpen={isOpen}
-            placement='right'
-            onClose={onClose}
+        <Drawer.Root
+            lazyMount
+            open={open}
+            placement='end'
+            onOpenChange={(e) => setOpen(e.open)}
             size="md"
-            initialFocusRef={firstField}
+            initialFocusEl={() => firstField.current}
         >
-            <DrawerOverlay/>
-            <DrawerContent>
-                <DrawerCloseButton/>
-                <DrawerHeader>
-                    {!!category ? 'Update' : 'Create'} Category
-                </DrawerHeader>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+                <Drawer.Content>
+                    <Drawer.CloseTrigger />
+                    <Drawer.Header>
+                        {!!category ? 'Update' : 'Create'} Category
+                    </Drawer.Header>
 
-                <DrawerBody>
-                    <CategoryForm
-                        onSubmit={async values => {
-                            const result = await onSubmit(values)
-                            if (result) {
-                                onClose()
-                            }
-                            return result
-                        }}
-                        initialValues={{
-                            ...category,
-                            emoji: category?.emoji || undefined
-                        }}
-                        ref={firstField}
-                    />
-                </DrawerBody>
-            </DrawerContent>
-        </Drawer>
+                    <Drawer.Body>
+                        <CategoryForm
+                            onSubmit={async values => {
+                                const result = await onSubmit(values)
+                                if (result) {
+                                    setOpen(false)
+                                }
+                                return result
+                            }}
+                            initialValues={{
+                                ...category,
+                                emoji: category?.emoji || undefined
+                            }}
+                            ref={firstField}
+                        />
+                    </Drawer.Body>
+                </Drawer.Content>
+            </Drawer.Positioner>
+        </Drawer.Root>
     )
 }

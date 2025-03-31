@@ -1,22 +1,22 @@
 import {AccountType, accountTypeName} from "@/app/api/schema";
-import {Box, BoxProps, Stack, Tag, TagProps} from "@chakra-ui/react";
+import {Box, BoxProps, Stack, Tag} from "@chakra-ui/react";
 import React from "react";
 
-export interface AccountTypeTagProps extends TagProps {
+export interface AccountTypeTagProps extends Tag.RootProps {
     accountType: AccountType
 }
 
 export function AccountTypeTag({ accountType, ...props }: AccountTypeTagProps) {
     return (
-        <Tag {...props} colorScheme={accountType === 'CURRENT_ACCOUNT' ? 'purple' : 'blue'}>
-            {accountTypeName(accountType)}
-        </Tag>
+        <Tag.Root {...props} colorPalette={accountType === 'CURRENT_ACCOUNT' ? 'purple' : 'blue'}>
+            <Tag.Label>{accountTypeName(accountType)}</Tag.Label>
+        </Tag.Root>
     )
 }
 
 export function AccountSummary({ accountName, accountType }: { accountName: string, accountType: AccountType }) {
     return (
-        <Stack spacing={1}>
+        <Stack gap={1}>
             <Box as="span">{accountName}</Box>
             <Mute>{accountTypeName(accountType)}</Mute>
         </Stack>

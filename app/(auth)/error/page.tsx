@@ -1,12 +1,13 @@
 
-import {Text, Button, Alert, AlertIcon, AlertTitle, AlertDescription, Stack} from "@chakra-ui/react";
+import {Text, Button, Alert} from "@chakra-ui/react";
 import NextLink from 'next/link'
 import {HomeIcon, LoginIcon} from "@/components/icons";
 import React from "react";
 
-export default async function ErrorPage({ searchParams: { error } }: { searchParams: { error?: string } }) {
+export default async function ErrorPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+    const { error } = await searchParams
     return (
-        <Alert
+        <Alert.Root
             status='error'
             variant='subtle'
             flexDirection='column'
@@ -17,16 +18,16 @@ export default async function ErrorPage({ searchParams: { error } }: { searchPar
             borderRadius={8}
             boxShadow="lg"
         >
-            <AlertIcon boxSize='40px' mr={0} />
+            <Alert.Indicator boxSize='40px' mr={0} />
 
-            <AlertTitle mt={4} mb={3} fontSize='lg'>
+            <Alert.Title mt={4} mb={3} fontSize='lg'>
                 {errorTitle(error)}
-            </AlertTitle>
+            </Alert.Title>
 
-            <AlertDescription maxWidth='sm'>
+            <Alert.Description maxWidth='sm'>
                 <ErrorDescription error={error} />
-            </AlertDescription>
-        </Alert>
+            </Alert.Description>
+        </Alert.Root>
     )
 }
 
@@ -51,7 +52,9 @@ function ErrorDescription({ error }: { error?: string }) {
                     <Text>There is a problem with the server configuration.</Text>
                     <Text mb={4}>Check the server logs for more information.</Text>
                     <NextLink href='/login' passHref legacyBehavior>
-                        <Button as="a" leftIcon={<LoginIcon />} variant="outline" colorScheme="red">Login as a different user</Button>
+                        <Button as="a" variant="outline" colorPalette="red">
+                            <LoginIcon /> Login as a different user
+                        </Button>
                     </NextLink>
                 </>
             )
@@ -60,7 +63,9 @@ function ErrorDescription({ error }: { error?: string }) {
                 <>
                     <Text mb={4}>You do not have permission to login.</Text>
                     <NextLink href='/login' passHref legacyBehavior>
-                        <Button as="a" leftIcon={<LoginIcon />} variant="outline" colorScheme="red">Login as a different user</Button>
+                        <Button as="a" variant="outline" colorPalette="red">
+                            <LoginIcon /> Login as a different user
+                        </Button>
                     </NextLink>
                 </>
             )
@@ -69,7 +74,9 @@ function ErrorDescription({ error }: { error?: string }) {
                 <>
                     <Text mb={4}>The sign in link is no longer valid. It may have been used already or it may have expired.</Text>
                     <NextLink href='/login' passHref legacyBehavior>
-                        <Button as="a" leftIcon={<LoginIcon />} variant="outline" colorScheme="red">Login</Button>
+                        <Button as="a" variant="outline" colorPalette="red">
+                            <LoginIcon /> Login
+                        </Button>
                     </NextLink>
                 </>
             )
@@ -78,7 +85,9 @@ function ErrorDescription({ error }: { error?: string }) {
                 <>
                     <Text mb={4}>There was a problem with your request. Please try again.</Text>
                     <NextLink href='/login' passHref legacyBehavior>
-                        <Button as="a" leftIcon={<HomeIcon />} variant="outline" colorScheme="red">Home</Button>
+                        <Button as="a" variant="outline" colorPalette="red">
+                            <HomeIcon /> Home
+                        </Button>
                     </NextLink>
                 </>
             )

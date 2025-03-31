@@ -2,14 +2,15 @@
 
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import {Box, IconButton, Input, InputGroup, InputRightElement, useColorMode, useDisclosure} from "@chakra-ui/react"
+import {Box, IconButton, Input, InputGroup, Portal, useDisclosure} from "@chakra-ui/react"
 import {EmojiIcon} from "@/components/icons"
 import {useEffect, useRef} from "react";
+import {useColorMode} from "@/components/ui/color-mode";
 
 
 export function EmojiPicker({ value, onChange }: { value: string, onChange(value: string): void }) {
     const { colorMode } = useColorMode()
-    const { isOpen, onClose, onToggle } = useDisclosure()
+    const { open, onClose, onToggle } = useDisclosure()
     const wrapperRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLDivElement>(null)
 
@@ -28,16 +29,21 @@ export function EmojiPicker({ value, onChange }: { value: string, onChange(value
 
     return (
         <>
-            <Box position="relative">
-                <InputGroup onClick={onToggle} ref={inputRef}>
+            <Box position="relative" w="100%">
+                <InputGroup
+                    endElement={
+                        <IconButton variant="ghost" _hover={{ bg: 'initial' }} onClick={onToggle} aria-label="Pick emojis">
+                            <EmojiIcon />
+                        </IconButton>
+                    }
+                    onClick={onToggle}
+                    ref={inputRef}
+                >
                     <Input placeholder='Emoji' value={value} readOnly />
-                    <InputRightElement>
-                        <IconButton variant="ghost" _hover={{ bg: 'initial' }} icon={<EmojiIcon />} onClick={onToggle} aria-label="Pick emojis" />
-                    </InputRightElement>
                 </InputGroup>
                 {
-                    isOpen ? (
-                        <Box position="absolute" marginTop={2} right={0} zIndex={999} ref={wrapperRef}>
+                    open ? (
+                        <Box position="absolute" marginTop={2} right={0} zIndex={9999} ref={wrapperRef}>
                             <Picker
                                 maxFrequentRows={0}
                                 theme={colorMode}
@@ -56,8 +62,6 @@ export function EmojiPicker({ value, onChange }: { value: string, onChange(value
                     ) : <></>
                 }
             </Box>
-
-
         </>
     )
 }

@@ -53,7 +53,7 @@ export interface FrequencyTableEntry {
 
 export function aggregateByCategory(
     transactions: CategorizedTransaction[],
-    limit: number = 8,
+    targetCategoryCount: number = 8,
 ): FrequencyTableEntry[] {
     const flatTransactions = transactions
         .map(({ category, emoji, credit, debit }) => ({
@@ -75,9 +75,9 @@ export function aggregateByCategory(
         .reduce((agg, { category, emoji, amount }) => {
             const key = `${category}:${emoji || ''}`
                 if (key in agg) {
-                    agg[key] = agg[key].add(amount.abs())
+                    agg[key] = agg[key].add(amount)
                 } else {
-                    agg[key] = amount.abs()
+                    agg[key] = amount
                 }
                 return agg
             },
@@ -88,26 +88,40 @@ export function aggregateByCategory(
     const decimalData = Object.entries(byCategory)
         .map(([key, value]) => {
             const [label, emoji] = key.split(':')
+            const absValue = value.abs()
             return {
                 label,
                 emoji: emoji || null,
-                value,
-                percent: value.div(total).mul(100),
+                value: absValue,
+                percent: absValue.div(total).mul(100),
                 color: colors.next().value
             }
         })
         .sort((a, b) => b.value.cmp(a.value))
 
+    if (decimalData.length > targetCategoryCount) {
+        const otherData = decimalData.splice(targetCategoryCount - 1)
 
-    if (decimalData.length > limit) {
-        const otherData = decimalData.splice(limit - 1)
-        decimalData.push({
-            label: OTHER_LABEL,
-            emoji: OTHER_EMOJI,
-            value: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
-            percent: otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0)),
-            color: OTHER_COLOR_CSS
-        })
+        function calcOtherPercent() {
+            return otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0))
+        }
+
+        let otherPercent = calcOtherPercent()
+        while (otherPercent.greaterThan(5) && otherData.length > 0) {
+            // remove the largest one from other data and add back into data
+            decimalData.push(otherData.shift()!)
+            otherPercent = calcOtherPercent()
+        }
+
+        if (otherData.length > 0) {
+            decimalData.push({
+                label: OTHER_LABEL,
+                emoji: OTHER_EMOJI,
+                value: otherData.reduce((a, b) => a.add(b.value), new Prisma.Decimal(0)),
+                percent: otherPercent,
+                color: OTHER_COLOR_CSS
+            })
+        }
     }
 
     return decimalData.map(({ value, percent, ...rest }) => ({

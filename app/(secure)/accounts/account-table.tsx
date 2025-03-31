@@ -2,32 +2,17 @@ import {Account} from "@/app/api/schema";
 import {useAccounts} from "@/api-client";
 import {ErrorAlert, Loading, NoData} from "@/components/alert";
 import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay, Box,
-    Button,
+    Box,
+    Dialog,
     IconButton,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
+    Menu, Portal,
     Table,
-    TableContainer,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
-    useDisclosure
 } from "@chakra-ui/react";
 import React, {useState} from "react";
-import {MoreVerticalIcon} from "@/components/icons";
-import {DeleteIcon, ViewIcon} from "@chakra-ui/icons";
+import {MoreVerticalIcon, DeleteIcon, ViewIcon} from "@/components/icons";
 import {AccountTypeTag} from "./account-summary";
 import {formatDateShort, needsNewStatement} from "@/components/dates";
+import {Button} from "@/components/ui/button";
 
 export function AccountTable({onDelete, onViewTransactions}: {
     onDelete(account: Account): Promise<void>,
@@ -48,42 +33,40 @@ export function AccountTable({onDelete, onViewTransactions}: {
     }
 
     const rows = accounts.map(account =>
-        (<Tr key={account.id}>
+        (<Table.Row key={account.id}>
 
-            <Td>{account.bankName}</Td>
-            <Td>{account.accountName}</Td>
-            <Td>
+            <Table.Cell>{account.bankName}</Table.Cell>
+            <Table.Cell>{account.accountName}</Table.Cell>
+            <Table.Cell>
                 <AccountTypeTag accountType={account.accountType} />
-            </Td>
-            <Td>
+            </Table.Cell>
+            <Table.Cell>
                 {account.statementsTo
                     ? (<Box as="span" color={needsNewStatement(account.statementsTo) ? 'red' : 'green'}>
                         {formatDateShort(account.statementsTo)}
                       </Box>)
                     : 'None'}
-            </Td>
-            <Td px={0}>
+            </Table.Cell>
+            <Table.Cell px={0}>
                 <AccountMenu onDelete={onDelete} onViewTransactions={onViewTransactions} account={account}/>
-            </Td>
-        </Tr>))
+            </Table.Cell>
+        </Table.Row>))
 
     return (
-        <TableContainer>
-            <Table variant='simple'>
-                <Thead>
-                    <Tr>
-                        <Th>Bank</Th>
-                        <Th>Account #</Th>
-                        <Th>Type</Th>
-                        <Th>Statements To</Th>
-                        <Th px={0}></Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {rows}
-                </Tbody>
-            </Table>
-        </TableContainer>
+        <Table.Root variant="line">
+            <Table.Header>
+                <Table.Row>
+                    <Table.ColumnHeader>Bank</Table.ColumnHeader>
+                    <Table.ColumnHeader>Account #</Table.ColumnHeader>
+                    <Table.ColumnHeader>Type</Table.ColumnHeader>
+                    <Table.ColumnHeader>Statements To</Table.ColumnHeader>
+                    <Table.ColumnHeader px={0}></Table.ColumnHeader>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {rows}
+            </Table.Body>
+        </Table.Root>
     )
 }
 
@@ -93,64 +76,73 @@ function AccountMenu({onDelete, onViewTransactions, account}: {
     account: Account
 }) {
     const [isDeleting, setIsDeleting] = useState(false)
-    const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose} = useDisclosure()
-    const cancelDeleteRef = React.useRef()
+    const [isDeleteOpen, setDeleteOpen] = useState(false)
 
     return (
         <>
-            <Menu isLazy>
-                <MenuButton as={IconButton} aria-label='Options' icon={<MoreVerticalIcon/>} variant="ghost"/>
-                <MenuList>
-                    <MenuItem
-                        icon={<ViewIcon/>}
-                        onClick={() => onViewTransactions(account)}
-                    >
-                        View transactions
-                    </MenuItem>
-                    <MenuItem
-                        icon={<DeleteIcon/>}
-                        isDisabled={isDeleting}
-                        onClick={onDeleteOpen}
-                    >
-                        Delete
-                    </MenuItem>
-                </MenuList>
-            </Menu>
+            <Menu.Root>
+                <Menu.Trigger asChild>
+                    <IconButton aria-label='Options' variant="ghost">
+                        <MoreVerticalIcon />
+                    </IconButton>
+                </Menu.Trigger>
 
-            <AlertDialog
-                isOpen={isDeleteOpen}
-                leastDestructiveRef={cancelDeleteRef as any}
-                onClose={onDeleteClose}
+                <Portal>
+                    <Menu.Positioner>
+                        <Menu.Content>
+                            <Menu.Item value="view-transactions" onClick={() => onViewTransactions(account)}>
+                                <ViewIcon/> View transactions
+                            </Menu.Item>
+                            <Menu.Item
+                                value="delete-account"
+                                disabled={isDeleting}
+                                onClick={() => setDeleteOpen(true)}
+                            >
+                                <DeleteIcon/> Delete
+                            </Menu.Item>
+                        </Menu.Content>
+                    </Menu.Positioner>
+                </Portal>
+            </Menu.Root>
+
+            <Dialog.Root
+                lazyMount
+                role="alertdialog"
+                open={isDeleteOpen}
+                onOpenChange={(e) => setDeleteOpen(e.open)}
             >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Delete Account
-                        </AlertDialogHeader>
+                <Portal>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                        <Dialog.Content>
+                            <Dialog.Header fontSize='lg' fontWeight='bold'>
+                                Delete Account
+                            </Dialog.Header>
 
-                        <AlertDialogBody>
-                            This will delete all statements and transactions attached to this account.
-                        </AlertDialogBody>
+                            <Dialog.Body>
+                                This will delete all statements and transactions attached to this account.
+                            </Dialog.Body>
 
-                        <AlertDialogFooter>
-                            <Button ref={cancelDeleteRef as any} isDisabled={isDeleting} onClick={onDeleteClose}>
-                                Cancel
-                            </Button>
-                            <Button colorScheme='red' isLoading={isDeleting} onClick={async () => {
-                                setIsDeleting(true)
-                                try {
-                                    await onDelete(account)
-                                } finally {
-                                    setIsDeleting(false)
-                                    onDeleteClose()
-                                }
-                            }} ml={3}>
-                                Delete
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
+                            <Dialog.Footer>
+                                <Button disabled={isDeleting} onClick={() => setDeleteOpen(false)}>
+                                    Cancel
+                                </Button>
+                                <Button colorPalette='red' loading={isDeleting} onClick={async () => {
+                                    setIsDeleting(true)
+                                    try {
+                                        await onDelete(account)
+                                    } finally {
+                                        setIsDeleting(false)
+                                        setDeleteOpen(false)
+                                    }
+                                }} ml={3}>
+                                    Delete
+                                </Button>
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </Dialog.Positioner>
+                </Portal>
+            </Dialog.Root>
         </>
     )
 }

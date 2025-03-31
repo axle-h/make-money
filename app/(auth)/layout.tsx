@@ -1,6 +1,6 @@
 import React from "react"
 import {MobileNav} from "@/components/nav";
-import {Alert, AlertDescription, AlertIcon, AlertTitle, Box, Container, Flex} from "@chakra-ui/react";
+import {Alert, Container, Flex} from "@chakra-ui/react";
 import {auth, isAuthorized} from "@/auth";
 
 export default async function PublicLayout({ children, }: { children: React.ReactNode }) {
@@ -9,11 +9,11 @@ export default async function PublicLayout({ children, }: { children: React.Reac
         <Flex h="100dvh" flexDirection="column">
             {!!session?.user && !isAuthorized(session.user)
                 ? (
-                    <Alert status='error'>
-                        <AlertIcon />
-                        <AlertTitle>Unauthorized</AlertTitle>
-                        <AlertDescription>Looks like your account does not have the required roles to use Make Money.</AlertDescription>
-                    </Alert>
+                    <Alert.Root status='error'>
+                        <Alert.Indicator />
+                        <Alert.Title>Unauthorized</Alert.Title>
+                        <Alert.Description>Looks like your account does not have the required roles to use Make Money.</Alert.Description>
+                    </Alert.Root>
                 ) : <></>
             }
 

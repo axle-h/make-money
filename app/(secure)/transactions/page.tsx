@@ -1,6 +1,6 @@
 'use client'
 
-import {Box, Button, ButtonGroup, Flex, Heading, HStack, Tag, useToast} from "@chakra-ui/react";
+import {ButtonGroup, Flex, Heading, HStack} from "@chakra-ui/react";
 import {useRouter} from "next/navigation";
 import React, {useState} from "react";
 import {PaginatedParams, QueryParams} from "./types";
@@ -13,34 +13,33 @@ import {
     resetTransactionCategories
 } from "./actions";
 import {createCategory} from "../categories/actions";
-import {CheckIcon} from "@chakra-ui/icons";
+import {CheckIcon} from "@/components/icons";
 import {TransactionSearch} from "@/app/(secure)/transactions/transaction-search";
+import {Button} from "@/components/ui/button";
 
-interface TransactionsPageProps  {
-    searchParams: { [P in keyof PaginatedParams]: string } & { bulkApproveName: string }
-}
+type TransactionsSearchParams = { [P in keyof PaginatedParams]: string } & { bulkApproveName: string }
 
-export default function TransactionsPage({ searchParams }: TransactionsPageProps) {
-    const toast = useToast({ position: 'top' })
+export default function TransactionsPage({ searchParams }: { searchParams: Promise<TransactionsSearchParams> }) {
     const router = useRouter()
     const [isBulkApproval, setBulkApproval] = useState(false)
+    const pageQuery = React.use(searchParams)
 
     const queryParams: QueryParams = {
-        accountId: Number(searchParams?.accountId) || undefined,
-        statementId: Number(searchParams?.statementId) || undefined,
-        categoryId: Number(searchParams?.categoryId) || undefined,
-        ruleId: Number(searchParams?.ruleId) || undefined,
-        type: searchParams.type,
-        name: searchParams.name,
-        description: searchParams.description,
-        uncategorized: searchParams?.uncategorized === 'true' || searchParams?.uncategorized === '1',
-        search: searchParams.search
+        accountId: Number(pageQuery.accountId) || undefined,
+        statementId: Number(pageQuery.statementId) || undefined,
+        categoryId: Number(pageQuery.categoryId) || undefined,
+        ruleId: Number(pageQuery.ruleId) || undefined,
+        type: pageQuery.type,
+        name: pageQuery.name,
+        description: pageQuery.description,
+        uncategorized: pageQuery.uncategorized === 'true' || pageQuery.uncategorized === '1',
+        search: pageQuery.search
     }
     const paginatedParams: PaginatedParams = {
         ...queryParams,
-        page: Number(searchParams?.page) || 1,
-        orderBy: searchParams.orderBy as any,
-        orderByDescending: searchParams.orderByDescending === 'true',
+        page: Number(pageQuery.page) || 1,
+        orderBy: pageQuery.orderBy as any,
+        orderByDescending: pageQuery.orderByDescending === 'true',
     }
 
     if (!paginatedParams.orderBy) {
@@ -61,30 +60,29 @@ export default function TransactionsPage({ searchParams }: TransactionsPageProps
 
     return (
         <>
-            <Heading>Transactions</Heading>
-            {!!searchParams.bulkApproveName ? <Heading size="sm">Approving {searchParams.bulkApproveName}</Heading> : <></>}
+            <Heading size="4xl">Transactions</Heading>
+            {!!pageQuery.bulkApproveName ? <Heading size="sm">Approving {pageQuery.bulkApproveName}</Heading> : <></>}
             <Flex alignItems="center" justifyContent="space-between" mb={4} mt={6}>
                 <ButtonGroup variant="outline">
-                    {!!searchParams.bulkApproveName && !!queryParams.ruleId && queryParams.uncategorized === true ? (
+                    {!!pageQuery.bulkApproveName && !!queryParams.ruleId && queryParams.uncategorized === true ? (
                         <>
                             <Button
-                                colorScheme="yellow"
-                                leftIcon={<CheckIcon/>}
-                                isLoading={isBulkApproval}
+                                colorPalette="yellow"
+                                loading={isBulkApproval}
                                 onClick={async () => {
                                     setBulkApproval(true)
-                                    if (await approveAllTransactionsForRule(toast, queryParams.ruleId || 0)) {
+                                    if (await approveAllTransactionsForRule(queryParams.ruleId || 0)) {
                                         router.push('rules')
                                     }
                                     setBulkApproval(false)
                                 }}
                             >
-                                Approve All
+                                <CheckIcon/> Approve All
                             </Button>
                         </>
                     ) : <></>}
                 </ButtonGroup>
-                <HStack spacing={2}>
+                <HStack gap={2}>
                     <TransactionSearch queryParams={queryParams} onChange={updateQuery} />
                     <TransactionFilters queryParams={queryParams} onChange={updateQuery} />
                 </HStack>
@@ -93,20 +91,20 @@ export default function TransactionsPage({ searchParams }: TransactionsPageProps
             <TransactionTable
                 queryParams={paginatedParams}
                 updateSort={(orderBy, orderByDescending) => {
-                    const urlParams = new URLSearchParams(searchParams)
+                    const urlParams = new URLSearchParams(pageQuery)
                     urlParams.set('orderBy', orderBy)
                     urlParams.set('orderByDescending', orderByDescending.toString())
                     router.replace('?' + urlParams.toString())
                 }}
                 updatePage={page => {
-                    const urlParams = new URLSearchParams(searchParams)
+                    const urlParams = new URLSearchParams(pageQuery)
                     urlParams.set('page', page.toString())
                     router.replace('?' + urlParams.toString())
                 }}
-                onCategoryReset={id => resetTransactionCategories(toast, id)}
+                onCategoryReset={id => resetTransactionCategories(id)}
                 onBuildRule={transaction => router.push(buildRuleUrl(transaction))}
-                onUpdate={(id, values) => approveTransaction(toast, id, values)}
-                onCreateCategory={category => createCategory(toast, category)}
+                onUpdate={(id, values) => approveTransaction(id, values)}
+                onCreateCategory={category => createCategory(category)}
             />
         </>
     )
