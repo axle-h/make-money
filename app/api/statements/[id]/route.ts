@@ -6,9 +6,10 @@ export const dynamic = 'force-dynamic'
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = parseInt(params.id, 10)
+    const { id: idString } = await params
+    const id = parseInt(idString, 10)
     if (isNaN(id)) {
         return notFound('statement')
     }
