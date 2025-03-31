@@ -1,5 +1,4 @@
-import {parseIsoUtcDatetime, getTaxYears, getRangeMonthsToNow, parseUtcDateShort} from "@/components/dates";
-import {UTCDate} from "@date-fns/utc";
+import {parseIsoUtcDatetime, getTaxYears, getRangeMonthsToNow, parseUtcDate} from "@/components/dates";
 
 describe('dates', () => {
     it('parses utc date', () => {
@@ -9,6 +8,16 @@ describe('dates', () => {
 
     it('parses utc date short', () => {
         expect(parseIsoUtcDatetime("2024-06-10").toISOString())
+            .toBe('2024-06-10T00:00:00.000Z')
+    })
+
+    it('parses ofx date', () => {
+        expect(parseUtcDate("20240610131012", 'yyyyMMddHHmmss').toISOString())
+            .toBe('2024-06-10T13:10:12.000Z')
+    })
+
+    it('parses qif date', () => {
+        expect(parseUtcDate("10/06/2024", 'dd/LL/yyyy').toISOString())
             .toBe('2024-06-10T00:00:00.000Z')
     })
 

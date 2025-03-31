@@ -1,6 +1,6 @@
 import {aggregateByCategory, FrequencyTableEntry, timeSeries, TimeSeriesEntry} from "@/components/charts/data"
 import {CategorizedTransaction, CategoryType} from "@/app/api/schema"
-import {parseUtcDateShort} from "@/components/dates"
+import {parseIsoUtcDatetime} from "@/components/dates"
 import {Prisma} from "@prisma/client"
 
 
@@ -18,7 +18,7 @@ type PartialCategorizedTransaction = Partial<Stringified<CategorizedTransaction>
 
 function transaction(partial: PartialCategorizedTransaction): CategorizedTransaction {
     return {
-        date: parseUtcDateShort(partial.date || '2024-06-09'),
+        date: parseIsoUtcDatetime(partial.date || '2024-06-09'),
         emoji: partial.emoji || null,
         category: partial.category || 'Leisure',
         categoryType: (partial.categoryType || 'EXPENSE') as CategoryType,
@@ -129,7 +129,7 @@ describe('data', () => {
                 { date: '2024-06-10', debit: -10.2 },
                 { date: '2024-06-10', debit: -7.99 },
                 { date: '2024-06-10', credit: 1.23 },
-            ]), parseUtcDateShort('2024-06-09'), parseUtcDateShort('2024-06-10'))
+            ]), parseIsoUtcDatetime('2024-06-09'), parseIsoUtcDatetime('2024-06-10'))
 
             timeSeriesShouldBe(observed, [
                 { date: '2024-06-09', credit: 0, debit: -19.45 },
@@ -140,7 +140,7 @@ describe('data', () => {
         it('fills in time range with 0s', () => {
             const observed = timeSeries(transactions([
                 { date: '2024-06-09', debit: -19.45 },
-            ]), parseUtcDateShort('2024-06-09'), parseUtcDateShort('2024-06-10'))
+            ]), parseIsoUtcDatetime('2024-06-09'), parseIsoUtcDatetime('2024-06-10'))
 
             timeSeriesShouldBe(observed, [
                 { date: '2024-06-09', credit: 0, debit: -19.45 },
@@ -155,8 +155,8 @@ describe('data', () => {
                     { date: '2024-08-06', credit: 1.23 },
                     { date: '2024-08-13', debit: -19.45 },
                     { date: '2024-08-14', debit: -12.5 },
-                ]), parseUtcDateShort('2024-07-31'), // 2 weeks ago
-                parseUtcDateShort('2024-08-14'),
+                ]), parseIsoUtcDatetime('2024-07-31'), // 2 weeks ago
+                parseIsoUtcDatetime('2024-08-14'),
                 'weeks')
 
             timeSeriesShouldBe(observed, [
@@ -173,8 +173,8 @@ describe('data', () => {
                     { date: '2024-07-06', credit: 1.23 },
                     { date: '2024-07-13', debit: -19.45 },
                     { date: '2024-07-14', debit: -12.5 },
-                ]), parseUtcDateShort('2024-07-01'), // 2 weeks ago
-                parseUtcDateShort('2024-08-31'),
+                ]), parseIsoUtcDatetime('2024-07-01'), // 2 weeks ago
+                parseIsoUtcDatetime('2024-08-31'),
                 'months')
 
             timeSeriesShouldBe(observed, [

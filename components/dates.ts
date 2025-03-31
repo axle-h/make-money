@@ -7,7 +7,6 @@ import {
     getYear,
     differenceInDays,
     parse as parseDate,
-    parseISO,
     isAfter,
     startOfDay,
     DurationUnit,
@@ -21,7 +20,7 @@ import {
 } from "date-fns"
 import { UTCDate } from "@date-fns/utc"
 import { enGB } from 'date-fns/locale/en-GB'
-import {fromZonedTime} from "date-fns-tz";
+import { TZDate } from "@date-fns/tz"
 
 export function formatDateTimeLong(date: Date) {
     return format(date, 'PPpp', { locale: enGB })
@@ -118,23 +117,17 @@ export function formatDateRange(start: Date, end: Date): string {
 }
 
 const TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
-const REFERENCE_UTC = fromZonedTime(new UTCDate(0), TIME_ZONE)
+const REFERENCE_UTC = new TZDate(0, 'Etc/UTC')
 
 export function parseIsoUtcDatetime(dateString: string | Date): Date {
-    if (typeof dateString === 'string' && dateString.length === 10) {
-        return parseUtcDateShort(dateString)
-    }
-    const zoned = dateString instanceof Date ? dateString : parseISO(dateString)
-    return new UTCDate(fromZonedTime(zoned, TIME_ZONE))
+    const zoned = dateString instanceof Date
+        ? new TZDate(dateString, TIME_ZONE)
+        : new TZDate(dateString, TIME_ZONE)
+    return new UTCDate(zoned)
 }
 
 export function parseUtcDate(dateString: string, formatString: string) {
-    const zoned = parseDate(dateString, formatString, REFERENCE_UTC)
-    return new UTCDate(fromZonedTime(zoned, 'Etc/UTC'))
-}
-
-export function parseUtcDateShort(dateString: string) {
-    return parseUtcDate(dateString, 'yyyy-MM-dd')
+    return new UTCDate(parseDate(dateString, formatString, REFERENCE_UTC))
 }
 
 export function getRangeMonthsToNow(months: number, now: Date = utcNow()): DateRange {
