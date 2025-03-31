@@ -16,7 +16,6 @@
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
     "@emoji-mart/data": "^1.2.1",
-    "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.14.0",
     "@prisma/client": "^6.5.0",
     "chakra-react-select": "^6.1.0",

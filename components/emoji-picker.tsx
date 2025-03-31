@@ -1,12 +1,11 @@
 'use client'
 
 import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
-import {Box, IconButton, Input, InputGroup, Portal, useDisclosure} from "@chakra-ui/react"
+import { Picker } from 'emoji-mart'
+import {Box, IconButton, Input, InputGroup, useDisclosure} from "@chakra-ui/react"
 import {EmojiIcon} from "@/components/icons"
-import {useEffect, useRef} from "react";
+import React, {MutableRefObject, useEffect, useRef} from "react";
 import {useColorMode} from "@/components/ui/color-mode";
-
 
 export function EmojiPicker({ value, onChange }: { value: string, onChange(value: string): void }) {
     const { colorMode } = useColorMode()
@@ -44,7 +43,7 @@ export function EmojiPicker({ value, onChange }: { value: string, onChange(value
                 {
                     open ? (
                         <Box position="absolute" marginTop={2} right={0} zIndex={9999} ref={wrapperRef}>
-                            <Picker
+                            <EmojiMartPicker
                                 maxFrequentRows={0}
                                 theme={colorMode}
                                 data={data}
@@ -64,4 +63,23 @@ export function EmojiPicker({ value, onChange }: { value: string, onChange(value
             </Box>
         </>
     )
+}
+
+function EmojiMartPicker(props: any) {
+    const ref = useRef<HTMLDivElement | null>(null)
+    const instance = useRef<Picker | null>(null)
+
+    if (instance.current) {
+        instance.current.update(props)
+    }
+
+    useEffect(() => {
+        instance.current = new Picker({ ...props, ref })
+
+        return () => {
+            instance.current = null
+        }
+    }, [props, ref])
+
+    return React.createElement('div', { ref })
 }
