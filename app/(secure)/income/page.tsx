@@ -1,105 +1,157 @@
-'use client'
+"use client";
 
 import { Flex, Heading, NumberInput, NativeSelect } from "@chakra-ui/react";
-import {ErrorAlert, Loading, NoData, StatementAlerts} from "@/components/alert";
-import {useAccounts, useCategorizedTransactions} from "@/api-client";
-import { getCurrentTaxYear, getTaxYears} from "@/components/dates";
-import {useState} from "react";
-import {CategorizedTransactionQuery} from "@/app/api/schema";
-import {cumulativeTimeSeries} from "@/components/charts/data";
-import {CurrencyBenchmarkLineChart} from "@/components/charts/currency-benchmark-line-chart";
-import {currency} from "@/components/currency";
+import {
+  ErrorAlert,
+  Loading,
+  NoData,
+  StatementAlerts,
+} from "@/components/alert";
+import { useAccounts, useCategorizedTransactions } from "@/api-client";
+import { getCurrentTaxYear, getTaxYears } from "@/components/dates";
+import { useState } from "react";
+import { CategorizedTransactionQuery } from "@/app/api/schema";
+import { cumulativeTimeSeries } from "@/components/charts/data";
+import { CurrencyBenchmarkLineChart } from "@/components/charts/currency-benchmark-line-chart";
+import { currency } from "@/components/currency";
 
 export default function IncomePage() {
-    const [query, setQuery] = useState<CategorizedTransactionQuery>({
-        ...getCurrentTaxYear().query,
-        subCategories: false
-    })
-    const [benchmark, setBenchmark] = useState(100000)
+  const [query, setQuery] = useState<CategorizedTransactionQuery>({
+    ...getCurrentTaxYear().query,
+    subCategories: false,
+  });
+  const [benchmark, setBenchmark] = useState(100000);
 
-    return (
-        <>
-            <StatementAlerts />
-            <Heading size="4xl" mb={4}>Income</Heading>
-            <IncomeFilters query={query} onChangeQuery={setQuery} benchmark={benchmark} onChangeBenchmark={setBenchmark} />
-            <IncomeReport query={query} benchmark={benchmark} />
-        </>
-    )
+  return (
+    <>
+      <StatementAlerts />
+      <Heading size="4xl" mb={4}>
+        Income
+      </Heading>
+      <IncomeFilters
+        query={query}
+        onChangeQuery={setQuery}
+        benchmark={benchmark}
+        onChangeBenchmark={setBenchmark}
+      />
+      <IncomeReport query={query} benchmark={benchmark} />
+    </>
+  );
 }
 
 interface IncomeFiltersProps {
-    query: CategorizedTransactionQuery
-    onChangeQuery(query: CategorizedTransactionQuery): void
-    benchmark: number
-    onChangeBenchmark(benchmark: number): void
+  query: CategorizedTransactionQuery;
+  onChangeQuery(query: CategorizedTransactionQuery): void;
+  benchmark: number;
+  onChangeBenchmark(benchmark: number): void;
 }
 
-function IncomeFilters({ query, onChangeQuery, benchmark, onChangeBenchmark }: IncomeFiltersProps) {
-    const { accounts = [], isLoading, error } = useAccounts()
+function IncomeFilters({
+  query,
+  onChangeQuery,
+  benchmark,
+  onChangeBenchmark,
+}: IncomeFiltersProps) {
+  const { accounts = [], isLoading, error } = useAccounts();
 
-    const firstStatementStart = accounts.reduce((agg, { statementsFrom }) =>
-        !statementsFrom ? agg
-            : !agg ? statementsFrom
-                : statementsFrom < agg ? statementsFrom : agg, null as Date | null)
+  const firstStatementStart = accounts.reduce(
+    (agg, { statementsFrom }) =>
+      !statementsFrom
+        ? agg
+        : !agg
+          ? statementsFrom
+          : statementsFrom < agg
+            ? statementsFrom
+            : agg,
+    null as Date | null,
+  );
 
-    const taxYears = firstStatementStart ? getTaxYears(firstStatementStart) : [getCurrentTaxYear()]
+  const taxYears = firstStatementStart
+    ? getTaxYears(firstStatementStart)
+    : [getCurrentTaxYear()];
 
-    return (
-        <Flex mb={4} justifyContent="space-between" gap={2} flexDirection={{ base: 'column', sm: 'row' }}>
-            <NativeSelect.Root>
-                <NativeSelect.Field onChange={ev => onChangeQuery({
-                    ...query,
-                    ...taxYears.find(x => x.name === ev.target.value)?.query!
-                })}>
-                    {taxYears.map(({ name }) => (
-                        <option key={name} value={name}>{name}</option>
-                    ))}
-                </NativeSelect.Field>
-                <NativeSelect.Indicator />
-            </NativeSelect.Root>
+  return (
+    <Flex
+      mb={4}
+      justifyContent="space-between"
+      gap={2}
+      flexDirection={{ base: "column", sm: "row" }}
+    >
+      <NativeSelect.Root>
+        <NativeSelect.Field
+          onChange={(ev) =>
+            onChangeQuery({
+              ...query,
+              ...taxYears.find((x) => x.name === ev.target.value)?.query!,
+            })
+          }
+        >
+          {taxYears.map(({ name }) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </NativeSelect.Field>
+        <NativeSelect.Indicator />
+      </NativeSelect.Root>
 
-            <NumberInput.Root
-                min={1000}
-                step={1000}
-                defaultValue={benchmark.toString()}
-                formatOptions={{
-                    style: "currency",
-                    currency: "GBP",
-                    maximumSignificantDigits: 1
-                }}
-                maxW={{ base: 'initial', sm: 200 }}
-                onValueChange={(e) => onChangeBenchmark(e.valueAsNumber)}
-            >
-                <NumberInput.Input />
-                <NumberInput.Control />
-            </NumberInput.Root>
-        </Flex>
-    )
+      <NumberInput.Root
+        min={1000}
+        step={1000}
+        defaultValue={benchmark.toString()}
+        formatOptions={{
+          style: "currency",
+          currency: "GBP",
+          maximumSignificantDigits: 1,
+        }}
+        maxW={{ base: "initial", sm: 200 }}
+        onValueChange={(e) => onChangeBenchmark(e.valueAsNumber)}
+      >
+        <NumberInput.Input />
+        <NumberInput.Control />
+      </NumberInput.Root>
+    </Flex>
+  );
 }
 
-function IncomeReport({ query, benchmark }: { query: CategorizedTransactionQuery, benchmark: number }) {
-    const { transactions = [], isLoading, error } = useCategorizedTransactions(query)
+function IncomeReport({
+  query,
+  benchmark,
+}: {
+  query: CategorizedTransactionQuery;
+  benchmark: number;
+}) {
+  const {
+    transactions = [],
+    isLoading,
+    error,
+  } = useCategorizedTransactions(query);
 
-    if (isLoading || !query.dateFrom || !query.dateTo) {
-        return <Loading />
-    }
+  if (isLoading || !query.dateFrom || !query.dateTo) {
+    return <Loading />;
+  }
 
-    if (error) {
-        return <ErrorAlert error={error} />
-    }
+  if (error) {
+    return <ErrorAlert error={error} />;
+  }
 
-    if (transactions.length === 0) {
-        return <NoData />
-    }
+  if (transactions.length === 0) {
+    return <NoData />;
+  }
 
-    // TODO do this on the server
-    const income = transactions.filter(t => t.categoryType === 'INCOME')
+  // TODO do this on the server
+  const income = transactions.filter((t) => t.categoryType === "INCOME");
 
-    return (
-        <CurrencyBenchmarkLineChart
-            dataKey="credit"
-            data={cumulativeTimeSeries(income, query.dateFrom, query.dateTo, 'months')}
-            benchmark={benchmark}
-        />
-    )
+  return (
+    <CurrencyBenchmarkLineChart
+      dataKey="credit"
+      data={cumulativeTimeSeries(
+        income,
+        query.dateFrom,
+        query.dateTo,
+        "months",
+      )}
+      benchmark={benchmark}
+    />
+  );
 }
