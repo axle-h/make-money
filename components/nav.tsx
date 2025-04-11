@@ -214,37 +214,44 @@ function LogoutButton() {
           <LogoutIcon /> Logout
         </Button>
       </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title fontSize="lg" fontWeight="bold">
-            Logout
-          </Dialog.Title>
-        </Dialog.Header>
 
-        <Dialog.Body>
-          <Text>Are you sure you want to logout?</Text>
-        </Dialog.Body>
+      <Portal>
+        <Dialog.Backdrop />
 
-        <Dialog.Footer>
-          <Dialog.ActionTrigger asChild>
-            <Button>Cancel</Button>
-          </Dialog.ActionTrigger>
-          <Button
-            colorPalette="red"
-            loading={isLoading}
-            loadingText="Logging out..."
-            onClick={() => {
-              setLoading(true);
-              router.replace("/logout");
-            }}
-            ml={3}
-          >
-            <LogoutIcon />
-            Logout
-          </Button>
-        </Dialog.Footer>
-        <Dialog.CloseTrigger />
-      </Dialog.Content>
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title fontSize="lg" fontWeight="bold">
+                Logout
+              </Dialog.Title>
+            </Dialog.Header>
+
+            <Dialog.Body>
+              <Text>Are you sure you want to logout?</Text>
+            </Dialog.Body>
+
+            <Dialog.Footer>
+              <Dialog.ActionTrigger asChild>
+                <Button>Cancel</Button>
+              </Dialog.ActionTrigger>
+              <Button
+                colorPalette="red"
+                loading={isLoading}
+                loadingText="Logging out..."
+                onClick={() => {
+                  setLoading(true);
+                  router.replace("/logout");
+                }}
+                ml={3}
+              >
+                <LogoutIcon />
+                Logout
+              </Button>
+            </Dialog.Footer>
+            <Dialog.CloseTrigger />
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
     </Dialog.Root>
   );
 }
