@@ -181,11 +181,13 @@ function UserMenu({ session }: { session: Session }) {
                     <Avatar size={'sm'} name={displayName} colorPalette={"blue"} />
                 </Button>
             </Menu.Trigger>
-            <Menu.Content>
-                <Menu.Item value="logout" asChild>
-                    <LogoutButton />
-                </Menu.Item>
-            </Menu.Content>
+            <Menu.Positioner>
+                <Menu.Content>
+                    <Menu.Item value="logout" asChild>
+                        <LogoutButton />
+                    </Menu.Item>
+                </Menu.Content>
+            </Menu.Positioner>
         </Menu.Root>
     )
 }

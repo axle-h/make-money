@@ -1,7 +1,8 @@
 'use client'
 
 import {
-    Alert, AlertIndicator,
+    Alert,
+    AlertIndicator,
     Box,
     Center,
     Spinner,
