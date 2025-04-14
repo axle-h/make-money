@@ -1,13 +1,13 @@
-import { Drawer } from "@chakra-ui/react";
-import React from "react";
-import { CategoryRule, NewCategoryRule } from "@/app/api/schema";
-import { NewRuleForm } from "./new-rule-form";
+import { Drawer } from '@chakra-ui/react'
+import React from 'react'
+import { CategoryRule, NewCategoryRule } from '@/app/api/schema'
+import { NewRuleForm } from './new-rule-form'
 
 export interface UpdateRuleDrawerProps {
-  open: boolean;
-  setOpen(open: boolean): void;
-  rule: CategoryRule;
-  onSubmit(values: NewCategoryRule): Promise<boolean>;
+  open: boolean
+  setOpen(open: boolean): void
+  rule: CategoryRule
+  onSubmit(values: NewCategoryRule): Promise<boolean>
 }
 
 export function UpdateRuleDrawer({
@@ -16,7 +16,7 @@ export function UpdateRuleDrawer({
   rule,
   onSubmit,
 }: UpdateRuleDrawerProps) {
-  const firstField = React.useRef<HTMLInputElement>(null);
+  const firstField = React.useRef<HTMLInputElement>(null)
   return (
     <Drawer.Root
       lazyMount
@@ -35,11 +35,11 @@ export function UpdateRuleDrawer({
           <Drawer.Body>
             <NewRuleForm
               onSubmit={async (values) => {
-                const result = await onSubmit(values);
+                const result = await onSubmit(values)
                 if (result) {
-                  setOpen(false);
+                  setOpen(false)
                 }
-                return result;
+                return result
               }}
               initialValues={{
                 name: rule.name,
@@ -52,5 +52,5 @@ export function UpdateRuleDrawer({
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  );
+  )
 }

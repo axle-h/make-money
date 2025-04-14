@@ -1,40 +1,40 @@
-import { NewCategoryRule, Schema } from "@/app/api/schema";
-import { Field, IconButton, Input, InputGroup, Stack } from "@chakra-ui/react";
-import { Field as FormikField, Form, Formik } from "formik";
-import { FieldProps } from "formik/dist/Field";
-import { InfoIcon } from "@/components/icons";
-import { PredicateInfoDrawer } from "./predicate-info";
-import React, { useState } from "react";
-import { CategorySelect } from "../categories/category-select";
-import { Button } from "@/components/ui/button";
+import { NewCategoryRule, Schema } from '@/app/api/schema'
+import { Field, IconButton, Input, InputGroup, Stack } from '@chakra-ui/react'
+import { Field as FormikField, Form, Formik } from 'formik'
+import { FieldProps } from 'formik/dist/Field'
+import { InfoIcon } from '@/components/icons'
+import { PredicateInfoDrawer } from './predicate-info'
+import React, { useState } from 'react'
+import { CategorySelect } from '../categories/category-select'
+import { Button } from '@/components/ui/button'
 
 export interface NewRuleFormProps {
-  onSubmit(rule: NewCategoryRule): Promise<boolean>;
-  initialValues?: Partial<NewCategoryRule>;
+  onSubmit(rule: NewCategoryRule): Promise<boolean>
+  initialValues?: Partial<NewCategoryRule>
 }
 
 export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(
   ({ onSubmit, initialValues }, firstField) => {
-    const [predicateInfoOpen, setPredicateInfoOpen] = useState(false);
+    const [predicateInfoOpen, setPredicateInfoOpen] = useState(false)
 
     return (
       <>
         <Formik
           initialValues={
             {
-              name: initialValues?.name || "",
-              predicate: initialValues?.predicate || "",
+              name: initialValues?.name || '',
+              predicate: initialValues?.predicate || '',
               categoryId: initialValues?.categoryId || 0,
             } as NewCategoryRule
           }
           validate={(values) => {
-            const result = Schema.NewCategoryRule.safeParse(values);
-            return result.success ? {} : result.error.flatten().fieldErrors;
+            const result = Schema.NewCategoryRule.safeParse(values)
+            return result.success ? {} : result.error.flatten().fieldErrors
           }}
           onSubmit={async (values, actions) => {
             if (await onSubmit(values)) {
-              actions.setSubmitting(false);
-              actions.resetForm();
+              actions.setSubmitting(false)
+              actions.resetForm()
             }
           }}
         >
@@ -95,8 +95,8 @@ export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(
                       <CategorySelect
                         {...field}
                         onChange={(event) => {
-                          const id = Number(event.target.value) || 0;
-                          return form.setFieldValue("categoryId", id);
+                          const id = Number(event.target.value) || 0
+                          return form.setFieldValue('categoryId', id)
                         }}
                       />
                       <Field.ErrorText>
@@ -124,8 +124,8 @@ export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(
           setOpen={setPredicateInfoOpen}
         />
       </>
-    );
-  },
-);
+    )
+  }
+)
 
-NewRuleForm.displayName = "NewRuleForm";
+NewRuleForm.displayName = 'NewRuleForm'

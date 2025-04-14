@@ -5,9 +5,9 @@
     "prettier"
   ],
   "plugins": [
-    "prettier" // Enables eslint-plugin-prettier
+    "prettier"
   ],
   "rules": {
-    "prettier/prettier": "warn" // Or "error" if you prefer
+    "prettier/prettier": "error"
   }
 }

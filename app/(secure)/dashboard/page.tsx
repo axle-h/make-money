@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Box,
@@ -12,78 +12,78 @@ import {
   Stack,
   Stat,
   Switch,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { FilterIcon, FiltersAppliedBadge } from "@/components/icons";
-import { CategorizedTransactionQuery } from "@/app/api/schema";
-import { useAccounts, useCategorizedTransactions } from "@/api-client";
+} from '@chakra-ui/react'
+import React, { useState } from 'react'
+import { FilterIcon, FiltersAppliedBadge } from '@/components/icons'
+import { CategorizedTransactionQuery } from '@/app/api/schema'
+import { useAccounts, useCategorizedTransactions } from '@/api-client'
 import {
   ErrorAlert,
   Loading,
   NoData,
   StatementAlerts,
-} from "@/components/alert";
-import { CurrencyPieChart } from "@/components/charts/currency-pie-chart";
+} from '@/components/alert'
+import { CurrencyPieChart } from '@/components/charts/currency-pie-chart'
 import {
   aggregateByCategory,
   keyStats,
   outgoings,
   timeSeries,
-} from "@/components/charts/data";
-import { CurrencyBarChart } from "@/components/charts/currency-bar-chart";
-import { currency } from "@/components/currency";
-import { DurationUnit } from "date-fns";
-import { formatDateShort, getRangeMonthsToNow } from "@/components/dates";
-import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+} from '@/components/charts/data'
+import { CurrencyBarChart } from '@/components/charts/currency-bar-chart'
+import { currency } from '@/components/currency'
+import { DurationUnit } from 'date-fns'
+import { formatDateShort, getRangeMonthsToNow } from '@/components/dates'
+import { Button } from '@/components/ui/button'
+import { Avatar } from '@/components/ui/avatar'
 
 interface ReportFiltersState {
-  monthsToNow: number;
-  subCategories: boolean;
+  monthsToNow: number
+  subCategories: boolean
 }
 
 const DEFAULT_QUERY: ReportFiltersState = Object.freeze({
   monthsToNow: 1,
   subCategories: false,
-});
+})
 
 function monthsToNowLabel(monthsToNow: number) {
   switch (monthsToNow) {
     case 1:
-      return "Last month";
+      return 'Last month'
     case 12:
-      return "Last year";
+      return 'Last year'
     default:
-      return `Last ${monthsToNow} months`;
+      return `Last ${monthsToNow} months`
   }
 }
 
 function getIdealPeriod(monthsToNow: number): DurationUnit {
   if (monthsToNow >= 12) {
-    return "months";
+    return 'months'
   }
   if (monthsToNow >= 3) {
-    return "weeks";
+    return 'weeks'
   }
-  return "days";
+  return 'days'
 }
 
 function periodLabel(period: DurationUnit) {
   switch (period) {
-    case "days":
-      return "Daily";
-    case "weeks":
-      return "Weekly";
-    case "months":
-      return "Monthly";
+    case 'days':
+      return 'Daily'
+    case 'weeks':
+      return 'Weekly'
+    case 'months':
+      return 'Monthly'
     default:
-      throw new Error(`period not supported ${period}`);
+      throw new Error(`period not supported ${period}`)
   }
 }
 
 export default function Home() {
-  const [query, setQuery] = useState<ReportFiltersState>(DEFAULT_QUERY);
-  const { accounts = [], isLoading: isAccountsLoading } = useAccounts();
+  const [query, setQuery] = useState<ReportFiltersState>(DEFAULT_QUERY)
+  const { accounts = [], isLoading: isAccountsLoading } = useAccounts()
 
   const lastStatementEnd = isAccountsLoading
     ? undefined
@@ -96,11 +96,11 @@ export default function Home() {
               : statementsTo > agg
                 ? statementsTo
                 : agg,
-        undefined as Date | undefined,
-      );
+        undefined as Date | undefined
+      )
 
   if (!query) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -119,7 +119,7 @@ export default function Home() {
             mb={4}
             fontStyle="italic"
             color="gray.600"
-            _dark={{ color: "gray.400" }}
+            _dark={{ color: 'gray.400' }}
           >
             To last statement end {formatDateShort(lastStatementEnd)}
           </Heading>
@@ -140,36 +140,36 @@ export default function Home() {
         />
       )}
     </>
-  );
+  )
 }
 
 function Report({
   query,
   period,
 }: {
-  query: CategorizedTransactionQuery;
-  period: DurationUnit;
+  query: CategorizedTransactionQuery
+  period: DurationUnit
 }) {
   const {
     transactions = [],
     isLoading,
     error,
-  } = useCategorizedTransactions(query);
+  } = useCategorizedTransactions(query)
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   if (!query.dateFrom || !query.dateTo) {
     // TODO
-    return <NoData />;
+    return <NoData />
   }
 
-  const stats = keyStats(transactions);
+  const stats = keyStats(transactions)
   if (!stats) {
-    return <NoData />;
+    return <NoData />
   }
 
   return (
@@ -179,7 +179,7 @@ function Report({
         gridRowGap={4}
         mb={4}
         bg="gray.300"
-        _dark={{ bg: "gray.700" }}
+        _dark={{ bg: 'gray.700' }}
         p={6}
       >
         <Stat.Root textAlign="center">
@@ -230,7 +230,7 @@ function Report({
           </Heading>
           <CurrencyPieChart
             data={aggregateByCategory(
-              transactions.filter((t) => t.categoryType === "BILL"),
+              transactions.filter((t) => t.categoryType === 'BILL')
             )}
           />
         </Box>
@@ -240,7 +240,7 @@ function Report({
           </Heading>
           <CurrencyPieChart
             data={aggregateByCategory(
-              transactions.filter((t) => t.categoryType === "EXPENSE"),
+              transactions.filter((t) => t.categoryType === 'EXPENSE')
             )}
           />
         </Box>
@@ -250,7 +250,7 @@ function Report({
           </Heading>
           <CurrencyPieChart
             data={aggregateByCategory(
-              transactions.filter((t) => t.categoryType === "INCOME"),
+              transactions.filter((t) => t.categoryType === 'INCOME')
             )}
           />
         </Box>
@@ -262,19 +262,19 @@ function Report({
         </Box>
       </SimpleGrid>
     </>
-  );
+  )
 }
 
 function ReportFilters({
   query,
   onChange,
 }: {
-  query: ReportFiltersState;
-  onChange(query: ReportFiltersState): void;
+  query: ReportFiltersState
+  onChange(query: ReportFiltersState): void
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const filtersApplied = Object.entries(query).some(([, v]) => !!v);
+  const filtersApplied = Object.entries(query).some(([, v]) => !!v)
 
   return (
     <>
@@ -346,8 +346,8 @@ function ReportFilters({
                   colorPalette="red"
                   variant="outline"
                   onClick={() => {
-                    onChange(DEFAULT_QUERY);
-                    setOpen(false);
+                    onChange(DEFAULT_QUERY)
+                    setOpen(false)
                   }}
                 >
                   Clear
@@ -358,5 +358,5 @@ function ReportFilters({
         </Drawer.Positioner>
       </Drawer.Root>
     </>
-  );
+  )
 }

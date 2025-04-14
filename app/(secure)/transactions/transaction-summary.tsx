@@ -1,12 +1,12 @@
-import { CategoryRule, Transaction } from "@/app/api/schema";
-import { Box, BoxProps, Flex, FlexProps, HStack, Tag } from "@chakra-ui/react";
-import { formatDateShort } from "@/components/dates";
-import React from "react";
-import { CashFlow } from "@/components/cash-flow";
+import { CategoryRule, Transaction } from '@/app/api/schema'
+import { Box, BoxProps, Flex, FlexProps, HStack, Tag } from '@chakra-ui/react'
+import { formatDateShort } from '@/components/dates'
+import React from 'react'
+import { CashFlow } from '@/components/cash-flow'
 
 export interface TransactionSummaryProps extends FlexProps {
-  transaction: Transaction;
-  ruleMatch?: Pick<CategoryRule, "name" | "categoryName">;
+  transaction: Transaction
+  ruleMatch?: Pick<CategoryRule, 'name' | 'categoryName'>
 }
 
 export function TransactionSummary({
@@ -33,7 +33,7 @@ export function TransactionSummary({
         <CashFlow amount={transaction.amount} />
       </Box>
     </Flex>
-  );
+  )
 }
 
 export function TransactionName({
@@ -43,9 +43,9 @@ export function TransactionName({
   return (
     <Flex as="span" direction="column">
       <Box as="span">
-        {name} {type === "UNKNOWN" ? "" : `(${type})`}
+        {name} {type === 'UNKNOWN' ? '' : `(${type})`}
       </Box>
-      {description === "UNKNOWN" ? <></> : <Mute>{description}</Mute>}
+      {description === 'UNKNOWN' ? <></> : <Mute>{description}</Mute>}
       {!!notes ? <Mute as="span">{notes}</Mute> : <></>}
       {!!ruleMatch ? (
         <HStack as="span">
@@ -60,7 +60,7 @@ export function TransactionName({
         <></>
       )}
     </Flex>
-  );
+  )
 }
 
 function Mute(props: BoxProps) {
@@ -69,9 +69,9 @@ function Mute(props: BoxProps) {
       as="span"
       fontStyle="italic"
       color="gray.600"
-      _dark={{ color: "gray.400" }}
+      _dark={{ color: 'gray.400' }}
       fontSize={14}
       {...props}
     />
-  );
+  )
 }

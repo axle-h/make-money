@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { Flex, Heading, Button } from "@chakra-ui/react";
-import { LoginIcon } from "@/components/icons";
-import { useFormStatus } from "react-dom";
-import { useSearchParams } from "next/navigation";
-import { signInOnServer } from "@/app/(auth)/login/actions";
+import { Flex, Heading, Button } from '@chakra-ui/react'
+import { LoginIcon } from '@/components/icons'
+import { useFormStatus } from 'react-dom'
+import { useSearchParams } from 'next/navigation'
+import { signInOnServer } from '@/app/(auth)/login/actions'
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
   const redirectTo =
-    searchParams.get("redirectTo") || searchParams.get("callbackUrl") || "/";
+    searchParams.get('redirectTo') || searchParams.get('callbackUrl') || '/'
 
   return (
     <Flex
@@ -17,7 +17,7 @@ export default function LoginPage() {
       flexDirection="column"
       bg="white"
       _dark={{
-        bg: "gray.900",
+        bg: 'gray.900',
       }}
       py={20}
       borderRadius={8}
@@ -31,11 +31,11 @@ export default function LoginPage() {
         <LoginButton />
       </form>
     </Flex>
-  );
+  )
 }
 
 function LoginButton() {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
   return (
     <Button
       colorPalette="teal"
@@ -47,5 +47,5 @@ function LoginButton() {
       <LoginIcon />
       Login with ax-h.com
     </Button>
-  );
+  )
 }

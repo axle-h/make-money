@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Cell,
@@ -7,24 +7,24 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip,
-} from "recharts";
-import { currency, currencyShort } from "@/components/currency";
-import { FrequencyTableEntry } from "@/components/charts/data";
-import { Box } from "@chakra-ui/react";
-import { useColorMode } from "@/components/ui/color-mode";
+} from 'recharts'
+import { currency, currencyShort } from '@/components/currency'
+import { FrequencyTableEntry } from '@/components/charts/data'
+import { Box } from '@chakra-ui/react'
+import { useColorMode } from '@/components/ui/color-mode'
 
 export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
-  const { colorMode } = useColorMode();
+  const { colorMode } = useColorMode()
 
   const stroke =
-    colorMode === "light"
-      ? "var(--chakra-colors-black)"
-      : "var(--chakra-colors-white)";
+    colorMode === 'light'
+      ? 'var(--chakra-colors-black)'
+      : 'var(--chakra-colors-white)'
 
   const strokeAlt =
-    colorMode === "light"
-      ? "var(--chakra-colors-white)"
-      : "var(--chakra-colors-black)";
+    colorMode === 'light'
+      ? 'var(--chakra-colors-white)'
+      : 'var(--chakra-colors-black)'
 
   return (
     <Box mb={6} w="100%">
@@ -48,9 +48,9 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
           <Tooltip
             contentStyle={{
               backgroundColor:
-                colorMode === "dark"
-                  ? "var(--chakra-colors-gray-800)"
-                  : "var(--chakra-colors-gray-100)",
+                colorMode === 'dark'
+                  ? 'var(--chakra-colors-gray-800)'
+                  : 'var(--chakra-colors-gray-100)',
             }}
             itemStyle={{
               color: stroke,
@@ -61,23 +61,23 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
           />
           <Legend
             formatter={(_, { payload }) => {
-              const entry = payload as unknown as FrequencyTableEntry;
+              const entry = payload as unknown as FrequencyTableEntry
               return [entry.label, entry.emoji, label(entry)]
                 .filter((x) => x)
-                .join(" ");
+                .join(' ')
             }}
           />
         </PieChart>
       </ResponsiveContainer>
     </Box>
-  );
+  )
 }
 
 function label(entry: FrequencyTableEntry) {
-  return `${currencyShort(entry.value)} (${formatPercent(entry.percent)})`;
+  return `${currencyShort(entry.value)} (${formatPercent(entry.percent)})`
 }
 
 function formatPercent(percent: number): string {
-  const rounded = percent < 1 ? percent : Math.round(percent);
-  return `${rounded}%`;
+  const rounded = percent < 1 ? percent : Math.round(percent)
+  return `${rounded}%`
 }

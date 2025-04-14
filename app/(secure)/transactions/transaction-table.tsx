@@ -4,8 +4,8 @@ import {
   Transaction,
   TransactionCategory,
   UpdateTransactionRequest,
-} from "@/app/api/schema";
-import { PaginatedParams, toApiQuery } from "./types";
+} from '@/app/api/schema'
+import { PaginatedParams, toApiQuery } from './types'
 import {
   Box,
   IconButton,
@@ -15,8 +15,8 @@ import {
   Table,
   Wrap,
   WrapItem,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+} from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
 import {
   CodeIcon,
   MoreVerticalIcon,
@@ -24,33 +24,33 @@ import {
   EditIcon,
   TriangleDownIcon,
   TriangleUpIcon,
-} from "@/components/icons";
-import { useTransactions } from "@/api-client";
-import { ErrorAlert, Loading, NoData } from "@/components/alert";
-import { formatDateShort } from "@/components/dates";
-import { Pagination } from "@/components/pagination";
-import { TransactionApproveDrawer } from "../transactions/transaction-approve-drawer";
-import { CreateOrUpdateCategoryDrawer } from "../categories/create-or-update-category-drawer";
-import { AccountSummary } from "../accounts/account-summary";
-import { TransactionName } from "../transactions/transaction-summary";
-import { CashFlow } from "@/components/cash-flow";
+} from '@/components/icons'
+import { useTransactions } from '@/api-client'
+import { ErrorAlert, Loading, NoData } from '@/components/alert'
+import { formatDateShort } from '@/components/dates'
+import { Pagination } from '@/components/pagination'
+import { TransactionApproveDrawer } from '../transactions/transaction-approve-drawer'
+import { CreateOrUpdateCategoryDrawer } from '../categories/create-or-update-category-drawer'
+import { AccountSummary } from '../accounts/account-summary'
+import { TransactionName } from '../transactions/transaction-summary'
+import { CashFlow } from '@/components/cash-flow'
 
-type OrderByField = Required<PaginatedTransactionQuery>["orderBy"];
+type OrderByField = Required<PaginatedTransactionQuery>['orderBy']
 
 interface TransactionTableProps {
-  queryParams: PaginatedParams;
+  queryParams: PaginatedParams
 
-  updatePage(page: number): void;
+  updatePage(page: number): void
 
-  updateSort(orderBy: OrderByField, orderByDescending: boolean): void;
+  updateSort(orderBy: OrderByField, orderByDescending: boolean): void
 
-  onCategoryReset(id: number): Promise<boolean>;
+  onCategoryReset(id: number): Promise<boolean>
 
-  onBuildRule(transaction: Transaction): void;
+  onBuildRule(transaction: Transaction): void
 
-  onUpdate(id: number, values: UpdateTransactionRequest): Promise<boolean>;
+  onUpdate(id: number, values: UpdateTransactionRequest): Promise<boolean>
 
-  onCreateCategory(category: NewCategory): Promise<boolean>;
+  onCreateCategory(category: NewCategory): Promise<boolean>
 }
 
 export function TransactionTable({
@@ -62,36 +62,36 @@ export function TransactionTable({
   onUpdate,
   onCreateCategory,
 }: TransactionTableProps) {
-  const limit = 20;
-  const [pageCount, updatePageCount] = useState<number | null>(null);
+  const limit = 20
+  const [pageCount, updatePageCount] = useState<number | null>(null)
   const query: PaginatedTransactionQuery = {
     page: queryParams.page,
     limit,
     orderBy: queryParams.orderBy,
     orderByDescending: queryParams.orderByDescending,
     ...toApiQuery(queryParams),
-  };
+  }
 
-  const { transactions, isLoading, error } = useTransactions(query);
-  const [createCategoryOpen, setCreateCategoryOpen] = useState(false);
-  const transactionCount = transactions?.count || null;
+  const { transactions, isLoading, error } = useTransactions(query)
+  const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
+  const transactionCount = transactions?.count || null
 
   useEffect(() => {
     if (transactionCount) {
-      updatePageCount(Math.ceil(transactionCount / limit));
+      updatePageCount(Math.ceil(transactionCount / limit))
     }
-  }, [transactionCount, limit]);
+  }, [transactionCount, limit])
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   if (!transactions || transactions.data.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
   const rows = transactions.data.map((transaction) => {
@@ -126,8 +126,8 @@ export function TransactionTable({
           />
         </Table.Cell>
       </Table.Row>
-    );
-  });
+    )
+  })
 
   function SortableHeader({
     title,
@@ -137,23 +137,23 @@ export function TransactionTable({
     const sorted =
       queryParams.orderBy === field
         ? queryParams.orderByDescending
-          ? "desc"
-          : "asc"
-        : null;
+          ? 'desc'
+          : 'asc'
+        : null
     return (
       <Table.ColumnHeader
         {...props}
         onClick={() => {
           const nextSorted =
-            sorted === null || sorted === "desc" ? "asc" : "desc";
-          return updateSort(field, nextSorted === "desc");
+            sorted === null || sorted === 'desc' ? 'asc' : 'desc'
+          return updateSort(field, nextSorted === 'desc')
         }}
         cursor="pointer"
       >
         {title}
         <SortChevron sorted={sorted} />
       </Table.ColumnHeader>
-    );
+    )
   }
 
   return (
@@ -186,15 +186,15 @@ export function TransactionTable({
         onSubmit={onCreateCategory}
       />
     </>
-  );
+  )
 }
 
 interface TransactionMenuProps {
-  transaction: Transaction;
-  onCategoryReset(): Promise<boolean>;
-  onBuildRule(): void;
-  onUpdate(values: UpdateTransactionRequest): Promise<boolean>;
-  onCreateNewCategory(): void;
+  transaction: Transaction
+  onCategoryReset(): Promise<boolean>
+  onBuildRule(): void
+  onUpdate(values: UpdateTransactionRequest): Promise<boolean>
+  onCreateNewCategory(): void
 }
 
 function TransactionMenu({
@@ -204,8 +204,8 @@ function TransactionMenu({
   onUpdate,
   onCreateNewCategory,
 }: TransactionMenuProps) {
-  const [isCategoryReset, setCategoryReset] = useState(false);
-  const [approveOpen, setApproveOpen] = useState(false);
+  const [isCategoryReset, setCategoryReset] = useState(false)
+  const [approveOpen, setApproveOpen] = useState(false)
 
   return (
     <Menu.Root>
@@ -226,11 +226,11 @@ function TransactionMenu({
             value="reset-categories"
             disabled={isCategoryReset}
             onClick={async () => {
-              setCategoryReset(true);
+              setCategoryReset(true)
               try {
-                await onCategoryReset();
+                await onCategoryReset()
               } finally {
-                setCategoryReset(false);
+                setCategoryReset(false)
               }
             }}
           >
@@ -248,28 +248,28 @@ function TransactionMenu({
         onCreateNewCategory={onCreateNewCategory}
       />
     </Menu.Root>
-  );
+  )
 }
 
-function SortChevron({ sorted }: { sorted: "desc" | "asc" | null }) {
+function SortChevron({ sorted }: { sorted: 'desc' | 'asc' | null }) {
   if (sorted === null) {
-    return <></>;
+    return <></>
   }
   return (
     <Box as="span" pl="4">
-      {sorted === "desc" ? (
+      {sorted === 'desc' ? (
         <TriangleDownIcon aria-label="sorted descending" />
       ) : (
         <TriangleUpIcon aria-label="sorted ascending" />
       )}
     </Box>
-  );
+  )
 }
 
 function TransactionCategoryTag({
   category: { name, fraction },
 }: {
-  category: TransactionCategory;
+  category: TransactionCategory
 }) {
   return (
     <Tag.Root colorPalette="purple">
@@ -277,5 +277,5 @@ function TransactionCategoryTag({
         {name} {fraction === 1 ? <></> : <>{fraction * 100}%</>}
       </Tag.Label>
     </Tag.Root>
-  );
+  )
 }

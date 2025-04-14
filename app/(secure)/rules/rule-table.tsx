@@ -1,6 +1,6 @@
-import { useRules, useTransactions } from "@/api-client";
-import { ErrorAlert, Loading, NoData } from "@/components/alert";
-import { CategoryRule, NewCategoryRule } from "@/app/api/schema";
+import { useRules, useTransactions } from '@/api-client'
+import { ErrorAlert, Loading, NoData } from '@/components/alert'
+import { CategoryRule, NewCategoryRule } from '@/app/api/schema'
 import {
   Code,
   IconButton,
@@ -8,17 +8,17 @@ import {
   Table,
   Tag,
   useDisclosure,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { ListIcon, MoreVerticalIcon } from "@/components/icons";
-import { DeleteIcon, EditIcon, ViewIcon } from "@/components/icons";
-import { UpdateRuleDrawer } from "./update-rule-drawer";
-import { Predicate } from "@/app/api/predicate";
+} from '@chakra-ui/react'
+import React, { useState } from 'react'
+import { ListIcon, MoreVerticalIcon } from '@/components/icons'
+import { DeleteIcon, EditIcon, ViewIcon } from '@/components/icons'
+import { UpdateRuleDrawer } from './update-rule-drawer'
+import { Predicate } from '@/app/api/predicate'
 
 export interface RuleTableProps {
-  onDelete(id: number): Promise<boolean>;
-  onViewTransactions(rule: CategoryRule, uncategorized: boolean): void;
-  onUpdate(id: number, values: NewCategoryRule): Promise<boolean>;
+  onDelete(id: number): Promise<boolean>
+  onViewTransactions(rule: CategoryRule, uncategorized: boolean): void
+  onUpdate(id: number, values: NewCategoryRule): Promise<boolean>
 }
 
 export function RuleTable({
@@ -26,38 +26,38 @@ export function RuleTable({
   onViewTransactions,
   onUpdate,
 }: RuleTableProps) {
-  const { rules, isLoading, error } = useRules();
+  const { rules, isLoading, error } = useRules()
   const { transactions } = useTransactions({
     page: 1,
     limit: 999,
     uncategorized: true,
-  });
+  })
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
   if (!rules || rules.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
-  const uncategorizedTransactions = transactions?.data || [];
+  const uncategorizedTransactions = transactions?.data || []
 
   function RuleRow({ rule }: { rule: CategoryRule }) {
-    let uncategorizedCount: number | null = null;
+    let uncategorizedCount: number | null = null
     try {
-      const predicate = new Predicate(rule.predicate);
+      const predicate = new Predicate(rule.predicate)
       uncategorizedCount = uncategorizedTransactions.filter((t) =>
-        predicate.evaluate(t),
-      ).length;
+        predicate.evaluate(t)
+      ).length
     } catch (e) {
-      console.error(e);
+      console.error(e)
     }
 
     const hasUncategorizedTransactions =
-      uncategorizedCount !== null && uncategorizedCount > 0;
+      uncategorizedCount !== null && uncategorizedCount > 0
 
     return (
       <Table.Row>
@@ -72,7 +72,7 @@ export function RuleTable({
         </Table.Cell>
         <Table.Cell
           textAlign="end"
-          color={hasUncategorizedTransactions ? "red.500" : "initial"}
+          color={hasUncategorizedTransactions ? 'red.500' : 'initial'}
         >
           {uncategorizedCount === null ? (
             <Loading />
@@ -92,7 +92,7 @@ export function RuleTable({
           />
         </Table.Cell>
       </Table.Row>
-    );
+    )
   }
 
   return (
@@ -112,15 +112,15 @@ export function RuleTable({
         ))}
       </Table.Body>
     </Table.Root>
-  );
+  )
 }
 
 interface RuleMenuProps {
-  rule: CategoryRule;
-  onUpdate(values: NewCategoryRule): Promise<boolean>;
-  onDelete(): Promise<boolean>;
-  onViewTransactions(uncategorized: boolean): void;
-  hasUncategorizedTransactions: boolean;
+  rule: CategoryRule
+  onUpdate(values: NewCategoryRule): Promise<boolean>
+  onDelete(): Promise<boolean>
+  onViewTransactions(uncategorized: boolean): void
+  hasUncategorizedTransactions: boolean
 }
 
 function RuleMenu({
@@ -130,8 +130,8 @@ function RuleMenu({
   onUpdate,
   hasUncategorizedTransactions,
 }: RuleMenuProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [updateOpen, setUpdateOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [updateOpen, setUpdateOpen] = useState(false)
 
   return (
     <>
@@ -163,11 +163,11 @@ function RuleMenu({
               value="delete-rule"
               disabled={isDeleting}
               onClick={async () => {
-                setIsDeleting(true);
+                setIsDeleting(true)
                 try {
-                  await onDelete();
+                  await onDelete()
                 } finally {
-                  setIsDeleting(false);
+                  setIsDeleting(false)
                 }
               }}
             >
@@ -183,5 +183,5 @@ function RuleMenu({
         onSubmit={onUpdate}
       />
     </>
-  );
+  )
 }

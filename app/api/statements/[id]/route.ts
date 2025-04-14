@@ -1,23 +1,23 @@
-import { NextResponse } from "next/server";
-import { notFound, toApiError } from "@/app/api/api-error";
-import { db } from "@/app/api/db";
+import { NextResponse } from 'next/server'
+import { notFound, toApiError } from '@/app/api/api-error'
+import { db } from '@/app/api/db'
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id: idString } = await params;
-  const id = parseInt(idString, 10);
+  const { id: idString } = await params
+  const id = parseInt(idString, 10)
   if (isNaN(id)) {
-    return notFound("statement");
+    return notFound('statement')
   }
 
   try {
-    await db.statements.delete(id);
-    return NextResponse.json({});
+    await db.statements.delete(id)
+    return NextResponse.json({})
   } catch (e) {
-    return toApiError(e);
+    return toApiError(e)
   }
 }

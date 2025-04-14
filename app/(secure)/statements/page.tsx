@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   ButtonGroup,
@@ -8,32 +8,32 @@ import {
   NativeSelect,
   Stack,
   Table,
-} from "@chakra-ui/react";
-import { FileUpload } from "@/components/file-upload";
-import { ParsedStatement, parseStatementFile } from "./parse";
-import React, { useState } from "react";
-import { mutateStatements, statementApi, useAccounts } from "@/api-client";
-import { formatDateLong, formatDateTimeLong } from "@/components/dates";
-import { UploadIcon } from "@/components/icons";
-import { ApiError } from "@/api-client/error";
-import { NewStatement, Statement } from "@/app/api/schema";
-import { useRouter } from "next/navigation";
-import { StatementTable } from "./statement-table";
-import { ErrorAlert, Loading } from "@/components/alert";
-import { currency } from "@/components/currency";
-import { Prisma } from "@prisma/client";
-import { Field as FormikField, Form, Formik } from "formik";
-import { FieldProps } from "formik/dist/Field";
-import { Button } from "@/components/ui/button";
-import { toaster } from "@/components/ui/toaster";
+} from '@chakra-ui/react'
+import { FileUpload } from '@/components/file-upload'
+import { ParsedStatement, parseStatementFile } from './parse'
+import React, { useState } from 'react'
+import { mutateStatements, statementApi, useAccounts } from '@/api-client'
+import { formatDateLong, formatDateTimeLong } from '@/components/dates'
+import { UploadIcon } from '@/components/icons'
+import { ApiError } from '@/api-client/error'
+import { NewStatement, Statement } from '@/app/api/schema'
+import { useRouter } from 'next/navigation'
+import { StatementTable } from './statement-table'
+import { ErrorAlert, Loading } from '@/components/alert'
+import { currency } from '@/components/currency'
+import { Prisma } from '@prisma/client'
+import { Field as FormikField, Form, Formik } from 'formik'
+import { FieldProps } from 'formik/dist/Field'
+import { Button } from '@/components/ui/button'
+import { toaster } from '@/components/ui/toaster'
 
 export default function StatementsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string }>
 }) {
-  const router = useRouter();
-  const pageParams = React.use(searchParams);
+  const router = useRouter()
+  const pageParams = React.use(searchParams)
 
   return (
     <>
@@ -48,28 +48,28 @@ export default function StatementsPage({
         }
         onDelete={(statement) => deleteStatement(statement)}
         updatePage={(page) => {
-          const params = new URLSearchParams(pageParams);
-          params.set("page", page.toString());
-          router.replace(`?` + params.toString());
+          const params = new URLSearchParams(pageParams)
+          params.set('page', page.toString())
+          router.replace(`?` + params.toString())
         }}
       />
     </>
-  );
+  )
 }
 
 function StatementControls() {
-  const firstField = React.useRef<HTMLInputElement>(null);
+  const firstField = React.useRef<HTMLInputElement>(null)
   const [parsedStatement, setParsedStatement] =
-    useState<ParsedStatement | null>(null);
+    useState<ParsedStatement | null>(null)
 
   return (
     <>
       <ButtonGroup variant="outline" mb={4}>
         <FileUpload
           onUpload={async (file) => {
-            const statement = await tryParseStatement(file);
+            const statement = await tryParseStatement(file)
             if (statement) {
-              setParsedStatement(statement);
+              setParsedStatement(statement)
             }
           }}
           colorPalette="teal"
@@ -83,7 +83,7 @@ function StatementControls() {
         initialFocusEl={() => firstField.current}
         onOpenChange={(e) => {
           if (!e.open) {
-            setParsedStatement(null);
+            setParsedStatement(null)
           }
         }}
         size="md"
@@ -106,11 +106,11 @@ function StatementControls() {
                       accountId,
                       transactions: parsedStatement.transactions,
                       dateUploaded: parsedStatement.dateUploaded,
-                    });
+                    })
                     if (result) {
-                      setParsedStatement(null);
+                      setParsedStatement(null)
                     }
-                    return result;
+                    return result
                   }}
                 />
               ) : (
@@ -121,22 +121,22 @@ function StatementControls() {
         </Drawer.Positioner>
       </Drawer.Root>
     </>
-  );
+  )
 }
 
 function ParsedStatementSummary({
   statement: { startDate, endDate, sortCode, accountNumber, transactions },
 }: {
-  statement: ParsedStatement;
+  statement: ParsedStatement
 }) {
-  const amounts = transactions.map(({ amount }) => new Prisma.Decimal(amount));
+  const amounts = transactions.map(({ amount }) => new Prisma.Decimal(amount))
 
   const totalDebits = amounts
     .filter((t) => t.isNeg())
-    .reduce((a, b) => a.add(b), new Prisma.Decimal(0));
+    .reduce((a, b) => a.add(b), new Prisma.Decimal(0))
   const totalCredits = amounts
     .filter((t) => t.isPos())
-    .reduce((a, b) => a.add(b), new Prisma.Decimal(0));
+    .reduce((a, b) => a.add(b), new Prisma.Decimal(0))
 
   return (
     <Table.Root size="sm">
@@ -179,24 +179,24 @@ function ParsedStatementSummary({
         </Table.Row>
       </Table.Body>
     </Table.Root>
-  );
+  )
 }
 
 function UploadStatementForm({
   statement,
   onSubmit,
 }: {
-  statement: ParsedStatement;
-  onSubmit(accountId: number): Promise<boolean>;
+  statement: ParsedStatement
+  onSubmit(accountId: number): Promise<boolean>
 }) {
-  const { accounts = [], isLoading, error } = useAccounts();
+  const { accounts = [], isLoading, error } = useAccounts()
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   const selectedAccount =
@@ -208,16 +208,16 @@ function UploadStatementForm({
             (account) =>
               account.accountNumber.trim() ===
                 statement.accountNumber?.trim() &&
-              account.sortCode?.replaceAll("-", "")?.trim() ===
-                statement.sortCode?.replace("-", "")?.trim(),
-          );
+              account.sortCode?.replaceAll('-', '')?.trim() ===
+                statement.sortCode?.replace('-', '')?.trim()
+          )
 
   if (!!statement.accountNumber && !!statement.sortCode && !selectedAccount) {
     return (
       <ErrorAlert
         error={`Statement is for unknown account ${statement.sortCode} ${statement.accountNumber}`}
       />
-    );
+    )
   }
 
   return (
@@ -226,10 +226,10 @@ function UploadStatementForm({
       <Formik
         initialValues={{ accountId: selectedAccount?.id || 0 }}
         onSubmit={async (values, actions) => {
-          actions.setSubmitting(true);
+          actions.setSubmitting(true)
           if (await onSubmit(values.accountId)) {
-            actions.setSubmitting(false);
-            actions.resetForm();
+            actions.setSubmitting(false)
+            actions.resetForm()
           }
         }}
       >
@@ -245,8 +245,8 @@ function UploadStatementForm({
                         placeholder="Select account"
                         {...field}
                         onChange={(event) => {
-                          const id = Number(event.target.value) || 0;
-                          return form.setFieldValue("accountId", id);
+                          const id = Number(event.target.value) || 0
+                          return form.setFieldValue('accountId', id)
                         }}
                       >
                         {accounts.map((x) => (
@@ -273,93 +273,93 @@ function UploadStatementForm({
         )}
       </Formik>
     </Stack>
-  );
+  )
 }
 
 async function tryParseStatement(file: File): Promise<ParsedStatement | null> {
   try {
-    return await parseStatementFile(file);
+    return await parseStatementFile(file)
   } catch (e) {
-    let description: string;
+    let description: string
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to parse statement",
+      title: 'Failed to parse statement',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return null;
+    })
+    return null
   }
 }
 
 async function uploadStatement(statement: NewStatement) {
   try {
-    await statementApi.create(statement);
-    await mutateStatements();
+    await statementApi.create(statement)
+    await mutateStatements()
     toaster.create({
-      title: "Success",
-      description: "created new statement.",
-      type: "success",
+      title: 'Success',
+      description: 'created new statement.',
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
-    return true;
+    })
+    return true
   } catch (e) {
-    let description: string;
+    let description: string
     if (
       e instanceof ApiError &&
       e.status === 400 &&
-      e.body.includes("account does not exist")
+      e.body.includes('account does not exist')
     ) {
-      description = "account does not exist";
+      description = 'account does not exist'
     } else if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to create new statement",
+      title: 'Failed to create new statement',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 }
 
 async function deleteStatement(statement: Statement) {
   try {
-    await statementApi.delete(statement.id);
-    await mutateStatements();
+    await statementApi.delete(statement.id)
+    await mutateStatements()
     toaster.create({
-      title: "Success",
+      title: 'Success',
       description: `Deleted statement ${formatDateTimeLong(statement.dateUploaded)}.`,
-      type: "success",
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
+    })
   } catch (e) {
-    let description: string;
+    let description: string
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to delete statement",
+      title: 'Failed to delete statement',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
+    })
   }
 }

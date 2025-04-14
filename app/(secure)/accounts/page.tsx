@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { Button, ButtonGroup, Drawer, Heading } from "@chakra-ui/react";
-import { ApiError } from "@/api-client/error";
-import { AddIcon } from "@/components/icons";
-import React, { useState } from "react";
-import { Account, NewAccount } from "@/app/api/schema";
-import { accountApi, mutateAccounts } from "@/api-client";
-import { mutateAll } from "@/api-client/request";
-import { AccountTable } from "./account-table";
-import { NewAccountForm } from "./new-account-form";
-import { useRouter } from "next/navigation";
-import { toaster } from "@/components/ui/toaster";
+import { Button, ButtonGroup, Drawer, Heading } from '@chakra-ui/react'
+import { ApiError } from '@/api-client/error'
+import { AddIcon } from '@/components/icons'
+import React, { useState } from 'react'
+import { Account, NewAccount } from '@/app/api/schema'
+import { accountApi, mutateAccounts } from '@/api-client'
+import { mutateAll } from '@/api-client/request'
+import { AccountTable } from './account-table'
+import { NewAccountForm } from './new-account-form'
+import { useRouter } from 'next/navigation'
+import { toaster } from '@/components/ui/toaster'
 
 export default function AccountsPage() {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <>
       <Heading size="4xl" mb={6}>
@@ -27,16 +27,16 @@ export default function AccountsPage() {
         onDelete={(account) => deleteAccount(account)}
       />
     </>
-  );
+  )
 }
 
 function AccountControls({
   onCreate,
 }: {
-  onCreate(account: NewAccount): Promise<boolean>;
+  onCreate(account: NewAccount): Promise<boolean>
 }) {
-  const [open, setOpen] = useState(false);
-  const firstField = React.useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false)
+  const firstField = React.useRef<HTMLInputElement>(null)
 
   return (
     <>
@@ -64,11 +64,11 @@ function AccountControls({
               <NewAccountForm
                 ref={firstField}
                 onSubmit={async (account) => {
-                  const result = await onCreate(account);
+                  const result = await onCreate(account)
                   if (result) {
-                    setOpen(false);
+                    setOpen(false)
                   }
-                  return result;
+                  return result
                 }}
               />
             </Drawer.Body>
@@ -76,67 +76,67 @@ function AccountControls({
         </Drawer.Positioner>
       </Drawer.Root>
     </>
-  );
+  )
 }
 
 async function createAccount(newAccount: NewAccount) {
   try {
-    await accountApi.create(newAccount);
-    await mutateAccounts();
+    await accountApi.create(newAccount)
+    await mutateAccounts()
     toaster.create({
-      title: "Success",
-      description: "Created new account.",
-      type: "success",
+      title: 'Success',
+      description: 'Created new account.',
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
-    return true;
+    })
+    return true
   } catch (e) {
-    let description: string;
-    if (e instanceof ApiError && e.status === 400 && e.body.includes("P2002")) {
-      description = "account already exists";
+    let description: string
+    if (e instanceof ApiError && e.status === 400 && e.body.includes('P2002')) {
+      description = 'account already exists'
     } else if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to create new account",
+      title: 'Failed to create new account',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 }
 
 async function deleteAccount(account: Account) {
   try {
-    await accountApi.delete(account.id);
-    await mutateAll();
+    await accountApi.delete(account.id)
+    await mutateAll()
     toaster.create({
-      title: "Success",
+      title: 'Success',
       description: `Deleted account ${account.bankName} ${account.sortCode} ${account.accountNumber}.`,
-      type: "success",
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
+    })
   } catch (e) {
-    let description: string;
+    let description: string
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to delete account",
+      title: 'Failed to delete account',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
+    })
   }
 }

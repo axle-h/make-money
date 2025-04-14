@@ -1,36 +1,36 @@
-import { accountTypeName, NewAccount, Schema } from "@/app/api/schema";
-import React from "react";
-import { Field as FormikField, Form, Formik } from "formik";
-import { Field, Input, NativeSelect, Stack } from "@chakra-ui/react";
-import { FieldProps } from "formik/dist/Field";
-import { Button } from "@/components/ui/button";
+import { accountTypeName, NewAccount, Schema } from '@/app/api/schema'
+import React from 'react'
+import { Field as FormikField, Form, Formik } from 'formik'
+import { Field, Input, NativeSelect, Stack } from '@chakra-ui/react'
+import { FieldProps } from 'formik/dist/Field'
+import { Button } from '@/components/ui/button'
 
 export const NewAccountForm = React.forwardRef(
   (
     { onSubmit }: { onSubmit(account: NewAccount): Promise<boolean> },
-    firstField,
+    firstField
   ) => {
     return (
       <Formik
         initialValues={
           {
-            bankName: "",
-            sortCode: "",
-            accountNumber: "",
-            accountType: "CURRENT_ACCOUNT",
+            bankName: '',
+            sortCode: '',
+            accountNumber: '',
+            accountType: 'CURRENT_ACCOUNT',
           } as NewAccount
         }
         validate={(values) => {
           const result = Schema.NewAccount.safeParse({
             ...values,
             sortCode: values.sortCode || undefined,
-          });
-          return result.success ? {} : result.error.flatten().fieldErrors;
+          })
+          return result.success ? {} : result.error.flatten().fieldErrors
         }}
         onSubmit={async ({ sortCode, ...values }, actions) => {
           if (await onSubmit({ ...values, sortCode: sortCode || undefined })) {
-            actions.setSubmitting(false);
-            actions.resetForm();
+            actions.setSubmitting(false)
+            actions.resetForm()
           }
         }}
       >
@@ -46,17 +46,17 @@ export const NewAccountForm = React.forwardRef(
                         {...field}
                         ref={firstField as any}
                         onChange={async (event) => {
-                          field.onChange(event);
-                          if (event.target.value !== "CURRENT_ACCOUNT") {
-                            await form.setFieldValue("sortCode", "");
+                          field.onChange(event)
+                          if (event.target.value !== 'CURRENT_ACCOUNT') {
+                            await form.setFieldValue('sortCode', '')
                           }
                         }}
                       >
                         <option value="CURRENT_ACCOUNT">
-                          {accountTypeName("CURRENT_ACCOUNT")}
+                          {accountTypeName('CURRENT_ACCOUNT')}
                         </option>
                         <option value="CREDIT_CARD">
-                          {accountTypeName("CREDIT_CARD")}
+                          {accountTypeName('CREDIT_CARD')}
                         </option>
                       </NativeSelect.Field>
                       <NativeSelect.Indicator />
@@ -78,17 +78,17 @@ export const NewAccountForm = React.forwardRef(
                 )}
               </FormikField>
 
-              {form.values.accountType === "CURRENT_ACCOUNT" ? (
+              {form.values.accountType === 'CURRENT_ACCOUNT' ? (
                 <FormikField name="sortCode">
                   {({ field }: FieldProps<string, NewAccount>) => (
                     <Field.Root
                       invalid={!!form.errors.sortCode && form.touched.sortCode}
-                      required={form.values.accountType === "CURRENT_ACCOUNT"}
+                      required={form.values.accountType === 'CURRENT_ACCOUNT'}
                     >
                       <Field.Label>Sort code</Field.Label>
                       <Input
                         {...field}
-                        disabled={form.values.accountType === "CREDIT_CARD"}
+                        disabled={form.values.accountType === 'CREDIT_CARD'}
                         placeholder="Enter sort code e.g. 123456"
                       />
                       <Field.ErrorText>{form.errors.sortCode}</Field.ErrorText>
@@ -132,7 +132,7 @@ export const NewAccountForm = React.forwardRef(
           </Form>
         )}
       </Formik>
-    );
-  },
-);
-NewAccountForm.displayName = "NewAccountForm";
+    )
+  }
+)
+NewAccountForm.displayName = 'NewAccountForm'

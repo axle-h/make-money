@@ -1,21 +1,21 @@
-import { PaginatedTransactionQuery, TransactionQuery } from "@/app/api/schema";
+import { PaginatedTransactionQuery, TransactionQuery } from '@/app/api/schema'
 
 export interface QueryParams {
-  accountId?: number;
-  statementId?: number;
-  categoryId?: number;
-  type?: string;
-  name?: string;
-  description?: string;
-  ruleId?: number;
-  uncategorized?: boolean;
-  search?: string;
+  accountId?: number
+  statementId?: number
+  categoryId?: number
+  type?: string
+  name?: string
+  description?: string
+  ruleId?: number
+  uncategorized?: boolean
+  search?: string
 }
 
 export interface PaginatedParams extends QueryParams {
-  page: number;
-  orderBy: PaginatedTransactionQuery["orderBy"];
-  orderByDescending: boolean;
+  page: number
+  orderBy: PaginatedTransactionQuery['orderBy']
+  orderByDescending: boolean
 }
 
 export function toApiQuery(queryParams: QueryParams): TransactionQuery {
@@ -25,18 +25,18 @@ export function toApiQuery(queryParams: QueryParams): TransactionQuery {
     categoryId: queryParams.categoryId,
     ruleId: queryParams.ruleId,
     type: queryParams.type,
-  };
+  }
   if (queryParams.name) {
-    query.name = { equals: queryParams.name };
+    query.name = { equals: queryParams.name }
   }
   if (queryParams.description) {
-    query.description = { equals: queryParams.description };
+    query.description = { equals: queryParams.description }
   }
   if (queryParams.uncategorized) {
-    query.uncategorized = true;
+    query.uncategorized = true
   }
   if (queryParams.search) {
-    query.name = { contains: queryParams.search };
+    query.name = { contains: queryParams.search }
   }
-  return query;
+  return query
 }

@@ -1,31 +1,31 @@
-import { NativeSelect } from "@chakra-ui/react";
-import React from "react";
-import { useCategories } from "@/api-client";
-import { Loading } from "@/components/alert";
-import { CategoryType, categoryTypeName } from "@/app/api/schema";
+import { NativeSelect } from '@chakra-ui/react'
+import React from 'react'
+import { useCategories } from '@/api-client'
+import { Loading } from '@/components/alert'
+import { CategoryType, categoryTypeName } from '@/app/api/schema'
 
 export const CategorySelect = React.forwardRef<
   HTMLSelectElement,
   NativeSelect.FieldProps
 >((props, ref) => {
-  const { categories, isLoading } = useCategories();
+  const { categories, isLoading } = useCategories()
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const categoryOptions =
     categories?.reduce(
       (grps, { id, name, type }) => {
-        const entry = { label: name, value: id };
+        const entry = { label: name, value: id }
         if (type in grps) {
-          grps[type].push(entry);
+          grps[type].push(entry)
         } else {
-          grps[type] = [entry];
+          grps[type] = [entry]
         }
-        return grps;
+        return grps
       },
-      {} as Record<string, { label: string; value: number }[]>,
-    ) ?? {};
+      {} as Record<string, { label: string; value: number }[]>
+    ) ?? {}
 
   return (
     <NativeSelect.Root>
@@ -44,7 +44,7 @@ export const CategorySelect = React.forwardRef<
       </NativeSelect.Field>
       <NativeSelect.Indicator />
     </NativeSelect.Root>
-  );
-});
+  )
+})
 
-CategorySelect.displayName = "CategorySelect";
+CategorySelect.displayName = 'CategorySelect'

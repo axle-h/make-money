@@ -1,13 +1,13 @@
-import { Code, Drawer, Table, Text } from "@chakra-ui/react";
-import React from "react";
-import { Button } from "@/components/ui/button";
+import { Code, Drawer, Table, Text } from '@chakra-ui/react'
+import React from 'react'
+import { Button } from '@/components/ui/button'
 
 export function PredicateInfoDrawer({
   open,
   setOpen,
 }: {
-  open: boolean;
-  setOpen(open: boolean): void;
+  open: boolean
+  setOpen(open: boolean): void
 }) {
   return (
     <Drawer.Root
@@ -150,5 +150,5 @@ export function PredicateInfoDrawer({
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  );
+  )
 }

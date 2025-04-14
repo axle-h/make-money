@@ -3,52 +3,52 @@ import {
   getTaxYears,
   getRangeMonthsToNow,
   parseUtcDate,
-} from "@/components/dates";
+} from '@/components/dates'
 
-describe("dates", () => {
-  it("parses utc date", () => {
-    expect(parseIsoUtcDatetime("2024-07-01T00:00:00.000Z").toISOString()).toBe(
-      "2024-07-01T00:00:00.000Z",
-    );
-  });
+describe('dates', () => {
+  it('parses utc date', () => {
+    expect(parseIsoUtcDatetime('2024-07-01T00:00:00.000Z').toISOString()).toBe(
+      '2024-07-01T00:00:00.000Z'
+    )
+  })
 
-  it("parses utc date short", () => {
-    expect(parseIsoUtcDatetime("2024-06-10").toISOString()).toBe(
-      "2024-06-10T00:00:00.000Z",
-    );
-  });
+  it('parses utc date short', () => {
+    expect(parseIsoUtcDatetime('2024-06-10').toISOString()).toBe(
+      '2024-06-10T00:00:00.000Z'
+    )
+  })
 
-  it("parses ofx date", () => {
-    expect(parseUtcDate("20240610131012", "yyyyMMddHHmmss").toISOString()).toBe(
-      "2024-06-10T13:10:12.000Z",
-    );
-  });
+  it('parses ofx date', () => {
+    expect(parseUtcDate('20240610131012', 'yyyyMMddHHmmss').toISOString()).toBe(
+      '2024-06-10T13:10:12.000Z'
+    )
+  })
 
-  it("parses qif date", () => {
-    expect(parseUtcDate("10/06/2024", "dd/LL/yyyy").toISOString()).toBe(
-      "2024-06-10T00:00:00.000Z",
-    );
-  });
+  it('parses qif date', () => {
+    expect(parseUtcDate('10/06/2024', 'dd/LL/yyyy').toISOString()).toBe(
+      '2024-06-10T00:00:00.000Z'
+    )
+  })
 
-  it("generates tax years", () => {
+  it('generates tax years', () => {
     const result = getTaxYears(
-      parseIsoUtcDatetime("2023-01-01T00:00:00.000Z"),
-      parseIsoUtcDatetime("2024-07-09T12:30:00.000Z"),
+      parseIsoUtcDatetime('2023-01-01T00:00:00.000Z'),
+      parseIsoUtcDatetime('2024-07-09T12:30:00.000Z')
     ).map(
       ({ name, query: { dateFrom, dateTo } }) =>
-        `${name}: ${dateFrom.toISOString()} - ${dateTo.toISOString()}`,
-    );
+        `${name}: ${dateFrom.toISOString()} - ${dateTo.toISOString()}`
+    )
     expect(result).toEqual([
-      "Current tax year so far: 2024-04-06T00:00:00.000Z - 2025-04-06T00:00:00.000Z",
-      "Tax year 2023/24: 2023-04-06T00:00:00.000Z - 2024-04-06T00:00:00.000Z",
-      "Tax year 2022/23: 2022-04-06T00:00:00.000Z - 2023-04-06T00:00:00.000Z",
-    ]);
-  });
+      'Current tax year so far: 2024-04-06T00:00:00.000Z - 2025-04-06T00:00:00.000Z',
+      'Tax year 2023/24: 2023-04-06T00:00:00.000Z - 2024-04-06T00:00:00.000Z',
+      'Tax year 2022/23: 2022-04-06T00:00:00.000Z - 2023-04-06T00:00:00.000Z',
+    ])
+  })
 
-  it("gets range months to now", () => {
-    const now = parseIsoUtcDatetime("2023-01-01T12:30:26.132Z");
-    const { dateFrom, dateTo } = getRangeMonthsToNow(3, now);
-    expect(dateFrom.toISOString()).toBe("2022-10-01T00:00:00.000Z");
-    expect(dateTo.toISOString()).toBe("2023-01-01T00:00:00.000Z");
-  });
-});
+  it('gets range months to now', () => {
+    const now = parseIsoUtcDatetime('2023-01-01T12:30:26.132Z')
+    const { dateFrom, dateTo } = getRangeMonthsToNow(3, now)
+    expect(dateFrom.toISOString()).toBe('2022-10-01T00:00:00.000Z')
+    expect(dateTo.toISOString()).toBe('2023-01-01T00:00:00.000Z')
+  })
+})

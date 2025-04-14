@@ -4,24 +4,24 @@ import {
   NewCategory,
   Transaction,
   UpdateTransactionRequest,
-} from "@/app/api/schema";
+} from '@/app/api/schema'
 import {
   CategoryRulePredicate,
   useAccounts,
   useRulePredicates,
   useTransactions,
-} from "@/api-client";
-import { ErrorAlert, Loading, NoData, UpToDate } from "@/components/alert";
-import { Accordion, Badge, Box, Flex } from "@chakra-ui/react";
-import { TransactionApproveForm } from "../transactions/transaction-approve-form";
-import React, { useState } from "react";
-import { TransactionSummary } from "../transactions/transaction-summary";
-import { CreateOrUpdateCategoryDrawer } from "../categories/create-or-update-category-drawer";
+} from '@/api-client'
+import { ErrorAlert, Loading, NoData, UpToDate } from '@/components/alert'
+import { Accordion, Badge, Box, Flex } from '@chakra-ui/react'
+import { TransactionApproveForm } from '../transactions/transaction-approve-form'
+import React, { useState } from 'react'
+import { TransactionSummary } from '../transactions/transaction-summary'
+import { CreateOrUpdateCategoryDrawer } from '../categories/create-or-update-category-drawer'
 
 export interface UncategorizedTransactionTableGroupProps {
-  onApprove(id: number, values: UpdateTransactionRequest): Promise<boolean>;
-  onBuildRule(transaction: Transaction): void;
-  onCreateCategory(category: NewCategory): Promise<boolean>;
+  onApprove(id: number, values: UpdateTransactionRequest): Promise<boolean>
+  onBuildRule(transaction: Transaction): void
+  onCreateCategory(category: NewCategory): Promise<boolean>
 }
 
 export function UncategorizedTransactionTableGroup({
@@ -32,28 +32,28 @@ export function UncategorizedTransactionTableGroup({
     accounts = [],
     isLoading: loadingAccounts,
     error: accountError,
-  } = useAccounts();
+  } = useAccounts()
   const {
     rules = [],
     isLoading: loadingRules,
     error: ruleError,
-  } = useRulePredicates();
-  const [createCategoryOpen, setCreateCategoryOpen] = useState(false);
+  } = useRulePredicates()
+  const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
 
   if (loadingAccounts || loadingRules) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (accountError) {
-    return <ErrorAlert error={accountError} />;
+    return <ErrorAlert error={accountError} />
   }
 
   if (ruleError) {
-    return <ErrorAlert error={ruleError} />;
+    return <ErrorAlert error={ruleError} />
   }
 
   if (accounts.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
   return (
@@ -75,15 +75,15 @@ export function UncategorizedTransactionTableGroup({
         onSubmit={onCreateCategory}
       />
     </>
-  );
+  )
 }
 
 interface UncategorizedTransactionTableProps {
-  account: Account;
-  rules: CategoryRulePredicate[];
-  onApprove(id: number, values: UpdateTransactionRequest): Promise<boolean>;
-  onBuildRule(transaction: Transaction): void;
-  onCreateCategory(): void;
+  account: Account
+  rules: CategoryRulePredicate[]
+  onApprove(id: number, values: UpdateTransactionRequest): Promise<boolean>
+  onBuildRule(transaction: Transaction): void
+  onCreateCategory(): void
 }
 
 function UncategorizedTransactionAccountSection({
@@ -99,9 +99,9 @@ function UncategorizedTransactionAccountSection({
     limit: 10,
     uncategorized: true,
     accountId: account.id,
-    orderBy: "date",
+    orderBy: 'date',
     orderByDescending: true,
-  });
+  })
 
   return (
     <Accordion.Item
@@ -118,7 +118,7 @@ function UncategorizedTransactionAccountSection({
               as="span"
               fontStyle="italic"
               color="gray.600"
-              _dark={{ color: "gray.400" }}
+              _dark={{ color: 'gray.400' }}
               fontSize={14}
             >
               {accountTypeName(account.accountType)}
@@ -148,7 +148,7 @@ function UncategorizedTransactionAccountSection({
         )}
       </Accordion.ItemContent>
     </Accordion.Item>
-  );
+  )
 }
 
 function UncategorizedTransactionTable({
@@ -159,14 +159,12 @@ function UncategorizedTransactionTable({
   transactions,
 }: UncategorizedTransactionTableProps & { transactions: Transaction[] }) {
   if (transactions.length === 0) {
-    return <UpToDate />;
+    return <UpToDate />
   }
 
   const items = transactions.map((transaction) => {
-    const { id, date, type, name, description, amount } = transaction;
-    const ruleMatch = rules.find((rule) =>
-      rule.predicate.evaluate(transaction),
-    );
+    const { id, date, type, name, description, amount } = transaction
+    const ruleMatch = rules.find((rule) => rule.predicate.evaluate(transaction))
     return (
       <Accordion.Item value={id.toString()} key={id} py={3}>
         <Accordion.ItemTrigger>
@@ -186,12 +184,12 @@ function UncategorizedTransactionTable({
           />
         </Accordion.ItemContent>
       </Accordion.Item>
-    );
-  });
+    )
+  })
 
   return (
     <Accordion.Root collapsible mb={6}>
       {items}
     </Accordion.Root>
-  );
+  )
 }

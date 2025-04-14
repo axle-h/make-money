@@ -1,14 +1,14 @@
-import React from "react";
-import { MobileNav } from "@/components/nav";
-import { Alert, Container, Flex } from "@chakra-ui/react";
-import { auth, isAuthorized } from "@/auth";
+import React from 'react'
+import { MobileNav } from '@/components/nav'
+import { Alert, Container, Flex } from '@chakra-ui/react'
+import { auth, isAuthorized } from '@/auth'
 
 export default async function PublicLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const session = await auth();
+  const session = await auth()
   return (
     <Flex h="100dvh" flexDirection="column">
       {!!session?.user && !isAuthorized(session.user) ? (
@@ -32,5 +32,5 @@ export default async function PublicLayout({
         </Container>
       </Flex>
     </Flex>
-  );
+  )
 }

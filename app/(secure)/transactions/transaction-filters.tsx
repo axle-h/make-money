@@ -1,5 +1,5 @@
-import { TransactionMeta, TransactionQuery } from "@/app/api/schema";
-import { QueryParams, toApiQuery } from "./types";
+import { TransactionMeta, TransactionQuery } from '@/app/api/schema'
+import { QueryParams, toApiQuery } from './types'
 import {
   Separator,
   Drawer,
@@ -8,28 +8,28 @@ import {
   NativeSelect,
   Stack,
   Switch,
-} from "@chakra-ui/react";
-import { FilterIcon, FiltersAppliedBadge } from "@/components/icons";
-import React from "react";
-import { useRules, useTransactionMeta } from "@/api-client";
-import { Select as ReactSelect } from "chakra-react-select";
-import { CategorySelect } from "@/app/(secure)/categories/category-select";
-import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+} from '@chakra-ui/react'
+import { FilterIcon, FiltersAppliedBadge } from '@/components/icons'
+import React from 'react'
+import { useRules, useTransactionMeta } from '@/api-client'
+import { Select as ReactSelect } from 'chakra-react-select'
+import { CategorySelect } from '@/app/(secure)/categories/category-select'
+import { Button } from '@/components/ui/button'
+import { Avatar } from '@/components/ui/avatar'
 
 export function TransactionFilters({
   queryParams,
   onChange,
 }: {
-  queryParams: QueryParams;
-  onChange(params: QueryParams): void;
+  queryParams: QueryParams
+  onChange(params: QueryParams): void
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const filtersApplied = Object.entries(queryParams).some(
-    ([k, v]) => k !== "search" && k !== "page" && !!v,
-  );
+    ([k, v]) => k !== 'search' && k !== 'page' && !!v
+  )
 
-  const query = toApiQuery(queryParams);
+  const query = toApiQuery(queryParams)
   return (
     <>
       <IconButton
@@ -157,8 +157,8 @@ export function TransactionFilters({
                     // clear all except search
                     onChange({
                       search: queryParams.search || undefined,
-                    });
-                    setOpen(false);
+                    })
+                    setOpen(false)
                   }}
                 >
                   Clear
@@ -169,20 +169,20 @@ export function TransactionFilters({
         </Drawer.Positioner>
       </Drawer.Root>
     </>
-  );
+  )
 }
 
 function CategoryRuleSelect({
   selected,
   onChange,
 }: {
-  selected?: number;
-  onChange(value?: number): void;
+  selected?: number
+  onChange(value?: number): void
 }) {
-  const { rules, isLoading } = useRules();
+  const { rules, isLoading } = useRules()
   const ruleOptions = isLoading
     ? []
-    : (rules?.map(({ id, name }) => ({ label: name, value: id })) ?? []);
+    : (rules?.map(({ id, name }) => ({ label: name, value: id })) ?? [])
 
   return (
     <Field.Root>
@@ -204,15 +204,15 @@ function CategoryRuleSelect({
         <NativeSelect.Indicator />
       </NativeSelect.Root>
     </Field.Root>
-  );
+  )
 }
 
 interface TransactionFilterSelectProps {
-  selected?: string;
-  onChange(value?: string): void;
-  metaKey: keyof TransactionMeta;
-  name: string;
-  query: TransactionQuery;
+  selected?: string
+  onChange(value?: string): void
+  metaKey: keyof TransactionMeta
+  name: string
+  query: TransactionQuery
 }
 
 function TransactionFilterSelect({
@@ -223,21 +223,21 @@ function TransactionFilterSelect({
   query,
 }: TransactionFilterSelectProps) {
   const { transactionMeta, isLoading } = useTransactionMeta(
-    !!selected ? {} : query,
-  );
+    !!selected ? {} : query
+  )
 
-  const options: { label: string; value: string; field: "label" | "value" }[] =
+  const options: { label: string; value: string; field: 'label' | 'value' }[] =
     isLoading
       ? []
       : (transactionMeta?.[metaKey]?.map((meta) =>
-          typeof meta === "string"
-            ? { label: meta, value: meta.toLowerCase(), field: "label" }
+          typeof meta === 'string'
+            ? { label: meta, value: meta.toLowerCase(), field: 'label' }
             : {
                 label: meta.name,
                 value: meta.id.toString(),
-                field: "value",
-              },
-        ) ?? []);
+                field: 'value',
+              }
+        ) ?? [])
   return (
     <Field.Root>
       <Field.Label>{name}</Field.Label>
@@ -252,5 +252,5 @@ function TransactionFilterSelect({
         }
       />
     </Field.Root>
-  );
+  )
 }

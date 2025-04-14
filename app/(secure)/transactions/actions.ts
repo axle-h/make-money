@@ -1,110 +1,110 @@
-import { mutateTransactions, ruleApi, transactionApi } from "@/api-client";
-import { Transaction, UpdateTransactionRequest } from "@/app/api/schema";
-import { CategoryRule } from "@prisma/client";
-import { toaster } from "@/components/ui/toaster";
+import { mutateTransactions, ruleApi, transactionApi } from '@/api-client'
+import { Transaction, UpdateTransactionRequest } from '@/app/api/schema'
+import { CategoryRule } from '@prisma/client'
+import { toaster } from '@/components/ui/toaster'
 
 export async function resetTransactionCategories(id: number) {
   try {
-    await transactionApi.update(id, { categories: [] });
-    await mutateTransactions();
+    await transactionApi.update(id, { categories: [] })
+    await mutateTransactions()
     toaster.create({
-      title: "Success",
+      title: 'Success',
       description: `Reset categories.`,
-      type: "success",
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
-    return true;
+    })
+    return true
   } catch (e) {
-    let description: string;
+    let description: string
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to reset categories",
+      title: 'Failed to reset categories',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 }
 
 export async function approveAllTransactionsForRule(ruleId: number) {
-  let lastError: string | null = null;
+  let lastError: string | null = null
 
-  let rule: CategoryRule | null;
+  let rule: CategoryRule | null
   try {
-    rule = await ruleApi.get(ruleId);
+    rule = await ruleApi.get(ruleId)
   } catch (e) {
-    let description;
+    let description
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to retrieve category rule",
+      title: 'Failed to retrieve category rule',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 
   if (!rule) {
     toaster.create({
-      title: "Success",
-      description: "Category rule does not exist",
-      type: "success",
+      title: 'Success',
+      description: 'Category rule does not exist',
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 
-  let ids: number[];
+  let ids: number[]
   try {
     const transactions = await transactionApi.list({
       page: 1,
       limit: 1000,
       ruleId,
       uncategorized: true,
-    });
-    ids = transactions.data.map((t) => t.id);
+    })
+    ids = transactions.data.map((t) => t.id)
   } catch (e) {
-    let description;
+    let description
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to retrieve uncategorized transactions",
+      title: 'Failed to retrieve uncategorized transactions',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 
   if (ids.length === 0) {
     toaster.create({
-      title: "Success",
-      description: "No uncategorized transactions found for this rule",
-      type: "error",
+      title: 'Success',
+      description: 'No uncategorized transactions found for this rule',
+      type: 'error',
       duration: 2000,
       closable: true,
-    });
-    return true;
+    })
+    return true
   }
 
   const promises = ids.map(async (id) => {
@@ -112,94 +112,94 @@ export async function approveAllTransactionsForRule(ruleId: number) {
       await transactionApi.update(id, {
         notes: rule.name,
         categories: [{ id: rule.categoryId, fraction: 1 }],
-      });
+      })
     } catch (e) {
-      let description;
+      let description
       if (e instanceof Error) {
-        description = e.message;
+        description = e.message
       } else {
-        description = e?.toString() || "an unknown error";
+        description = e?.toString() || 'an unknown error'
       }
-      console.error(description);
-      lastError = description;
+      console.error(description)
+      lastError = description
     }
-  });
-  await Promise.all(promises);
+  })
+  await Promise.all(promises)
 
-  await mutateTransactions();
+  await mutateTransactions()
 
   if (lastError) {
     toaster.create({
-      title: "Failed to approve transactions",
+      title: 'Failed to approve transactions',
       description: lastError,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 
   toaster.create({
-    title: "Success",
-    description: "Approved transactions.",
-    type: "success",
+    title: 'Success',
+    description: 'Approved transactions.',
+    type: 'success',
     duration: 2000,
     closable: true,
-  });
-  return true;
+  })
+  return true
 }
 
 export async function approveTransaction(
   id: number,
-  values: UpdateTransactionRequest,
+  values: UpdateTransactionRequest
 ) {
   try {
-    await transactionApi.update(id, values);
-    await mutateTransactions();
+    await transactionApi.update(id, values)
+    await mutateTransactions()
     toaster.create({
-      title: "Success",
-      description: "Approved transaction.",
-      type: "success",
+      title: 'Success',
+      description: 'Approved transaction.',
+      type: 'success',
       duration: 2000,
       closable: true,
-    });
-    return true;
+    })
+    return true
   } catch (e) {
-    let description: string;
+    let description: string
     if (e instanceof Error) {
-      description = e.message;
+      description = e.message
     } else {
-      description = e?.toString() || "an unknown error";
+      description = e?.toString() || 'an unknown error'
     }
-    console.error(description);
+    console.error(description)
     toaster.create({
-      title: "Failed to approve transaction",
+      title: 'Failed to approve transaction',
       description,
-      type: "error",
+      type: 'error',
       duration: 5000,
       closable: true,
-    });
-    return false;
+    })
+    return false
   }
 }
 
 function cleanStringLiteral(s: string) {
-  return s.replaceAll("'", "\\'");
+  return s.replaceAll("'", "\\'")
 }
 
 export function buildRuleUrl({ name, description, type }: Transaction) {
-  const urlParams = new URLSearchParams();
-  urlParams.set("newName", toTitleCase(name));
+  const urlParams = new URLSearchParams()
+  urlParams.set('newName', toTitleCase(name))
   urlParams.set(
-    "newPredicate",
-    `name == '${cleanStringLiteral(name)}' AND description == '${cleanStringLiteral(description)}' AND type == '${cleanStringLiteral(type)}'`,
-  );
-  return "rules?" + urlParams.toString();
+    'newPredicate',
+    `name == '${cleanStringLiteral(name)}' AND description == '${cleanStringLiteral(description)}' AND type == '${cleanStringLiteral(type)}'`
+  )
+  return 'rules?' + urlParams.toString()
 }
 
 function toTitleCase(str: string): string {
   return str.replace(
     /\w\S*/g,
-    (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-  );
+    (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+  )
 }

@@ -1,19 +1,19 @@
-import type { Metadata } from "next";
-import { fonts } from "@/components/fonts";
-import { Providers } from "@/components/providers";
-import React from "react";
+import type { Metadata } from 'next'
+import { fonts } from '@/components/fonts'
+import { Providers } from '@/components/providers'
+import React from 'react'
 
-import "./global.css";
+import './global.css'
 
 export const metadata: Metadata = {
-  title: "Make Money",
-  description: "Money management for the MAKE household",
-};
+  title: 'Make Money',
+  description: 'Money management for the MAKE household',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en" className={fonts.rubik.variable} suppressHydrationWarning>
@@ -46,5 +46,5 @@ export default function RootLayout({
         <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }

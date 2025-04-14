@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { ColorModeProvider } from "@/components/ui/color-mode";
-import { ChakraProvider } from "@chakra-ui/react";
-import { SessionProvider } from "next-auth/react";
-import React from "react";
+import { ColorModeProvider } from '@/components/ui/color-mode'
+import { ChakraProvider } from '@chakra-ui/react'
+import { SessionProvider } from 'next-auth/react'
+import React from 'react'
 
-import { createSystem, defaultConfig } from "@chakra-ui/react";
+import { createSystem, defaultConfig } from '@chakra-ui/react'
 
 export const system = createSystem(defaultConfig, {
   theme: {
@@ -16,7 +16,7 @@ export const system = createSystem(defaultConfig, {
       },
     },
   },
-});
+})
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -25,5 +25,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <SessionProvider>{children}</SessionProvider>
       </ColorModeProvider>
     </ChakraProvider>
-  );
+  )
 }

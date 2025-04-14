@@ -1,22 +1,22 @@
-import { Statement } from "@/app/api/schema";
-import React, { useEffect, useState } from "react";
-import { useStatements } from "@/api-client";
-import { ErrorAlert, Loading, NoData } from "@/components/alert";
-import { Dialog, IconButton, Menu, Table } from "@chakra-ui/react";
-import { formatDateRange, formatDateTimeLong } from "@/components/dates";
-import { Pagination } from "@/components/pagination";
-import { MoreVerticalIcon, DeleteIcon, ViewIcon } from "@/components/icons";
-import { AccountSummary } from "../accounts/account-summary";
-import { Button } from "@/components/ui/button";
+import { Statement } from '@/app/api/schema'
+import React, { useEffect, useState } from 'react'
+import { useStatements } from '@/api-client'
+import { ErrorAlert, Loading, NoData } from '@/components/alert'
+import { Dialog, IconButton, Menu, Table } from '@chakra-ui/react'
+import { formatDateRange, formatDateTimeLong } from '@/components/dates'
+import { Pagination } from '@/components/pagination'
+import { MoreVerticalIcon, DeleteIcon, ViewIcon } from '@/components/icons'
+import { AccountSummary } from '../accounts/account-summary'
+import { Button } from '@/components/ui/button'
 
 interface StatementTableProps {
-  page: number;
+  page: number
 
-  updatePage(page: number): void;
+  updatePage(page: number): void
 
-  onDelete(statement: Statement): Promise<void>;
+  onDelete(statement: Statement): Promise<void>
 
-  onViewTransactions(statement: Statement): void;
+  onViewTransactions(statement: Statement): void
 }
 
 export function StatementTable({
@@ -25,31 +25,31 @@ export function StatementTable({
   onDelete,
   onViewTransactions,
 }: StatementTableProps) {
-  const limit = 20;
-  const [pageCount, updatePageCount] = useState<number | null>(null);
+  const limit = 20
+  const [pageCount, updatePageCount] = useState<number | null>(null)
   const { statements, isLoading, error } = useStatements({
     page,
     limit,
-    orderBy: "dateUploaded",
+    orderBy: 'dateUploaded',
     orderByDescending: true,
-  });
+  })
 
   useEffect(() => {
     if (statements?.count) {
-      updatePageCount(Math.ceil(statements.count / limit));
+      updatePageCount(Math.ceil(statements.count / limit))
     }
-  }, [statements?.count, limit]);
+  }, [statements?.count, limit])
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   if (!statements || statements.data.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
   const rows = statements.data.map((statement) => (
@@ -70,7 +70,7 @@ export function StatementTable({
         />
       </Table.Cell>
     </Table.Row>
-  ));
+  ))
 
   return (
     <>
@@ -92,12 +92,12 @@ export function StatementTable({
         <></>
       )}
     </>
-  );
+  )
 }
 
 interface StatementMenuProps
-  extends Pick<StatementTableProps, "onDelete" | "onViewTransactions"> {
-  statement: Statement;
+  extends Pick<StatementTableProps, 'onDelete' | 'onViewTransactions'> {
+  statement: Statement
 }
 
 function StatementMenu({
@@ -105,15 +105,15 @@ function StatementMenu({
   onViewTransactions,
   statement,
 }: StatementMenuProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   async function statefulOnDelete() {
-    setIsDeleting(true);
+    setIsDeleting(true)
     try {
-      await onDelete(statement);
+      await onDelete(statement)
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
   }
 
@@ -138,9 +138,9 @@ function StatementMenu({
               disabled={isDeleting}
               onClick={() => {
                 if (statement.transactionCount > 0) {
-                  setDeleteOpen(true);
+                  setDeleteOpen(true)
                 } else {
-                  return statefulOnDelete();
+                  return statefulOnDelete()
                 }
               }}
             >
@@ -178,8 +178,8 @@ function StatementMenu({
                   colorPalette="red"
                   loading={isDeleting}
                   onClick={async () => {
-                    await statefulOnDelete();
-                    setDeleteOpen(false);
+                    await statefulOnDelete()
+                    setDeleteOpen(false)
                   }}
                   ml={3}
                 >
@@ -193,5 +193,5 @@ function StatementMenu({
         <></>
       )}
     </>
-  );
+  )
 }

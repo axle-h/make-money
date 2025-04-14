@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { Flex, Button } from "@chakra-ui/react";
-import { ArrowBackIcon, ArrowForwardIcon } from "./icons";
-import React from "react";
+import { Flex, Button } from '@chakra-ui/react'
+import { ArrowBackIcon, ArrowForwardIcon } from './icons'
+import React from 'react'
 
 export function Pagination({
   current,
   count,
   onPaginate,
 }: {
-  current: number;
-  count: number;
-  onPaginate(page: number): void;
+  current: number
+  count: number
+  onPaginate(page: number): void
 }) {
   const PagButton = (props: {
-    page: number;
-    active?: boolean;
-    disabled?: boolean;
-    children: React.ReactNode;
+    page: number
+    active?: boolean
+    disabled?: boolean
+    children: React.ReactNode
   }) => {
     const activeStyle = {
-      bg: "blue.600",
-      color: "white",
+      bg: 'blue.600',
+      color: 'white',
       _dark: {
-        color: "white",
-        bg: "blue.500",
+        color: 'white',
+        bg: 'blue.500',
       },
-    };
+    }
     return (
       <Button
         mx={1}
@@ -35,40 +35,40 @@ export function Pagination({
         rounded="md"
         bg="transparent"
         _dark={{
-          color: props.disabled ? "gray.500" : "gray.200",
+          color: props.disabled ? 'gray.500' : 'gray.200',
         }}
-        color={props.disabled ? "gray.500" : "gray.800"}
+        color={props.disabled ? 'gray.500' : 'gray.800'}
         _hover={!props.disabled ? activeStyle : {}}
-        cursor={props.disabled ? "not-allowed" : undefined}
+        cursor={props.disabled ? 'not-allowed' : undefined}
         {...(props.active && activeStyle)}
         onClick={() => onPaginate(props.page)}
       >
         {props.children}
       </Button>
-    );
-  };
+    )
+  }
 
-  if (!current || !count) return <></>;
+  if (!current || !count) return <></>
 
   function pageOffset(offset: number): number | null {
-    const page = current + offset;
-    return page < 1 || page > count ? null : page;
+    const page = current + offset
+    return page < 1 || page > count ? null : page
   }
 
   const prevPages = [pageOffset(-2), pageOffset(-1)].filter(
-    (p) => p !== null,
-  ) as number[];
+    (p) => p !== null
+  ) as number[]
   const nextPages = [pageOffset(1), pageOffset(2)].filter(
-    (p) => p !== null,
-  ) as number[];
+    (p) => p !== null
+  ) as number[]
 
   if (prevPages.length === 0 && nextPages.length === 0) {
-    return <></>;
+    return <></>
   }
 
-  const first = prevPages.length === 0 || prevPages.includes(1) ? null : 1;
+  const first = prevPages.length === 0 || prevPages.includes(1) ? null : 1
   const last =
-    nextPages.length === 0 || nextPages.includes(count) ? null : count;
+    nextPages.length === 0 || nextPages.includes(count) ? null : count
 
   return (
     <Flex p={50} w="full" alignItems="center" justifyContent="center">
@@ -102,5 +102,5 @@ export function Pagination({
         )}
       </Flex>
     </Flex>
-  );
+  )
 }

@@ -1,32 +1,32 @@
-import { Account } from "@/app/api/schema";
-import { useAccounts } from "@/api-client";
-import { ErrorAlert, Loading, NoData } from "@/components/alert";
-import { Box, Dialog, IconButton, Menu, Portal, Table } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { MoreVerticalIcon, DeleteIcon, ViewIcon } from "@/components/icons";
-import { AccountTypeTag } from "./account-summary";
-import { formatDateShort, needsNewStatement } from "@/components/dates";
-import { Button } from "@/components/ui/button";
+import { Account } from '@/app/api/schema'
+import { useAccounts } from '@/api-client'
+import { ErrorAlert, Loading, NoData } from '@/components/alert'
+import { Box, Dialog, IconButton, Menu, Portal, Table } from '@chakra-ui/react'
+import React, { useState } from 'react'
+import { MoreVerticalIcon, DeleteIcon, ViewIcon } from '@/components/icons'
+import { AccountTypeTag } from './account-summary'
+import { formatDateShort, needsNewStatement } from '@/components/dates'
+import { Button } from '@/components/ui/button'
 
 export function AccountTable({
   onDelete,
   onViewTransactions,
 }: {
-  onDelete(account: Account): Promise<void>;
-  onViewTransactions(account: Account): void;
+  onDelete(account: Account): Promise<void>
+  onViewTransactions(account: Account): void
 }) {
-  const { accounts, isLoading, error } = useAccounts();
+  const { accounts, isLoading, error } = useAccounts()
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   if (!accounts || accounts.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
   const rows = accounts.map((account) => (
@@ -40,12 +40,12 @@ export function AccountTable({
         {account.statementsTo ? (
           <Box
             as="span"
-            color={needsNewStatement(account.statementsTo) ? "red" : "green"}
+            color={needsNewStatement(account.statementsTo) ? 'red' : 'green'}
           >
             {formatDateShort(account.statementsTo)}
           </Box>
         ) : (
-          "None"
+          'None'
         )}
       </Table.Cell>
       <Table.Cell px={0}>
@@ -56,7 +56,7 @@ export function AccountTable({
         />
       </Table.Cell>
     </Table.Row>
-  ));
+  ))
 
   return (
     <Table.Root variant="line">
@@ -71,7 +71,7 @@ export function AccountTable({
       </Table.Header>
       <Table.Body>{rows}</Table.Body>
     </Table.Root>
-  );
+  )
 }
 
 function AccountMenu({
@@ -79,12 +79,12 @@ function AccountMenu({
   onViewTransactions,
   account,
 }: {
-  onDelete(account: Account): Promise<void>;
-  onViewTransactions(account: Account): void;
-  account: Account;
+  onDelete(account: Account): Promise<void>
+  onViewTransactions(account: Account): void
+  account: Account
 }) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleteOpen, setDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
 
   return (
     <>
@@ -146,12 +146,12 @@ function AccountMenu({
                   colorPalette="red"
                   loading={isDeleting}
                   onClick={async () => {
-                    setIsDeleting(true);
+                    setIsDeleting(true)
                     try {
-                      await onDelete(account);
+                      await onDelete(account)
                     } finally {
-                      setIsDeleting(false);
-                      setDeleteOpen(false);
+                      setIsDeleting(false)
+                      setDeleteOpen(false)
                     }
                   }}
                   ml={3}
@@ -164,5 +164,5 @@ function AccountMenu({
         </Portal>
       </Dialog.Root>
     </>
-  );
+  )
 }

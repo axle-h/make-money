@@ -1,14 +1,14 @@
-import { Text, Button, Alert } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { HomeIcon, LoginIcon } from "@/components/icons";
-import React from "react";
+import { Text, Button, Alert } from '@chakra-ui/react'
+import NextLink from 'next/link'
+import { HomeIcon, LoginIcon } from '@/components/icons'
+import React from 'react'
 
 export default async function ErrorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string }>
 }) {
-  const { error } = await searchParams;
+  const { error } = await searchParams
   return (
     <Alert.Root
       status="error"
@@ -31,25 +31,25 @@ export default async function ErrorPage({
         <ErrorDescription error={error} />
       </Alert.Description>
     </Alert.Root>
-  );
+  )
 }
 
 function errorTitle(error?: string) {
   switch (error?.trim()?.toLowerCase()) {
-    case "configuration":
-      return "Something went wrong";
-    case "accessdenied":
-      return "Access Denied";
-    case "verification":
-      return "Unable to sign in";
+    case 'configuration':
+      return 'Something went wrong'
+    case 'accessdenied':
+      return 'Access Denied'
+    case 'verification':
+      return 'Unable to sign in'
     default:
-      return "Something went wrong";
+      return 'Something went wrong'
   }
 }
 
 function ErrorDescription({ error }: { error?: string }) {
   switch (error?.trim()?.toLowerCase()) {
-    case "configuration":
+    case 'configuration':
       return (
         <>
           <Text>There is a problem with the server configuration.</Text>
@@ -60,8 +60,8 @@ function ErrorDescription({ error }: { error?: string }) {
             </Button>
           </NextLink>
         </>
-      );
-    case "accessdenied":
+      )
+    case 'accessdenied':
       return (
         <>
           <Text mb={4}>You do not have permission to login.</Text>
@@ -71,8 +71,8 @@ function ErrorDescription({ error }: { error?: string }) {
             </Button>
           </NextLink>
         </>
-      );
-    case "verification":
+      )
+    case 'verification':
       return (
         <>
           <Text mb={4}>
@@ -85,7 +85,7 @@ function ErrorDescription({ error }: { error?: string }) {
             </Button>
           </NextLink>
         </>
-      );
+      )
     default:
       return (
         <>
@@ -98,6 +98,6 @@ function ErrorDescription({ error }: { error?: string }) {
             </Button>
           </NextLink>
         </>
-      );
+      )
   }
 }

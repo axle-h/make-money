@@ -1,6 +1,6 @@
-import { categoryTypeName, NewCategory, Schema } from "@/app/api/schema";
-import React from "react";
-import { Field as FormikField, Form, Formik } from "formik";
+import { categoryTypeName, NewCategory, Schema } from '@/app/api/schema'
+import React from 'react'
+import { Field as FormikField, Form, Formik } from 'formik'
 import {
   Field,
   Input,
@@ -8,36 +8,36 @@ import {
   SimpleGrid,
   Stack,
   Switch,
-} from "@chakra-ui/react";
-import { FieldProps } from "formik/dist/Field";
-import { EmojiPicker } from "@/components/emoji-picker";
-import { Button } from "@/components/ui/button";
+} from '@chakra-ui/react'
+import { FieldProps } from 'formik/dist/Field'
+import { EmojiPicker } from '@/components/emoji-picker'
+import { Button } from '@/components/ui/button'
 
 export interface NewCategoryFormProps {
-  initialValues?: Partial<NewCategory>;
-  onSubmit(category: NewCategory): Promise<boolean>;
+  initialValues?: Partial<NewCategory>
+  onSubmit(category: NewCategory): Promise<boolean>
 }
 
 export const CategoryForm = React.forwardRef(
   ({ initialValues, onSubmit }: NewCategoryFormProps, firstField) => {
     const formInitialValues: NewCategory = {
-      name: initialValues?.name || "",
-      emoji: initialValues?.emoji || "",
-      type: initialValues?.type || "EXPENSE",
+      name: initialValues?.name || '',
+      emoji: initialValues?.emoji || '',
+      type: initialValues?.type || 'EXPENSE',
       report: initialValues?.report === undefined || initialValues.report,
       subCategory: initialValues?.subCategory === true,
-    };
+    }
     return (
       <Formik
         initialValues={formInitialValues}
         validate={(values) => {
-          const result = Schema.NewCategory.safeParse(values);
-          return result.success ? {} : result.error.flatten().fieldErrors;
+          const result = Schema.NewCategory.safeParse(values)
+          return result.success ? {} : result.error.flatten().fieldErrors
         }}
         onSubmit={async (values, actions) => {
           if (await onSubmit(values)) {
-            actions.setSubmitting(false);
-            actions.resetForm();
+            actions.setSubmitting(false)
+            actions.resetForm()
           }
         }}
       >
@@ -69,7 +69,7 @@ export const CategoryForm = React.forwardRef(
                     <Field.Label>Emoji</Field.Label>
                     <EmojiPicker
                       value={field.value}
-                      onChange={(e) => form.setFieldValue("emoji", e)}
+                      onChange={(e) => form.setFieldValue('emoji', e)}
                     />
                     <Field.ErrorText>{form.errors.emoji}</Field.ErrorText>
                   </Field.Root>
@@ -87,14 +87,14 @@ export const CategoryForm = React.forwardRef(
                     <NativeSelect.Root>
                       <NativeSelect.Field {...field}>
                         <option value="EXPENSE">
-                          {categoryTypeName("EXPENSE")}
+                          {categoryTypeName('EXPENSE')}
                         </option>
-                        <option value="BILL">{categoryTypeName("BILL")}</option>
+                        <option value="BILL">{categoryTypeName('BILL')}</option>
                         <option value="INCOME">
-                          {categoryTypeName("INCOME")}
+                          {categoryTypeName('INCOME')}
                         </option>
                         <option value="OTHER">
-                          {categoryTypeName("OTHER")}
+                          {categoryTypeName('OTHER')}
                         </option>
                       </NativeSelect.Field>
                       <NativeSelect.Indicator />
@@ -146,8 +146,8 @@ export const CategoryForm = React.forwardRef(
           </Form>
         )}
       </Formik>
-    );
-  },
-);
+    )
+  }
+)
 
-CategoryForm.displayName = "CategoryForm";
+CategoryForm.displayName = 'CategoryForm'

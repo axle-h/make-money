@@ -7,23 +7,23 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts'
 import {
   CREDIT_COLOR_CSS,
   OTHER_COLOR_CSS,
   TimeSeriesEntry,
-} from "@/components/charts/data";
-import { formatMonthAndYear, utcNow } from "@/components/dates";
-import { isBefore } from "date-fns";
-import { Prisma } from "@prisma/client";
-import { useBreakpointValue } from "@chakra-ui/react";
-import { currency, currencyShort } from "@/components/currency";
-import { useColorMode } from "@/components/ui/color-mode";
+} from '@/components/charts/data'
+import { formatMonthAndYear, utcNow } from '@/components/dates'
+import { isBefore } from 'date-fns'
+import { Prisma } from '@prisma/client'
+import { useBreakpointValue } from '@chakra-ui/react'
+import { currency, currencyShort } from '@/components/currency'
+import { useColorMode } from '@/components/ui/color-mode'
 
 export interface CurrencyBenchmarkLineChartProps {
-  data: TimeSeriesEntry[];
-  dataKey: "credit" | "debit";
-  benchmark: number | Prisma.Decimal;
+  data: TimeSeriesEntry[]
+  dataKey: 'credit' | 'debit'
+  benchmark: number | Prisma.Decimal
 }
 
 export function CurrencyBenchmarkLineChart({
@@ -31,22 +31,22 @@ export function CurrencyBenchmarkLineChart({
   dataKey,
   benchmark,
 }: CurrencyBenchmarkLineChartProps) {
-  const interval = useBreakpointValue({ base: 1, lg: 0 }, { ssr: false });
-  const { colorMode } = useColorMode();
+  const interval = useBreakpointValue({ base: 1, lg: 0 }, { ssr: false })
+  const { colorMode } = useColorMode()
 
   const stroke =
-    colorMode === "light"
-      ? "var(--chakra-colors-black)"
-      : "var(--chakra-colors-white)";
+    colorMode === 'light'
+      ? 'var(--chakra-colors-black)'
+      : 'var(--chakra-colors-white)'
 
   const strokeSubtle =
-    colorMode === "light"
-      ? "var(--chakra-colors-gray-400)"
-      : "var(--chakra-colors-gray-600)";
+    colorMode === 'light'
+      ? 'var(--chakra-colors-gray-400)'
+      : 'var(--chakra-colors-gray-600)'
 
-  const now = utcNow();
+  const now = utcNow()
 
-  const benchmarkDecimal = new Prisma.Decimal(benchmark);
+  const benchmarkDecimal = new Prisma.Decimal(benchmark)
 
   const chartData = data.map(({ date, [dataKey]: amount }, index) => ({
     date: formatMonthAndYear(date),
@@ -55,7 +55,7 @@ export function CurrencyBenchmarkLineChart({
       .div(12)
       .mul(index + 1)
       .toFixed(2),
-  }));
+  }))
 
   return (
     <ResponsiveContainer width="100%" height={600}>
@@ -81,9 +81,9 @@ export function CurrencyBenchmarkLineChart({
         <Tooltip
           contentStyle={{
             backgroundColor:
-              colorMode === "dark"
-                ? "var(--chakra-colors-gray-800)"
-                : "var(--chakra-colors-gray-100)",
+              colorMode === 'dark'
+                ? 'var(--chakra-colors-gray-800)'
+                : 'var(--chakra-colors-gray-100)',
           }}
           itemStyle={{
             color: stroke,
@@ -108,5 +108,5 @@ export function CurrencyBenchmarkLineChart({
         />
       </LineChart>
     </ResponsiveContainer>
-  );
+  )
 }

@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { Button, ButtonGroup, Heading } from "@chakra-ui/react";
-import React from "react";
-import { NewCategory } from "@/app/api/schema";
-import { AddIcon } from "@/components/icons";
-import { CategoryTable } from "./category-table";
-import { useRouter } from "next/navigation";
-import { CreateOrUpdateCategoryDrawer } from "./create-or-update-category-drawer";
-import { createCategory, deleteCategory, updateCategory } from "./actions";
+import { Button, ButtonGroup, Heading } from '@chakra-ui/react'
+import React from 'react'
+import { NewCategory } from '@/app/api/schema'
+import { AddIcon } from '@/components/icons'
+import { CategoryTable } from './category-table'
+import { useRouter } from 'next/navigation'
+import { CreateOrUpdateCategoryDrawer } from './create-or-update-category-drawer'
+import { createCategory, deleteCategory, updateCategory } from './actions'
 
 export default function CategoriesPage() {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <>
       <Heading size="4xl" mb={6}>
@@ -25,15 +25,15 @@ export default function CategoriesPage() {
         }
       />
     </>
-  );
+  )
 }
 
 function CategoryControls({
   onCreate,
 }: {
-  onCreate(category: NewCategory): Promise<boolean>;
+  onCreate(category: NewCategory): Promise<boolean>
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <>
@@ -48,5 +48,5 @@ function CategoryControls({
         onSubmit={onCreate}
       />
     </>
-  );
+  )
 }

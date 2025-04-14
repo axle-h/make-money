@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { Box, HStack, IconButton, Menu, Stack, Table } from "@chakra-ui/react";
+import React, { useState } from 'react'
+import { Box, HStack, IconButton, Menu, Stack, Table } from '@chakra-ui/react'
 import {
   CheckIcon,
   DeleteIcon,
   EditIcon,
   MinusIcon,
   ViewIcon,
-} from "@/components/icons";
-import { MoreVerticalIcon } from "@/components/icons";
-import { useCategoryStats } from "@/api-client";
-import { ErrorAlert, Loading, NoData } from "@/components/alert";
-import { CreateOrUpdateCategoryDrawer } from "./create-or-update-category-drawer";
-import { Category, NewCategory } from "@/app/api/schema";
-import { CategoryTypeTag } from "./category-type-tag";
-import { Tooltip } from "@/components/ui/tooltip";
-import { CashFlow } from "@/components/cash-flow";
+} from '@/components/icons'
+import { MoreVerticalIcon } from '@/components/icons'
+import { useCategoryStats } from '@/api-client'
+import { ErrorAlert, Loading, NoData } from '@/components/alert'
+import { CreateOrUpdateCategoryDrawer } from './create-or-update-category-drawer'
+import { Category, NewCategory } from '@/app/api/schema'
+import { CategoryTypeTag } from './category-type-tag'
+import { Tooltip } from '@/components/ui/tooltip'
+import { CashFlow } from '@/components/cash-flow'
 
 export interface CategoryTableProps {
-  onDelete(id: number): Promise<boolean>;
-  onUpdate(id: number, values: NewCategory): Promise<boolean>;
-  onViewTransactions(id: number): void;
+  onDelete(id: number): Promise<boolean>
+  onUpdate(id: number, values: NewCategory): Promise<boolean>
+  onViewTransactions(id: number): void
 }
 
 export function CategoryTable({
@@ -27,18 +27,18 @@ export function CategoryTable({
   onUpdate,
   onViewTransactions,
 }: CategoryTableProps) {
-  const { categories, isLoading, error } = useCategoryStats();
+  const { categories, isLoading, error } = useCategoryStats()
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />
   }
 
   if (error) {
-    return <ErrorAlert error={error} />;
+    return <ErrorAlert error={error} />
   }
 
   if (!categories || categories.length === 0) {
-    return <NoData />;
+    return <NoData />
   }
 
   const rows = categories.map((category) => {
@@ -52,7 +52,7 @@ export function CategoryTable({
       transactions,
       totalDebits,
       totalCredits,
-    } = category;
+    } = category
     return (
       <Table.Row key={id}>
         <Table.Cell>
@@ -89,8 +89,8 @@ export function CategoryTable({
           />
         </Table.Cell>
       </Table.Row>
-    );
-  });
+    )
+  })
 
   return (
     <Table.Root variant="line">
@@ -106,14 +106,14 @@ export function CategoryTable({
       </Table.Header>
       <Table.Body>{rows}</Table.Body>
     </Table.Root>
-  );
+  )
 }
 
 interface CategoryMenuProps {
-  onUpdate(values: NewCategory): Promise<boolean>;
-  onDelete?(): Promise<boolean>;
-  onViewTransactions(): void;
-  category: Category;
+  onUpdate(values: NewCategory): Promise<boolean>
+  onDelete?(): Promise<boolean>
+  onViewTransactions(): void
+  category: Category
 }
 
 function CategoryMenu({
@@ -122,27 +122,27 @@ function CategoryMenu({
   category,
   onViewTransactions,
 }: CategoryMenuProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [openUpdate, setOpenUpdate] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [openUpdate, setOpenUpdate] = useState(false)
 
   const DeleteMenuItem = (
     <Menu.Item
       value="delete-category"
       disabled={!onDelete || isDeleting}
       onClick={async () => {
-        setIsDeleting(true);
+        setIsDeleting(true)
         try {
           if (onDelete) {
-            await onDelete();
+            await onDelete()
           }
         } finally {
-          setIsDeleting(false);
+          setIsDeleting(false)
         }
       }}
     >
       <DeleteIcon /> Delete
     </Menu.Item>
-  );
+  )
 
   return (
     <>
@@ -187,5 +187,5 @@ function CategoryMenu({
         onSubmit={onUpdate}
       />
     </>
-  );
+  )
 }

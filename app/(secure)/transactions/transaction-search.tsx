@@ -1,40 +1,40 @@
-import { IconButton, Input, InputGroup, Dialog } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { QueryParams } from "@/app/(secure)/transactions/types";
-import { CloseIcon, FiltersAppliedBadge, SearchIcon } from "@/components/icons";
-import useDebounce from "@/components/debounce";
-import { Avatar } from "@/components/ui/avatar";
+import { IconButton, Input, InputGroup, Dialog } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { QueryParams } from '@/app/(secure)/transactions/types'
+import { CloseIcon, FiltersAppliedBadge, SearchIcon } from '@/components/icons'
+import useDebounce from '@/components/debounce'
+import { Avatar } from '@/components/ui/avatar'
 
 export function TransactionSearch({
   queryParams,
   onChange,
 }: {
-  queryParams: QueryParams;
-  onChange(params: QueryParams): void;
+  queryParams: QueryParams
+  onChange(params: QueryParams): void
 }) {
-  const [searchTerm, setSearchTerm] = useState(queryParams.search ?? "");
-  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(queryParams.search ?? '')
+  const [open, setOpen] = useState(false)
   const handleSearch = useDebounce(
     (search: string) => onChange({ ...queryParams, search }),
-    500,
-  );
+    500
+  )
 
   // close when enter pressed
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        setOpen(false);
+      if (e.key === 'Enter') {
+        setOpen(false)
       }
-    };
-    document.addEventListener("keydown", keyDownHandler);
+    }
+    document.addEventListener('keydown', keyDownHandler)
 
     // clean up
     return () => {
-      document.removeEventListener("keydown", keyDownHandler);
-    };
-  }, [setOpen]);
+      document.removeEventListener('keydown', keyDownHandler)
+    }
+  }, [setOpen])
 
-  const filtersApplied = !!queryParams.search;
+  const filtersApplied = !!queryParams.search
 
   return (
     <>
@@ -59,10 +59,10 @@ export function TransactionSearch({
                 endElement={
                   <IconButton
                     variant="ghost"
-                    _hover={{ backgroundColor: "transparent" }}
+                    _hover={{ backgroundColor: 'transparent' }}
                     onClick={() => {
-                      setSearchTerm("");
-                      onChange({ ...queryParams, search: undefined });
+                      setSearchTerm('')
+                      onChange({ ...queryParams, search: undefined })
                     }}
                     aria-label="clear search"
                   >
@@ -73,10 +73,10 @@ export function TransactionSearch({
                 <Input
                   value={searchTerm}
                   onChange={(event) => {
-                    const { value } = event.target;
-                    setSearchTerm(value);
+                    const { value } = event.target
+                    setSearchTerm(value)
                     // Debounce the search callback
-                    handleSearch(value);
+                    handleSearch(value)
                   }}
                 />
               </InputGroup>
@@ -85,5 +85,5 @@ export function TransactionSearch({
         </Dialog.Positioner>
       </Dialog.Root>
     </>
-  );
+  )
 }

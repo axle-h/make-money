@@ -1,13 +1,13 @@
-import { Drawer } from "@chakra-ui/react";
-import React from "react";
-import { Category, NewCategory } from "@/app/api/schema";
-import { CategoryForm } from "./category-form";
+import { Drawer } from '@chakra-ui/react'
+import React from 'react'
+import { Category, NewCategory } from '@/app/api/schema'
+import { CategoryForm } from './category-form'
 
 export interface UpdateCategoryDrawerProps {
-  open: boolean;
-  setOpen(value: boolean): void;
-  category?: Category;
-  onSubmit(category: NewCategory): Promise<boolean>;
+  open: boolean
+  setOpen(value: boolean): void
+  category?: Category
+  onSubmit(category: NewCategory): Promise<boolean>
 }
 
 export function CreateOrUpdateCategoryDrawer({
@@ -16,7 +16,7 @@ export function CreateOrUpdateCategoryDrawer({
   category,
   onSubmit,
 }: UpdateCategoryDrawerProps) {
-  const firstField = React.useRef(null);
+  const firstField = React.useRef(null)
   return (
     <Drawer.Root
       lazyMount
@@ -31,17 +31,17 @@ export function CreateOrUpdateCategoryDrawer({
         <Drawer.Content>
           <Drawer.CloseTrigger />
           <Drawer.Header>
-            {!!category ? "Update" : "Create"} Category
+            {!!category ? 'Update' : 'Create'} Category
           </Drawer.Header>
 
           <Drawer.Body>
             <CategoryForm
               onSubmit={async (values) => {
-                const result = await onSubmit(values);
+                const result = await onSubmit(values)
                 if (result) {
-                  setOpen(false);
+                  setOpen(false)
                 }
-                return result;
+                return result
               }}
               initialValues={{
                 ...category,
@@ -53,5 +53,5 @@ export function CreateOrUpdateCategoryDrawer({
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  );
+  )
 }

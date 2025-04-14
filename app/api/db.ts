@@ -6,9 +6,9 @@ import {
   Transaction as DbTransaction,
   TransactionCategory as DbTransactionCategory,
   Category as DbCategory,
-} from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Paginated, toPageArgs } from "@/app/api/paginated";
+} from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { Paginated, toPageArgs } from '@/app/api/paginated'
 import {
   Account,
   NewAccount,
@@ -32,78 +32,78 @@ import {
   CategoryType,
   AccountType,
   accountNumber,
-} from "@/app/api/schema";
-import SortOrder = Prisma.SortOrder;
-import { formatDateIso, formatDateLong } from "@/components/dates";
-import { Predicate } from "@/app/api/predicate";
-import { addDays, compareAsc, compareDesc } from "date-fns";
+} from '@/app/api/schema'
+import SortOrder = Prisma.SortOrder
+import { formatDateIso, formatDateLong } from '@/components/dates'
+import { Predicate } from '@/app/api/predicate'
+import { addDays, compareAsc, compareDesc } from 'date-fns'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export class DbError extends Error {
   constructor(
     readonly message: string,
-    readonly badRequest: boolean,
+    readonly badRequest: boolean
   ) {
-    super(message);
+    super(message)
   }
 }
 
 export function tryHandleDbError(e: Error): DbError | null {
   if (e instanceof DbError) {
-    return e;
+    return e
   }
 
   if (!(e instanceof PrismaClientKnownRequestError)) {
-    return null;
+    return null
   }
-  let badRequest = false;
+  let badRequest = false
   // https://www.prisma.io/docs/orm/reference/error-reference#error-codes
   switch (e.code) {
-    case "P2000":
-    case "P2001":
-    case "P2002":
-    case "P2003":
-    case "P2004":
-    case "P2005":
-    case "P2006":
-    case "P2007":
-      badRequest = true;
-      break;
+    case 'P2000':
+    case 'P2001':
+    case 'P2002':
+    case 'P2003':
+    case 'P2004':
+    case 'P2005':
+    case 'P2006':
+    case 'P2007':
+      badRequest = true
+      break
   }
   const message =
     e.message
-      .split("\n")
+      .split('\n')
       .map((line) => line.trim())
-      .findLast((line) => line) || "unknown error";
-  return new DbError(`${e.code}: ${message}`, badRequest);
+      .findLast((line) => line) || 'unknown error'
+  return new DbError(`${e.code}: ${message}`, badRequest)
 }
 
 export class Accounts {
   private static readonly DEFAULT_INCLUDE: Prisma.AccountInclude = {
     statements: {
-      orderBy: { endDate: "desc" },
+      orderBy: { endDate: 'desc' },
       take: 1,
     },
-  };
+  }
 
   async all(): Promise<Account[]> {
     const accounts = await prisma.account.findMany({
       include: Accounts.DEFAULT_INCLUDE,
-    });
-    return accounts.map(Accounts.flattenAccount);
+    })
+    return accounts.map(Accounts.flattenAccount)
   }
 
   async create(request: NewAccount): Promise<Account> {
     const account = await prisma.account.create({
       include: Accounts.DEFAULT_INCLUDE,
       data: Schema.NewAccount.parse(request),
-    });
-    return Accounts.flattenAccount(account);
+    })
+    return Accounts.flattenAccount(account)
   }
 
   async delete(id: number) {
-    return prisma.account.delete({ where: { id } });
+    return prisma.account.delete({ where: { id } })
   }
 
   private static flattenAccount({
@@ -126,14 +126,14 @@ export class Accounts {
           : statements
               .map((s) => s.endDate)
               .sort((a, b) => compareDesc(a, b))[0],
-    };
+    }
   }
 }
 
 export class Statements {
   async create(request: NewStatement): Promise<Statement> {
     const { transactions, accountId, ...newStatement } =
-      Schema.NewStatement.parse(request);
+      Schema.NewStatement.parse(request)
 
     const statement = await prisma.statement.create({
       data: {
@@ -156,30 +156,30 @@ export class Statements {
         },
       },
       include: { account: true },
-    });
+    })
 
-    return Statements.flattenStatement(statement, transactions.length);
+    return Statements.flattenStatement(statement, transactions.length)
   }
 
   async list(request: StatementQuery): Promise<Paginated<Statement>> {
-    const { page, limit, ...args } = Schema.StatementQuery.parse(request);
+    const { page, limit, ...args } = Schema.StatementQuery.parse(request)
 
-    const where: Prisma.StatementWhereInput = {};
-    const orderBy: Prisma.StatementOrderByWithRelationInput = {};
+    const where: Prisma.StatementWhereInput = {}
+    const orderBy: Prisma.StatementOrderByWithRelationInput = {}
 
     if (args.accountId) {
       where.accountId = {
         equals: args.accountId,
-      };
+      }
     }
 
     if (args.orderBy) {
       orderBy[args.orderBy] = args.orderByDescending
         ? SortOrder.desc
-        : SortOrder.asc;
+        : SortOrder.asc
     }
 
-    const pageArgs = toPageArgs({ page, limit });
+    const pageArgs = toPageArgs({ page, limit })
     const dataPromise = prisma.statement.findMany({
       ...pageArgs,
       where,
@@ -188,31 +188,31 @@ export class Statements {
         account: true,
         _count: { select: { transactions: true } },
       },
-    });
-    const count = await prisma.statement.count({ where });
-    const statements = await dataPromise;
+    })
+    const count = await prisma.statement.count({ where })
+    const statements = await dataPromise
 
     const data = statements.map(({ _count, ...statement }) =>
-      Statements.flattenStatement(statement, _count.transactions),
-    );
+      Statements.flattenStatement(statement, _count.transactions)
+    )
 
-    return { page, limit, count, data };
+    return { page, limit, count, data }
   }
 
   private static flattenStatement(
     { account, ...statement }: DbStatement & { account: DbAccount },
-    transactionCount: number,
+    transactionCount: number
   ): Statement {
     return {
       ...statement,
       transactionCount,
       accountName: accountName(account as Account),
       accountType: account.accountType as AccountType,
-    };
+    }
   }
 
   delete(id: number) {
-    return prisma.statement.delete({ where: { id } });
+    return prisma.statement.delete({ where: { id } })
   }
 }
 
@@ -226,28 +226,28 @@ export class Transactions {
         },
         account: true,
       },
-    });
+    })
     if (!transaction) {
-      return null;
+      return null
     }
-    return this.flattenTransaction(transaction);
+    return this.flattenTransaction(transaction)
   }
 
   async list(
-    request: PaginatedTransactionQuery,
+    request: PaginatedTransactionQuery
   ): Promise<Paginated<Transaction>> {
     const { page, limit, ...query } =
-      Schema.PaginatedTransactionQuery.parse(request);
+      Schema.PaginatedTransactionQuery.parse(request)
 
-    const where = await this.where(query);
-    const orderBy: Prisma.TransactionOrderByWithRelationInput = {};
+    const where = await this.where(query)
+    const orderBy: Prisma.TransactionOrderByWithRelationInput = {}
 
     if (query.orderBy) {
       orderBy[query.orderBy] =
-        query.orderByDescending === true ? SortOrder.desc : SortOrder.asc;
+        query.orderByDescending === true ? SortOrder.desc : SortOrder.asc
     }
 
-    const pageArgs = toPageArgs({ page, limit });
+    const pageArgs = toPageArgs({ page, limit })
     const dataPromise = prisma.transaction.findMany({
       ...pageArgs,
       where,
@@ -258,25 +258,22 @@ export class Transactions {
         },
         account: true,
       },
-    });
-    const countPromise = prisma.transaction.count({ where });
+    })
+    const countPromise = prisma.transaction.count({ where })
 
-    const [transactions, count] = await Promise.all([
-      dataPromise,
-      countPromise,
-    ]);
+    const [transactions, count] = await Promise.all([dataPromise, countPromise])
 
     // flatten out many:many categories
-    const data = transactions.map((t) => this.flattenTransaction(t));
+    const data = transactions.map((t) => this.flattenTransaction(t))
 
-    return { page, limit, count, data };
+    return { page, limit, count, data }
   }
 
   async listCategorized(
-    request: CategorizedTransactionQuery,
+    request: CategorizedTransactionQuery
   ): Promise<CategorizedTransaction[]> {
     const { dateFrom, dateTo, subCategories } =
-      Schema.CategorizedTransactionQuery.parse(request);
+      Schema.CategorizedTransactionQuery.parse(request)
     const transactions = await prisma.transaction.findMany({
       where: {
         date: {
@@ -290,18 +287,18 @@ export class Transactions {
           include: { category: true },
         },
       },
-    });
+    })
     const categorized = transactions
       .flatMap(({ date, amount, categories }) =>
         categories
           .filter((category) => category.category.report)
           .map((category) => {
-            let categoryName = category.category.name;
+            let categoryName = category.category.name
             if (!subCategories && category.category.subCategory) {
               // strip sub category
-              const match = category.category.name.match(/(.*)\s+\(.+\)\s*$/);
+              const match = category.category.name.match(/(.*)\s+\(.+\)\s*$/)
               if (match) {
-                categoryName = match[1];
+                categoryName = match[1]
               }
             }
             return {
@@ -310,15 +307,15 @@ export class Transactions {
               emoji: category.category.emoji,
               categoryType: category.category.type as CategoryType,
               amount: amount.mul(category.fraction),
-            };
-          }),
+            }
+          })
       )
       .reduce(
         (agg, { date, amount, category, emoji, categoryType }) => {
-          const key = `${category}:${formatDateIso(date)}`;
+          const key = `${category}:${formatDateIso(date)}`
           const prop: keyof CategorizedTransaction = amount.gte(0)
-            ? "credit"
-            : "debit";
+            ? 'credit'
+            : 'debit'
           const other =
             key in agg
               ? agg[key]
@@ -329,13 +326,13 @@ export class Transactions {
                   categoryType,
                   debit: new Prisma.Decimal(0),
                   credit: new Prisma.Decimal(0),
-                });
+                })
 
-          other[prop] = other[prop].plus(amount);
-          return agg;
+          other[prop] = other[prop].plus(amount)
+          return agg
         },
-        {} as Record<string, CategorizedTransaction>,
-      );
+        {} as Record<string, CategorizedTransaction>
+      )
 
     return Object.entries(categorized)
       .map(([, v]) => v)
@@ -344,11 +341,11 @@ export class Transactions {
         credit: credit.toDecimalPlaces(2),
         ...v,
       }))
-      .sort((a, b) => compareAsc(a.date, b.date));
+      .sort((a, b) => compareAsc(a.date, b.date))
   }
 
   async meta(request: TransactionQuery): Promise<TransactionMeta> {
-    const where = await this.where(Schema.TransactionQuery.parse(request));
+    const where = await this.where(Schema.TransactionQuery.parse(request))
 
     // NOTE: not using prisma distinct as it does not actually call SELECT DISTINCT
     const transactions = await prisma.transaction.findMany({
@@ -378,21 +375,21 @@ export class Transactions {
         },
       },
       where,
-    });
+    })
 
     const statements = transactions.map(({ statement, account }) => ({
       id: statement.id,
       name: `${formatDateLong(statement.dateUploaded)}, ${account.bankName} ${account.accountNumber}`,
-    }));
+    }))
 
     const categories = transactions
       .flatMap(({ categories }) => categories)
-      .map((cat) => cat.category);
+      .map((cat) => cat.category)
 
     const accounts = transactions.map(({ account }) => ({
       id: account.id,
       name: `${account.bankName} ${account.accountNumber}`,
-    }));
+    }))
 
     return {
       types: [...new Set(transactions.map((x) => x.type))],
@@ -405,21 +402,20 @@ export class Transactions {
         ...new Map(categories.map((item) => [item.id, item])).values(),
       ],
       accounts: [...new Map(accounts.map((item) => [item.id, item])).values()],
-    };
+    }
   }
 
   async update(
     id: number,
-    request: UpdateTransactionRequest,
+    request: UpdateTransactionRequest
   ): Promise<Transaction | null> {
-    const { categories, notes } =
-      Schema.UpdateTransactionRequest.parse(request);
+    const { categories, notes } = Schema.UpdateTransactionRequest.parse(request)
 
-    await prisma.transaction.update({ where: { id }, data: { notes } });
+    await prisma.transaction.update({ where: { id }, data: { notes } })
 
     await prisma.transactionCategory.deleteMany({
       where: { transactionId: id },
-    });
+    })
 
     const promises = categories.map(async (category) => {
       await prisma.transactionCategory.create({
@@ -434,11 +430,11 @@ export class Transactions {
             connect: { id },
           },
         },
-      });
-    });
-    await Promise.all(promises);
+      })
+    })
+    await Promise.all(promises)
 
-    return await this.get(id);
+    return await this.get(id)
   }
 
   private flattenTransaction({
@@ -446,8 +442,8 @@ export class Transactions {
     account,
     ...transaction
   }: DbTransaction & {
-    categories: (DbTransactionCategory & { category: DbCategory })[];
-    account: DbAccount;
+    categories: (DbTransactionCategory & { category: DbCategory })[]
+    account: DbAccount
   }): Transaction {
     return {
       ...transaction,
@@ -457,29 +453,29 @@ export class Transactions {
       })),
       accountName: accountName(account as any),
       accountType: account.accountType as any,
-    };
+    }
   }
 
   private async where(
-    query: TransactionQuery,
+    query: TransactionQuery
   ): Promise<Prisma.TransactionWhereInput> {
-    let where: Prisma.TransactionWhereInput = {};
+    let where: Prisma.TransactionWhereInput = {}
 
     if (query.ruleId) {
       const rule = await prisma.categoryRule.findUnique({
         where: { id: query.ruleId },
-      });
+      })
       if (rule) {
-        const predicate = new Predicate(rule.predicate);
-        where = predicate.toPrismaWhere();
+        const predicate = new Predicate(rule.predicate)
+        where = predicate.toPrismaWhere()
       }
     }
 
     if (query.accountId) {
-      where.accountId = { equals: query.accountId };
+      where.accountId = { equals: query.accountId }
     }
     if (query.statementId) {
-      where.statementId = { equals: query.statementId };
+      where.statementId = { equals: query.statementId }
     }
     if (query.categoryId) {
       where.categories = {
@@ -488,42 +484,42 @@ export class Transactions {
             id: query.categoryId,
           },
         },
-      };
+      }
     }
     if (query.type) {
-      where.type = { equals: query.type };
+      where.type = { equals: query.type }
     }
     if (query.name) {
-      where.name = query.name;
+      where.name = query.name
     }
     if (query.description) {
-      where.description = query.description;
+      where.description = query.description
     }
     if (query.amount) {
-      where.amount = query.amount;
+      where.amount = query.amount
     }
     if (query.uncategorized) {
-      where.categories = { none: {} };
+      where.categories = { none: {} }
     }
 
-    return where;
+    return where
   }
 }
 
 export class Categories {
   async list(): Promise<Category[]> {
     const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
-    });
+      orderBy: { name: 'asc' },
+    })
     return categories.map(({ type, ...category }) => ({
       ...category,
       type: type as CategoryType,
-    }));
+    }))
   }
 
   async stats(): Promise<CategoryStats[]> {
     const result = await prisma.category.findMany({
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       select: {
         id: true,
         name: true,
@@ -541,7 +537,7 @@ export class Categories {
           },
         },
       },
-    });
+    })
     return result.map(({ transactions, type, ...category }) => ({
       ...category,
       type: type as CategoryType,
@@ -554,60 +550,60 @@ export class Categories {
         .filter((t) => t.transaction.amount.gt(0))
         .map((t) => t.transaction.amount)
         .reduce((a, b) => a.add(b), new Prisma.Decimal(0)),
-    }));
+    }))
   }
 
   async create(request: NewCategory): Promise<Category> {
     const { type, ...category } = await prisma.category.create({
       data: Schema.NewCategory.parse(request),
-    });
+    })
     return {
       ...category,
       type: type as CategoryType,
-    };
+    }
   }
 
   async delete(id: number) {
-    await prisma.category.delete({ where: { id } });
+    await prisma.category.delete({ where: { id } })
   }
 
   async update(id: number, request: NewCategory) {
     const { type, ...category } = await prisma.category.update({
       data: Schema.NewCategory.parse(request),
       where: { id },
-    });
+    })
     return {
       ...category,
       type: type as CategoryType,
-    };
+    }
   }
 }
 
 export class CategoryRules {
   async list(): Promise<CategoryRule[]> {
     const results = await prisma.categoryRule.findMany({
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       include: { category: true },
-    });
+    })
     return results.map(({ category, ...rule }) => ({
       ...rule,
       categoryName: category.name,
-    }));
+    }))
   }
 
   async create(request: NewCategoryRule): Promise<CategoryRule> {
     const { category, ...rule } = await prisma.categoryRule.create({
       data: Schema.NewCategoryRule.parse(request),
       include: { category: true },
-    });
+    })
     return {
       ...rule,
       categoryName: category.name,
-    };
+    }
   }
 
   async delete(id: number) {
-    await prisma.categoryRule.delete({ where: { id } });
+    await prisma.categoryRule.delete({ where: { id } })
   }
 
   async update(id: number, request: NewCategoryRule): Promise<CategoryRule> {
@@ -615,35 +611,35 @@ export class CategoryRules {
       data: Schema.NewCategoryRule.parse(request),
       include: { category: true },
       where: { id },
-    });
+    })
     return {
       ...rule,
       categoryName: category.name,
-    };
+    }
   }
 
   async get(id: number) {
     const result = await prisma.categoryRule.findUnique({
       where: { id },
       include: { category: true },
-    });
+    })
     if (!result) {
-      return null;
+      return null
     }
-    const { category, ...rule } = result;
+    const { category, ...rule } = result
     return {
       ...rule,
       categoryName: category.name,
-    };
+    }
   }
 }
 
 export class Db {
-  readonly accounts = new Accounts();
-  readonly statements = new Statements();
-  readonly transactions = new Transactions();
-  readonly categories = new Categories();
-  readonly rules = new CategoryRules();
+  readonly accounts = new Accounts()
+  readonly statements = new Statements()
+  readonly transactions = new Transactions()
+  readonly categories = new Categories()
+  readonly rules = new CategoryRules()
 }
 
-export const db = new Db();
+export const db = new Db()

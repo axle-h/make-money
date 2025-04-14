@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Alert,
@@ -8,13 +8,13 @@ import {
   Spinner,
   Stack,
   Text,
-} from "@chakra-ui/react";
-import React, { ReactNode, useEffect } from "react";
-import { useAccounts, useUncategorizedTransactionCount } from "@/api-client";
-import { needsNewStatement } from "@/components/dates";
-import { Link } from "@/components/link";
+} from '@chakra-ui/react'
+import React, { ReactNode, useEffect } from 'react'
+import { useAccounts, useUncategorizedTransactionCount } from '@/api-client'
+import { needsNewStatement } from '@/components/dates'
+import { Link } from '@/components/link'
 
-type AlertProps = Alert.RootProps;
+type AlertProps = Alert.RootProps
 
 function LeftAccentAlert(props: AlertProps) {
   return (
@@ -24,15 +24,15 @@ function LeftAccentAlert(props: AlertProps) {
       borderStartWidth="3px"
       borderStartColor="colorPalette.600"
     />
-  );
+  )
 }
 
 export function ErrorAlert({
   error,
-  title = "Something went wrong",
+  title = 'Something went wrong',
   ...props
 }: AlertProps & { error: any; title?: string }) {
-  useEffect(() => console.log(error), [error]);
+  useEffect(() => console.log(error), [error])
   return (
     <LeftAccentAlert {...props} status="error">
       <Alert.Indicator />
@@ -41,7 +41,7 @@ export function ErrorAlert({
         <Alert.Description>{error.toString()}</Alert.Description>
       </Box>
     </LeftAccentAlert>
-  );
+  )
 }
 
 export function Loading() {
@@ -49,7 +49,7 @@ export function Loading() {
     <Center py={4}>
       <Spinner />
     </Center>
-  );
+  )
 }
 
 export function NotFound({ entity, id }: { entity: string; id: string }) {
@@ -57,7 +57,7 @@ export function NotFound({ entity, id }: { entity: string; id: string }) {
     <LeftAccentAlert status="error">
       <Alert.Indicator />
       <Box>
-        <Alert.Title style={{ textTransform: "capitalize" }}>
+        <Alert.Title style={{ textTransform: 'capitalize' }}>
           {entity} not found
         </Alert.Title>
         <Alert.Description>
@@ -65,7 +65,7 @@ export function NotFound({ entity, id }: { entity: string; id: string }) {
         </Alert.Description>
       </Box>
     </LeftAccentAlert>
-  );
+  )
 }
 
 export function NoData() {
@@ -74,7 +74,7 @@ export function NoData() {
       <Alert.Indicator />
       <Alert.Title>No data</Alert.Title>
     </LeftAccentAlert>
-  );
+  )
 }
 
 export function UpToDate() {
@@ -83,18 +83,18 @@ export function UpToDate() {
       <Alert.Indicator />
       <Alert.Title>You&apos;re all up to date!</Alert.Title>
     </LeftAccentAlert>
-  );
+  )
 }
 
 export function StatementAlerts() {
-  const { accounts = [] } = useAccounts();
-  const uncategorizedTransactionCount = useUncategorizedTransactionCount();
+  const { accounts = [] } = useAccounts()
+  const uncategorizedTransactionCount = useUncategorizedTransactionCount()
 
   const badAccounts = accounts.filter(
-    (acc) => !acc.statementsTo || needsNewStatement(acc.statementsTo),
-  );
+    (acc) => !acc.statementsTo || needsNewStatement(acc.statementsTo)
+  )
 
-  const alerts: ReactNode[] = [];
+  const alerts: ReactNode[] = []
 
   if (badAccounts.length > 0) {
     alerts.push(
@@ -110,15 +110,15 @@ export function StatementAlerts() {
               <Box as="span" fontWeight={600} ml={1}>
                 {badAccounts
                   .map((acc) => `${acc.bankName} ${acc.accountName}`)
-                  .join(", ")}
+                  .join(', ')}
               </Box>
               &nbsp;
             </Text>
             <Text></Text>
           </Alert.Description>
         </Box>
-      </LeftAccentAlert>,
-    );
+      </LeftAccentAlert>
+    )
   }
 
   if (uncategorizedTransactionCount > 0) {
@@ -134,17 +134,17 @@ export function StatementAlerts() {
             </Link>
           </Alert.Description>
         </Box>
-      </LeftAccentAlert>,
-    );
+      </LeftAccentAlert>
+    )
   }
 
   if (alerts.length === 0) {
-    return <></>;
+    return <></>
   }
 
   return (
     <Stack gap={6} mb={6}>
       {alerts}
     </Stack>
-  );
+  )
 }

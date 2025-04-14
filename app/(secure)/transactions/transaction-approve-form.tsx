@@ -3,8 +3,8 @@ import {
   Schema,
   Transaction,
   UpdateTransactionRequest,
-} from "@/app/api/schema";
-import { Field as FormikField, FieldArray, Form, Formik } from "formik";
+} from '@/app/api/schema'
+import { Field as FormikField, FieldArray, Form, Formik } from 'formik'
 import {
   Box,
   ButtonGroup,
@@ -16,10 +16,10 @@ import {
   Menu,
   NumberInput,
   Stack,
-} from "@chakra-ui/react";
-import React from "react";
-import { FieldProps } from "formik/dist/Field";
-import { FormikHelpers } from "formik/dist/types";
+} from '@chakra-ui/react'
+import React from 'react'
+import { FieldProps } from 'formik/dist/Field'
+import { FormikHelpers } from 'formik/dist/types'
 import {
   CodeIcon,
   MoreVerticalIcon,
@@ -27,16 +27,16 @@ import {
   CheckIcon,
   CloseIcon,
   PlusSquareIcon,
-} from "@/components/icons";
-import { CategorySelect } from "../categories/category-select";
-import { Button } from "@/components/ui/button";
+} from '@/components/icons'
+import { CategorySelect } from '../categories/category-select'
+import { Button } from '@/components/ui/button'
 
 export interface TransactionApproveFormProps {
-  transaction: Transaction;
-  onSubmit(values: UpdateTransactionRequest): Promise<boolean>;
-  onBuildRule(): void;
-  onCreateNewCategory(): void;
-  ruleMatch?: Pick<CategoryRule, "name" | "categoryId">;
+  transaction: Transaction
+  onSubmit(values: UpdateTransactionRequest): Promise<boolean>
+  onBuildRule(): void
+  onCreateNewCategory(): void
+  ruleMatch?: Pick<CategoryRule, 'name' | 'categoryId'>
 }
 
 export const TransactionApproveForm = React.forwardRef(
@@ -48,14 +48,14 @@ export const TransactionApproveForm = React.forwardRef(
       onBuildRule,
       onCreateNewCategory,
     }: TransactionApproveFormProps,
-    firstField,
+    firstField
   ) => {
     return (
       <Formik
         enableReinitialize
         initialValues={
           {
-            notes: transaction.notes || (ruleMatch?.name ?? ""),
+            notes: transaction.notes || (ruleMatch?.name ?? ''),
             categories:
               transaction.categories.length === 0
                 ? [
@@ -68,23 +68,23 @@ export const TransactionApproveForm = React.forwardRef(
           } as UpdateTransactionRequest
         }
         validate={(values) => {
-          const result = Schema.UpdateTransactionRequest.safeParse(values);
+          const result = Schema.UpdateTransactionRequest.safeParse(values)
           const errors = result.success
             ? {}
-            : result.error.flatten().fieldErrors;
+            : result.error.flatten().fieldErrors
           if (values.categories.length === 0) {
-            errors.categories = ["Must have at least one category"];
+            errors.categories = ['Must have at least one category']
           }
-          return errors;
+          return errors
         }}
         onSubmit={async (values, actions) => {
-          const request = { ...values };
+          const request = { ...values }
           if (!request.notes?.trim()) {
-            delete request.notes;
+            delete request.notes
           }
           if (await onSubmit(request)) {
-            actions.setSubmitting(false);
-            actions.resetForm();
+            actions.setSubmitting(false)
+            actions.resetForm()
           }
         }}
       >
@@ -128,7 +128,7 @@ export const TransactionApproveForm = React.forwardRef(
                                   onChange={(event) =>
                                     setFieldValue(
                                       `categories[${index}].id`,
-                                      Number(event.target.value) || 0,
+                                      Number(event.target.value) || 0
                                     )
                                   }
                                 />
@@ -156,12 +156,12 @@ export const TransactionApproveForm = React.forwardRef(
                                       }}
                                       min={0.1}
                                       max={1}
-                                      maxW={{ base: 28, lg: "initial" }}
+                                      maxW={{ base: 28, lg: 'initial' }}
                                       {...field}
                                       onValueChange={(e) =>
                                         setFieldValue(
                                           `categories[${index}].fraction`,
-                                          e.valueAsNumber,
+                                          e.valueAsNumber
                                         )
                                       }
                                     >
@@ -178,9 +178,9 @@ export const TransactionApproveForm = React.forwardRef(
                                 onClick={async () => {
                                   await spreadFraction(
                                     values.categories.length - 1,
-                                    setFieldValue,
-                                  );
-                                  arrayHelpers.remove(index);
+                                    setFieldValue
+                                  )
+                                  arrayHelpers.remove(index)
                                 }}
                                 disabled={index === 0}
                               >
@@ -191,7 +191,7 @@ export const TransactionApproveForm = React.forwardRef(
                         </Flex>
                         <Field.ErrorText>
                           {errors.categories ? (
-                            typeof errors.categories === "string" ? (
+                            typeof errors.categories === 'string' ? (
                               <Box as="span">{errors.categories}</Box>
                             ) : (
                               <List.Root>
@@ -223,11 +223,11 @@ export const TransactionApproveForm = React.forwardRef(
                           <Menu.Item
                             value="split-categories"
                             onClick={() => {
-                              arrayHelpers.push({ id: 0, fraction: 1 });
+                              arrayHelpers.push({ id: 0, fraction: 1 })
                               return spreadFraction(
                                 values.categories.length + 1,
-                                setFieldValue,
-                              );
+                                setFieldValue
+                              )
                             }}
                           >
                             <PlusSquareIcon /> Split categories
@@ -260,20 +260,20 @@ export const TransactionApproveForm = React.forwardRef(
           </Form>
         )}
       </Formik>
-    );
-  },
-);
-TransactionApproveForm.displayName = "TransactionApproveForm";
+    )
+  }
+)
+TransactionApproveForm.displayName = 'TransactionApproveForm'
 
 async function spreadFraction(
   newCount: number,
-  setFieldValue: FormikHelpers<UpdateTransactionRequest>["setFieldValue"],
+  setFieldValue: FormikHelpers<UpdateTransactionRequest>['setFieldValue']
 ) {
   if (newCount < 1) {
-    return;
+    return
   }
-  const newFraction = 1.0 / newCount;
+  const newFraction = 1.0 / newCount
   for (let i = 0; i < newCount; i++) {
-    await setFieldValue(`categories[${i}].fraction`, newFraction);
+    await setFieldValue(`categories[${i}].fraction`, newFraction)
   }
 }

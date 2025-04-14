@@ -1,19 +1,19 @@
-import { Box, Drawer, Stack } from "@chakra-ui/react";
-import React from "react";
-import { Transaction, UpdateTransactionRequest } from "@/app/api/schema";
-import { TransactionApproveForm } from "./transaction-approve-form";
+import { Box, Drawer, Stack } from '@chakra-ui/react'
+import React from 'react'
+import { Transaction, UpdateTransactionRequest } from '@/app/api/schema'
+import { TransactionApproveForm } from './transaction-approve-form'
 
-import { TransactionSummary } from "./transaction-summary";
-import { useRulePredicates } from "@/api-client";
-import { ErrorAlert, Loading } from "@/components/alert";
+import { TransactionSummary } from './transaction-summary'
+import { useRulePredicates } from '@/api-client'
+import { ErrorAlert, Loading } from '@/components/alert'
 
 export interface TransactionApproveDrawerProps {
-  open: boolean;
-  setOpen(open: boolean): void;
-  transaction: Transaction;
-  onSubmit(values: UpdateTransactionRequest): Promise<boolean>;
-  onCreateNewCategory(): void;
-  onBuildRule(): void;
+  open: boolean
+  setOpen(open: boolean): void
+  transaction: Transaction
+  onSubmit(values: UpdateTransactionRequest): Promise<boolean>
+  onCreateNewCategory(): void
+  onBuildRule(): void
 }
 
 export function TransactionApproveDrawer({
@@ -28,18 +28,18 @@ export function TransactionApproveDrawer({
     rules = [],
     isLoading: loadingRules,
     error: ruleError,
-  } = useRulePredicates();
-  const firstField = React.useRef<HTMLInputElement>(null);
+  } = useRulePredicates()
+  const firstField = React.useRef<HTMLInputElement>(null)
 
   if (loadingRules) {
-    return <></>;
+    return <></>
   }
 
   if (ruleError) {
-    return <ErrorAlert error={ruleError} />;
+    return <ErrorAlert error={ruleError} />
   }
 
-  const ruleMatch = rules.find((rule) => rule.predicate.evaluate(transaction));
+  const ruleMatch = rules.find((rule) => rule.predicate.evaluate(transaction))
 
   return (
     <Drawer.Root
@@ -66,11 +66,11 @@ export function TransactionApproveDrawer({
               <TransactionApproveForm
                 transaction={transaction}
                 onSubmit={async (values) => {
-                  const result = await onSubmit(values);
+                  const result = await onSubmit(values)
                   if (result) {
-                    setOpen(false);
+                    setOpen(false)
                   }
-                  return result;
+                  return result
                 }}
                 ref={firstField}
                 ruleMatch={ruleMatch}
@@ -82,5 +82,5 @@ export function TransactionApproveDrawer({
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  );
+  )
 }
