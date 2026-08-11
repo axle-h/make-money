@@ -1,4 +1,5 @@
 import { NewStatement, NewTransaction, Schema } from '@/app/api/schema'
+import { z } from 'zod'
 import { parse as parseOfx } from 'ofx-js'
 import { deserializeQif, QifType } from 'qif-ts'
 import { compareDesc } from 'date-fns'
@@ -44,7 +45,7 @@ export async function parseStatementFile(file: File): Promise<ParsedStatement> {
   for (let transaction of transactions) {
     const validation = Schema.NewTransaction.safeParse(transaction)
     if (!validation.success) {
-      const errors = validation.error.flatten().fieldErrors
+      const errors = z.flattenError(validation.error).fieldErrors
       throw new Error(
         `transaction invalid ${JSON.stringify(errors)} ${JSON.stringify(transaction, undefined, 2)}`
       )

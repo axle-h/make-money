@@ -1,4 +1,5 @@
 import { accountTypeName, NewAccount, Schema } from '@/app/api/schema'
+import { z } from 'zod'
 import React from 'react'
 import { Field as FormikField, Form, Formik } from 'formik'
 import { Field, Input, NativeSelect, Stack } from '@chakra-ui/react'
@@ -25,7 +26,7 @@ export const NewAccountForm = React.forwardRef(
             ...values,
             sortCode: values.sortCode || undefined,
           })
-          return result.success ? {} : result.error.flatten().fieldErrors
+          return result.success ? {} : z.flattenError(result.error).fieldErrors
         }}
         onSubmit={async ({ sortCode, ...values }, actions) => {
           if (await onSubmit({ ...values, sortCode: sortCode || undefined })) {

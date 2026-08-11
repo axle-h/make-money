@@ -31,12 +31,12 @@ export class Schema {
     .refine(
       (arg) => !(arg.accountType === 'CURRENT_ACCOUNT' && !arg.sortCode),
       {
-        message: 'Sort code is required for current accounts',
+        error: 'Sort code is required for current accounts',
         path: ['sortCode'],
       }
     )
     .refine((arg) => !(arg.accountType === 'CREDIT_CARD' && arg.sortCode), {
-      message: 'Sort code is not allowed for credit cards',
+      error: 'Sort code is not allowed for credit cards',
       path: ['sortCode'],
     })
     .refine(
@@ -46,7 +46,7 @@ export class Schema {
           !/\d{8}/.test(arg.accountNumber)
         ),
       {
-        message: 'Current account number must be 8 digits',
+        error: 'Current account number must be 8 digits',
         path: ['accountNumber'],
       }
     )
@@ -55,7 +55,7 @@ export class Schema {
         !arg.sortCode ||
         arg.accountType !== 'CURRENT_ACCOUNT' ||
         /\d{6}/.test(arg.sortCode),
-      { message: 'Sort code must be 6 digits', path: ['sortCode'] }
+      { error: 'Sort code must be 6 digits', path: ['sortCode'] }
     )
 
   static readonly NewTransaction = z.object({

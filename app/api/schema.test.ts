@@ -1,5 +1,5 @@
 import { UpdateTransactionRequest, Schema, NewCategory } from '@/app/api/schema'
-import { ZodError } from 'zod'
+import { z, ZodError } from 'zod'
 
 describe('schema', () => {
   describe('boolean', () => {
@@ -31,6 +31,53 @@ describe('schema', () => {
       expect(() => Schema.PaginatedQuery.parse({ page: 0, limit: 0 })).toThrow(
         ZodError
       )
+    })
+  })
+
+  describe('categorized transaction query', () => {
+    // zod 4 changed the ordering of .default() relative to .transform().
+    // Schema.Boolean is a transform, so this asserts the default still lands
+    // as the boolean `false` rather than leaking the untransformed input.
+    it('applies the boolean transform default', () => {
+      const observed = Schema.CategorizedTransactionQuery.parse({})
+      expect(observed).toEqual({ subCategories: false })
+    })
+  })
+
+  describe('new account', () => {
+    it('requires a sort code for current accounts', () => {
+      const result = Schema.NewAccount.safeParse({
+        bankName: 'some bank',
+        accountNumber: '12345678',
+        accountType: 'CURRENT_ACCOUNT',
+      })
+      expect(result.success).toBe(false)
+      expect(z.flattenError(result.error!).fieldErrors).toEqual({
+        sortCode: ['Sort code is required for current accounts'],
+      })
+    })
+
+    it('rejects a sort code on credit cards', () => {
+      const result = Schema.NewAccount.safeParse({
+        bankName: 'some bank',
+        accountNumber: '1234567890123456',
+        sortCode: '112233',
+        accountType: 'CREDIT_CARD',
+      })
+      expect(result.success).toBe(false)
+      expect(z.flattenError(result.error!).fieldErrors).toEqual({
+        sortCode: ['Sort code is not allowed for credit cards'],
+      })
+    })
+
+    it('accepts a valid current account', () => {
+      const account = {
+        bankName: 'some bank',
+        accountNumber: '12345678',
+        sortCode: '112233',
+        accountType: 'CURRENT_ACCOUNT' as const,
+      }
+      expect(Schema.NewAccount.parse(account)).toEqual(account)
     })
   })
 

@@ -1,4 +1,5 @@
 import { categoryTypeName, NewCategory, Schema } from '@/app/api/schema'
+import { z } from 'zod'
 import React from 'react'
 import { Field as FormikField, Form, Formik } from 'formik'
 import {
@@ -32,7 +33,7 @@ export const CategoryForm = React.forwardRef(
         initialValues={formInitialValues}
         validate={(values) => {
           const result = Schema.NewCategory.safeParse(values)
-          return result.success ? {} : result.error.flatten().fieldErrors
+          return result.success ? {} : z.flattenError(result.error).fieldErrors
         }}
         onSubmit={async (values, actions) => {
           if (await onSubmit(values)) {

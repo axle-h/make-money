@@ -4,6 +4,7 @@ import {
   Transaction,
   UpdateTransactionRequest,
 } from '@/app/api/schema'
+import { z } from 'zod'
 import { Field as FormikField, FieldArray, Form, Formik } from 'formik'
 import {
   Box,
@@ -71,7 +72,7 @@ export const TransactionApproveForm = React.forwardRef(
           const result = Schema.UpdateTransactionRequest.safeParse(values)
           const errors = result.success
             ? {}
-            : result.error.flatten().fieldErrors
+            : z.flattenError(result.error).fieldErrors
           if (values.categories.length === 0) {
             errors.categories = ['Must have at least one category']
           }
