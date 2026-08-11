@@ -99,7 +99,11 @@ const config: Config = {
   // moduleNameMapper: {},
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-  // modulePathIgnorePatterns: [],
+  // An array of regexp pattern strings that are matched against all module
+  // paths before those are considered 'visible' to the module loader.
+  // `output: 'standalone'` copies package.json into .next/standalone, which
+  // Jest's haste map reports as a naming collision with the real one.
+  modulePathIgnorePatterns: ["<rootDir>/.next/"],
 
   // Activates notifications for test results
   // notify: false,
@@ -151,8 +155,10 @@ const config: Config = {
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
   // snapshotSerializers: [],
 
-  // The test environment that will be used for testing
-  testEnvironment: "jsdom",
+  // The test environment that will be used for testing.
+  // All test suites here are pure logic with no DOM access, so 'node' avoids
+  // pulling in jest-environment-jsdom entirely.
+  testEnvironment: "node",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
