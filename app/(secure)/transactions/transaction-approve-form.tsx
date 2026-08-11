@@ -18,8 +18,8 @@ import {
   Stack,
 } from '@chakra-ui/react'
 import React from 'react'
-import { FieldProps } from 'formik/dist/Field'
-import { FormikHelpers } from 'formik/dist/types'
+import { FieldProps } from 'formik'
+import { FormikHelpers } from 'formik'
 import {
   CodeIcon,
   MoreVerticalIcon,

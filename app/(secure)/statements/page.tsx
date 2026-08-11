@@ -23,7 +23,7 @@ import { ErrorAlert, Loading } from '@/components/alert'
 import { currency } from '@/components/currency'
 import { Prisma } from '@prisma/client'
 import { Field as FormikField, Form, Formik } from 'formik'
-import { FieldProps } from 'formik/dist/Field'
+import { FieldProps } from 'formik'
 import { Button } from '@/components/ui/button'
 import { toaster } from '@/components/ui/toaster'
 

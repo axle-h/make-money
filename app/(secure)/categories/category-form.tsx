@@ -9,7 +9,7 @@ import {
   Stack,
   Switch,
 } from '@chakra-ui/react'
-import { FieldProps } from 'formik/dist/Field'
+import { FieldProps } from 'formik'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { Button } from '@/components/ui/button'
 

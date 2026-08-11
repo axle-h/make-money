@@ -2,7 +2,7 @@ import { accountTypeName, NewAccount, Schema } from '@/app/api/schema'
 import React from 'react'
 import { Field as FormikField, Form, Formik } from 'formik'
 import { Field, Input, NativeSelect, Stack } from '@chakra-ui/react'
-import { FieldProps } from 'formik/dist/Field'
+import { FieldProps } from 'formik'
 import { Button } from '@/components/ui/button'
 
 export const NewAccountForm = React.forwardRef(
