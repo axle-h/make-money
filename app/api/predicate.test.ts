@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { Predicate, PredicateParseError } from './predicate'
 import { EXAMPLE_TRANSACTION } from '@/app/api/schema' // Adjust the import based on your file structure
 
@@ -125,110 +125,54 @@ describe('predicate', () => {
   describe('supports decimals', () => {
     test('==', () => {
       const predicate = new Predicate('a == b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.2 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.1 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.2) })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.1) })).toBe(
-        true
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.2 })).toBe(false)
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.1 })).toBe(true)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.2) })).toBe(false)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.1) })).toBe(true)
     })
 
     test('!=', () => {
       const predicate = new Predicate('a != b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.1 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.1) })).toBe(
-        false
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.1 })).toBe(false)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.2) })).toBe(true)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.1) })).toBe(false)
     })
 
     test('>', () => {
       const predicate = new Predicate('a > b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.2), b: 3.2 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.3), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.2, b: new Prisma.Decimal(3.2) })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.3, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.2), b: 3.2 })).toBe(false)
+      expect(predicate.evaluate({ a: new Decimal(3.3), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: 3.2, b: new Decimal(3.2) })).toBe(false)
+      expect(predicate.evaluate({ a: 3.3, b: new Decimal(3.2) })).toBe(true)
     })
 
     test('>=', () => {
       const predicate = new Predicate('a >= b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.2 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.2), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.3), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.2) })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.2, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.3, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.2 })).toBe(false)
+      expect(predicate.evaluate({ a: new Decimal(3.2), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: new Decimal(3.3), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.2) })).toBe(false)
+      expect(predicate.evaluate({ a: 3.2, b: new Decimal(3.2) })).toBe(true)
+      expect(predicate.evaluate({ a: 3.3, b: new Decimal(3.2) })).toBe(true)
     })
 
     test('<', () => {
       const predicate = new Predicate('a < b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.2), b: 3.2 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.2, b: new Prisma.Decimal(3.2) })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.2), b: 3.2 })).toBe(false)
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: 3.2, b: new Decimal(3.2) })).toBe(false)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.2) })).toBe(true)
     })
 
     test('<=', () => {
       const predicate = new Predicate('a <= b')
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.3), b: 3.2 })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.2), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: new Prisma.Decimal(3.1), b: 3.2 })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.3, b: new Prisma.Decimal(3.2) })).toBe(
-        false
-      )
-      expect(predicate.evaluate({ a: 3.2, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
-      expect(predicate.evaluate({ a: 3.1, b: new Prisma.Decimal(3.2) })).toBe(
-        true
-      )
+      expect(predicate.evaluate({ a: new Decimal(3.3), b: 3.2 })).toBe(false)
+      expect(predicate.evaluate({ a: new Decimal(3.2), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: new Decimal(3.1), b: 3.2 })).toBe(true)
+      expect(predicate.evaluate({ a: 3.3, b: new Decimal(3.2) })).toBe(false)
+      expect(predicate.evaluate({ a: 3.2, b: new Decimal(3.2) })).toBe(true)
+      expect(predicate.evaluate({ a: 3.1, b: new Decimal(3.2) })).toBe(true)
     })
   })
 

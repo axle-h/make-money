@@ -3,7 +3,7 @@ import {
   CategoryType,
   categoryTypeName,
 } from '@/app/api/schema'
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 import {
   compareAsc,
   isEqual,
@@ -53,7 +53,7 @@ export function sumTotal(
   prop: 'credit' | 'debit'
 ): number {
   return transactions
-    .reduce((sum, { [prop]: amount }) => sum.add(amount), new Prisma.Decimal(0))
+    .reduce((sum, { [prop]: amount }) => sum.add(amount), new Decimal(0))
     .toNumber()
 }
 
@@ -78,7 +78,7 @@ export function aggregateByCategory(
     .filter(({ amount }) => !amount.eq(0))
 
   const total = flatTransactions
-    .reduce((sum, { amount }) => sum.add(amount), new Prisma.Decimal(0))
+    .reduce((sum, { amount }) => sum.add(amount), new Decimal(0))
     .abs()
 
   if (total.isZero()) {
@@ -95,7 +95,7 @@ export function aggregateByCategory(
       }
       return agg
     },
-    {} as Record<string, Prisma.Decimal>
+    {} as Record<string, Decimal>
   )
 
   const colors = generateColors()
@@ -117,7 +117,7 @@ export function aggregateByCategory(
     const otherData = decimalData.splice(targetCategoryCount - 1)
 
     function calcOtherPercent() {
-      return otherData.reduce((a, b) => a.add(b.percent), new Prisma.Decimal(0))
+      return otherData.reduce((a, b) => a.add(b.percent), new Decimal(0))
     }
 
     let otherPercent = calcOtherPercent()
@@ -131,10 +131,7 @@ export function aggregateByCategory(
       decimalData.push({
         label: OTHER_LABEL,
         emoji: OTHER_EMOJI,
-        value: otherData.reduce(
-          (a, b) => a.add(b.value),
-          new Prisma.Decimal(0)
-        ),
+        value: otherData.reduce((a, b) => a.add(b.value), new Decimal(0)),
         percent: otherPercent,
         color: OTHER_COLOR_CSS,
       })
@@ -159,14 +156,14 @@ export function timeSeriesDecimal(
   startDate: Date,
   endDate: Date,
   period: DurationUnit = 'days'
-): TimeSeriesEntry<Prisma.Decimal>[] {
+): TimeSeriesEntry<Decimal>[] {
   if (transactions.length === 0) {
     return []
   }
 
   const startDateInclusive = startOf(startDate, period)
   const endDateExclusive = addAmount(startOf(endDate, period), 1, period)
-  const data: TimeSeriesEntry<Prisma.Decimal>[] = transactions
+  const data: TimeSeriesEntry<Decimal>[] = transactions
     .filter((x) => x.date >= startDateInclusive && x.date < endDateExclusive)
     .map(({ date, credit, debit }) => ({ date, credit, debit }))
     .sort((a, b) => compareAsc(a.date, b.date))
@@ -183,14 +180,14 @@ export function timeSeriesDecimal(
       }
 
       return agg
-    }, [] as TimeSeriesEntry<Prisma.Decimal>[])
+    }, [] as TimeSeriesEntry<Decimal>[])
 
   const periodDuration: Duration = { [period]: 1 }
 
-  function* flatten(): Generator<TimeSeriesEntry<Prisma.Decimal>> {
+  function* flatten(): Generator<TimeSeriesEntry<Decimal>> {
     let index = 0
     let date = startDateInclusive
-    let prev: TimeSeriesEntry<Prisma.Decimal> | null = null
+    let prev: TimeSeriesEntry<Decimal> | null = null
 
     while (date <= endDate) {
       const nextDate = addDuration(date, periodDuration)
@@ -209,8 +206,8 @@ export function timeSeriesDecimal(
       } else {
         yield (prev = {
           date,
-          credit: new Prisma.Decimal(0),
-          debit: new Prisma.Decimal(0),
+          credit: new Decimal(0),
+          debit: new Decimal(0),
         })
         date = nextDate
       }
@@ -250,13 +247,11 @@ export function cumulativeTimeSeries(
         debit: current.debit.add(last.debit),
       })
       return series
-    }, [] as TimeSeriesEntry<Prisma.Decimal>[])
+    }, [] as TimeSeriesEntry<Decimal>[])
     .map(toNumberEntry)
 }
 
-function toNumberEntry(
-  entry: TimeSeriesEntry<Prisma.Decimal>
-): TimeSeriesEntry {
+function toNumberEntry(entry: TimeSeriesEntry<Decimal>): TimeSeriesEntry {
   return {
     date: entry.date,
     credit: entry.credit.toNumber(),
@@ -281,12 +276,12 @@ export function outgoings(
 }
 
 export interface KeyStats {
-  totalIncome: Prisma.Decimal
-  totalBills: Prisma.Decimal
-  totalExpenses: Prisma.Decimal
-  weeklyDisposableIncome: Prisma.Decimal
-  totalBalance: Prisma.Decimal
-  totalOutgoings: Prisma.Decimal
+  totalIncome: Decimal
+  totalBills: Decimal
+  totalExpenses: Decimal
+  weeklyDisposableIncome: Decimal
+  totalBalance: Decimal
+  totalOutgoings: Decimal
 }
 
 export function keyStats(
@@ -324,8 +319,8 @@ export function keyStats(
 function sumByType(
   transactions: CategorizedTransaction[],
   categoryType: CategoryType
-): Prisma.Decimal {
+): Decimal {
   return transactions
     .filter((t) => t.categoryType === categoryType)
-    .reduce((a, b) => a.plus(b.credit).plus(b.debit), new Prisma.Decimal(0))
+    .reduce((a, b) => a.plus(b.credit).plus(b.debit), new Decimal(0))
 }

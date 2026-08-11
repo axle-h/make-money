@@ -12,7 +12,7 @@ import { assertOk } from '@/api-client/error'
 import { Paginated } from '@/app/api/paginated'
 import { stringifySearchParams } from '@/app/api/query'
 import useSWR, { mutate } from 'swr'
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { parseIsoUtcDatetime } from '@/components/dates'
 
 export class TransactionApi {
@@ -26,7 +26,7 @@ export class TransactionApi {
     const result: Paginated<Transaction> = await response.json()
     for (let item of result.data) {
       item.date = parseIsoUtcDatetime(item.date)
-      item.amount = new Prisma.Decimal(item.amount)
+      item.amount = new Decimal(item.amount)
     }
     return result
   }
@@ -41,8 +41,8 @@ export class TransactionApi {
     const result: CategorizedTransaction[] = await response.json()
     for (let item of result) {
       item.date = parseIsoUtcDatetime(item.date)
-      item.credit = new Prisma.Decimal(item.credit)
-      item.debit = new Prisma.Decimal(item.debit)
+      item.credit = new Decimal(item.credit)
+      item.debit = new Decimal(item.debit)
     }
     return result
   }

@@ -1,6 +1,6 @@
 import { mutateTransactions, ruleApi, transactionApi } from '@/api-client'
 import { Transaction, UpdateTransactionRequest } from '@/app/api/schema'
-import { CategoryRule } from '@prisma/client'
+import { CategoryRule } from '@/generated/prisma/browser'
 import { toaster } from '@/components/ui/toaster'
 
 export async function resetTransactionCategories(id: number) {

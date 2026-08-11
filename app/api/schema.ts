@@ -5,8 +5,8 @@ import {
   Category as DbCategory,
   TransactionCategory as DbTransactionCategory,
   CategoryRule as DbCategoryRule,
-  Prisma,
-} from '@prisma/client'
+} from '@/generated/prisma/browser'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { z } from 'zod'
 import { validatePredicate } from '@/app/api/predicate'
 
@@ -243,8 +243,8 @@ export interface CategorizedTransaction {
   category: string
   emoji: string | null
   categoryType: CategoryType
-  debit: Prisma.Decimal
-  credit: Prisma.Decimal
+  debit: Decimal
+  credit: Decimal
 }
 
 export const EXAMPLE_TRANSACTION: DbTransaction = {
@@ -256,7 +256,7 @@ export const EXAMPLE_TRANSACTION: DbTransaction = {
   description: 'some-description',
   statementId: 2,
   accountId: 3,
-  amount: new Prisma.Decimal(2.5),
+  amount: new Decimal(2.5),
   notes: 'Some transaction notes',
 }
 
@@ -297,8 +297,8 @@ export interface Category extends Omit<DbCategory, 'type'> {
 }
 export interface CategoryStats extends Category {
   transactions: number
-  totalDebits: Prisma.Decimal
-  totalCredits: Prisma.Decimal
+  totalDebits: Decimal
+  totalCredits: Decimal
 }
 export type TransactionCategory = DbCategory &
   Pick<DbTransactionCategory, 'fraction'>

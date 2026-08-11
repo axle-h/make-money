@@ -1,13 +1,13 @@
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 
 const SYMBOL = '£'
 
 export function currency(
-  value: Prisma.Decimal | number | string,
+  value: Decimal | number | string,
   decimalPlaces: number = 2
 ): string {
   if (typeof value === 'string') {
-    value = new Prisma.Decimal(value)
+    value = new Decimal(value)
   }
   const isNegative = typeof value === 'number' ? value < 0 : value.isNeg()
   if (isNegative) {
@@ -18,9 +18,9 @@ export function currency(
   return SYMBOL + numberWithCommas(value.toFixed(decimalPlaces))
 }
 
-export function currencyShort(value: Prisma.Decimal | number | string): string {
+export function currencyShort(value: Decimal | number | string): string {
   if (typeof value === 'string') {
-    value = new Prisma.Decimal(value)
+    value = new Decimal(value)
   }
   const isSmall = typeof value === 'number' ? value < 1000 : value.lt(1000)
   if (isSmall) {

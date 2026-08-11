@@ -3,7 +3,7 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended'
 
 const eslintConfig = [
   {
-    ignores: ['.next/**', 'next-env.d.ts'],
+    ignores: ['.next/**', 'next-env.d.ts', 'generated/**'],
   },
   ...next,
   // Must come last: disables the stylistic rules the other configs enable and

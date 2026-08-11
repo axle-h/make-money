@@ -2,7 +2,7 @@ import { Category, CategoryStats, NewCategory } from '@/app/api/schema'
 import { assertOk } from '@/api-client/error'
 import useSWR, { mutate } from 'swr'
 import { apiQuery, ApiRequest, isApiKey } from '@/api-client/request'
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 
 export class CategoriesApi {
   async list(): Promise<Category[]> {
@@ -17,8 +17,8 @@ export class CategoriesApi {
     const categories: CategoryStats[] = await response.json()
     return categories.map((cat) => ({
       ...cat,
-      totalCredits: new Prisma.Decimal(cat.totalCredits),
-      totalDebits: new Prisma.Decimal(cat.totalDebits),
+      totalCredits: new Decimal(cat.totalCredits),
+      totalDebits: new Decimal(cat.totalDebits),
     }))
   }
 
