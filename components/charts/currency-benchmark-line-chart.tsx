@@ -1,3 +1,5 @@
+'use client'
+
 import {
   LineChart,
   Line,
@@ -15,7 +17,7 @@ import {
 } from '@/components/charts/data'
 import { formatMonthAndYear, utcNow } from '@/components/dates'
 import { isBefore } from 'date-fns'
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { useBreakpointValue } from '@chakra-ui/react'
 import { currency, currencyShort } from '@/components/currency'
 import { useColorMode } from '@/components/ui/color-mode'
@@ -23,7 +25,7 @@ import { useColorMode } from '@/components/ui/color-mode'
 export interface CurrencyBenchmarkLineChartProps {
   data: TimeSeriesEntry[]
   dataKey: 'credit' | 'debit'
-  benchmark: number | Prisma.Decimal
+  benchmark: number | Decimal
 }
 
 export function CurrencyBenchmarkLineChart({
@@ -46,7 +48,7 @@ export function CurrencyBenchmarkLineChart({
 
   const now = utcNow()
 
-  const benchmarkDecimal = new Prisma.Decimal(benchmark)
+  const benchmarkDecimal = new Decimal(benchmark)
 
   const chartData = data.map(({ date, [dataKey]: amount }, index) => ({
     date: formatMonthAndYear(date),

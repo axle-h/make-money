@@ -8,13 +8,21 @@ RUN apk add --no-cache libc6-compat
 
 FROM base AS builder
 
+# Prisma 7 requires a driver adapter. @prisma/adapter-better-sqlite3 pulls in
+# better-sqlite3, a native module that node-gyp has to compile from source.
+RUN apk add --no-cache python3 make g++
+
 # Install dependencies in a seperate layer
 COPY package.json package-lock.json* ./
-COPY prisma/ .
 RUN npm ci
 
 # Build
 COPY . .
+
+# Prisma 7 generates the client into ./generated rather than node_modules, and
+# no longer does it as part of install, so it has to run before the build.
+RUN npx prisma generate
+
 RUN npm run build
 
 

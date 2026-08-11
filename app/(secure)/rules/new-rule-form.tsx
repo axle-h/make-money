@@ -1,7 +1,8 @@
 import { NewCategoryRule, Schema } from '@/app/api/schema'
+import { z } from 'zod'
 import { Field, IconButton, Input, InputGroup, Stack } from '@chakra-ui/react'
 import { Field as FormikField, Form, Formik } from 'formik'
-import { FieldProps } from 'formik/dist/Field'
+import { FieldProps } from 'formik'
 import { InfoIcon } from '@/components/icons'
 import { PredicateInfoDrawer } from './predicate-info'
 import React, { useState } from 'react'
@@ -29,7 +30,9 @@ export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(
           }
           validate={(values) => {
             const result = Schema.NewCategoryRule.safeParse(values)
-            return result.success ? {} : result.error.flatten().fieldErrors
+            return result.success
+              ? {}
+              : z.flattenError(result.error).fieldErrors
           }}
           onSubmit={async (values, actions) => {
             if (await onSubmit(values)) {

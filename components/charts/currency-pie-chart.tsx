@@ -34,7 +34,10 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
             data={data}
             outerRadius={150}
             dataKey="value"
-            label={(entry) => entry.emoji || entry.label}
+            label={({ payload }) => {
+              const entry = payload as FrequencyTableEntry
+              return entry.emoji || entry.label
+            }}
             stroke={strokeAlt}
           >
             {data.map((entry, index) => (
@@ -55,13 +58,17 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
             itemStyle={{
               color: stroke,
             }}
-            formatter={(_1, _2, { payload }) =>
-              label(payload as FrequencyTableEntry)
-            }
+            formatter={(_1, _2, { payload }) => {
+              const entry = payload as FrequencyTableEntry
+              // recharts 3 no longer takes the tooltip name from <Cell name>,
+              // so the formatter has to return it as [value, name] or every
+              // slice is labelled with its index.
+              return [label(entry), entry.label]
+            }}
           />
           <Legend
             formatter={(_, { payload }) => {
-              const entry = payload as unknown as FrequencyTableEntry
+              const entry = payload as FrequencyTableEntry
               return [entry.label, entry.emoji, label(entry)]
                 .filter((x) => x)
                 .join(' ')

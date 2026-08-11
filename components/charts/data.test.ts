@@ -6,13 +6,13 @@ import {
 } from '@/components/charts/data'
 import { CategorizedTransaction, CategoryType } from '@/app/api/schema'
 import { parseIsoUtcDatetime } from '@/components/dates'
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 
 export type Stringified<T> = {
   [k in keyof T]: T[k] extends Date
     ? string
-    : T[k] extends Prisma.Decimal
-      ? Prisma.Decimal | number | string
+    : T[k] extends Decimal
+      ? Decimal | number | string
       : T[k] extends CategoryType
         ? CategoryType | string
         : T[k]
@@ -30,8 +30,8 @@ function transaction(
     emoji: partial.emoji || null,
     category: partial.category || 'Leisure',
     categoryType: (partial.categoryType || 'EXPENSE') as CategoryType,
-    credit: new Prisma.Decimal(partial.credit || 0),
-    debit: new Prisma.Decimal(partial.debit || 0),
+    credit: new Decimal(partial.credit || 0),
+    debit: new Decimal(partial.debit || 0),
   }
 }
 

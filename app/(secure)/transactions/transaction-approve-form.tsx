@@ -4,6 +4,7 @@ import {
   Transaction,
   UpdateTransactionRequest,
 } from '@/app/api/schema'
+import { z } from 'zod'
 import { Field as FormikField, FieldArray, Form, Formik } from 'formik'
 import {
   Box,
@@ -18,8 +19,8 @@ import {
   Stack,
 } from '@chakra-ui/react'
 import React from 'react'
-import { FieldProps } from 'formik/dist/Field'
-import { FormikHelpers } from 'formik/dist/types'
+import { FieldProps } from 'formik'
+import { FormikHelpers } from 'formik'
 import {
   CodeIcon,
   MoreVerticalIcon,
@@ -71,7 +72,7 @@ export const TransactionApproveForm = React.forwardRef(
           const result = Schema.UpdateTransactionRequest.safeParse(values)
           const errors = result.success
             ? {}
-            : result.error.flatten().fieldErrors
+            : z.flattenError(result.error).fieldErrors
           if (values.categories.length === 0) {
             errors.categories = ['Must have at least one category']
           }

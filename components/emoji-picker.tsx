@@ -98,17 +98,21 @@ function EmojiMartPicker(props: any) {
   const ref = useRef<HTMLDivElement | null>(null)
   const instance = useRef<Picker | null>(null)
 
-  if (instance.current) {
-    instance.current.update(props)
-  }
-
   useEffect(() => {
+    // Built once on mount. `props` is a fresh object literal on every render,
+    // so including it here would tear down and rebuild the picker each time;
+    // the effect below keeps the existing instance in sync instead.
     instance.current = new Picker({ ...props, ref })
 
     return () => {
       instance.current = null
     }
-  }, [props, ref])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    instance.current?.update(props)
+  }, [props])
 
   return React.createElement('div', { ref })
 }

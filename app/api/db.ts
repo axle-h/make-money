@@ -6,8 +6,9 @@ import {
   Transaction as DbTransaction,
   TransactionCategory as DbTransactionCategory,
   Category as DbCategory,
-} from '@prisma/client'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+} from '@/generated/prisma/client'
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { Paginated, toPageArgs } from '@/app/api/paginated'
 import {
   Account,
@@ -38,7 +39,24 @@ import { formatDateIso, formatDateLong } from '@/components/dates'
 import { Predicate } from '@/app/api/predicate'
 import { addDays, compareAsc, compareDesc } from 'date-fns'
 
-const prisma = new PrismaClient()
+// Prisma 7 requires a driver adapter. The client is also cached on globalThis
+// so `next dev` hot reloads reuse one connection instead of leaking a new one
+// on every reload.
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient
+}
+
+const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter: new PrismaBetterSqlite3({
+      url: process.env.DATABASE_URL ?? 'file:./dev.db',
+    }),
+  })
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}
 
 export class DbError extends Error {
   constructor(
@@ -54,7 +72,7 @@ export function tryHandleDbError(e: Error): DbError | null {
     return e
   }
 
-  if (!(e instanceof PrismaClientKnownRequestError)) {
+  if (!(e instanceof Prisma.PrismaClientKnownRequestError)) {
     return null
   }
   let badRequest = false
@@ -324,8 +342,8 @@ export class Transactions {
                   category,
                   emoji,
                   categoryType,
-                  debit: new Prisma.Decimal(0),
-                  credit: new Prisma.Decimal(0),
+                  debit: new Decimal(0),
+                  credit: new Decimal(0),
                 })
 
           other[prop] = other[prop].plus(amount)
@@ -545,11 +563,11 @@ export class Categories {
       totalDebits: transactions
         .filter((t) => t.transaction.amount.lt(0))
         .map((t) => t.transaction.amount)
-        .reduce((a, b) => a.add(b), new Prisma.Decimal(0)),
+        .reduce((a, b) => a.add(b), new Decimal(0)),
       totalCredits: transactions
         .filter((t) => t.transaction.amount.gt(0))
         .map((t) => t.transaction.amount)
-        .reduce((a, b) => a.add(b), new Prisma.Decimal(0)),
+        .reduce((a, b) => a.add(b), new Decimal(0)),
     }))
   }
 

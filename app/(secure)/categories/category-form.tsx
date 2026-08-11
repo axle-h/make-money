@@ -1,4 +1,5 @@
 import { categoryTypeName, NewCategory, Schema } from '@/app/api/schema'
+import { z } from 'zod'
 import React from 'react'
 import { Field as FormikField, Form, Formik } from 'formik'
 import {
@@ -9,7 +10,7 @@ import {
   Stack,
   Switch,
 } from '@chakra-ui/react'
-import { FieldProps } from 'formik/dist/Field'
+import { FieldProps } from 'formik'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { Button } from '@/components/ui/button'
 
@@ -32,7 +33,7 @@ export const CategoryForm = React.forwardRef(
         initialValues={formInitialValues}
         validate={(values) => {
           const result = Schema.NewCategory.safeParse(values)
-          return result.success ? {} : result.error.flatten().fieldErrors
+          return result.success ? {} : z.flattenError(result.error).fieldErrors
         }}
         onSubmit={async (values, actions) => {
           if (await onSubmit(values)) {

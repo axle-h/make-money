@@ -45,6 +45,7 @@ import { Session } from 'next-auth'
 interface NavItemProps extends FlexProps {
   NavIcon: React.ComponentType<IconProps>
   href: string
+  onClose: () => void
   children: React.ReactNode
 }
 
@@ -52,51 +53,51 @@ interface SidebarProps extends BoxProps {
   onClose: () => void
 }
 
-function SidebarContent({ onClose, ...rest }: SidebarProps) {
+function NavItem({ NavIcon, href, onClose, children, ...rest }: NavItemProps) {
   const pathName = usePathname()
-  const todoTransactionCount = useUncategorizedTransactionCount()
-
-  function NavItem({ NavIcon, href, children, ...rest }: NavItemProps) {
-    const current = pathName === href
-    return (
-      <Link
-        href={href}
-        style={{ textDecoration: 'none' }}
-        _focus={{ boxShadow: 'none' }}
+  const current = pathName === href
+  return (
+    <Link
+      href={href}
+      style={{ textDecoration: 'none' }}
+      _focus={{ boxShadow: 'none' }}
+      w="100%"
+    >
+      <Flex
+        align="center"
+        p="4"
+        mx="4"
+        my="1"
+        borderRadius="lg"
+        role="group"
+        cursor="pointer"
+        _hover={{
+          bg: 'gray.600',
+          color: 'white',
+        }}
+        bg={current ? 'gray.300' : undefined}
+        _dark={{
+          bg: current ? 'gray.700' : undefined,
+        }}
+        onClick={onClose}
+        {...rest}
         w="100%"
       >
-        <Flex
-          align="center"
-          p="4"
-          mx="4"
-          my="1"
-          borderRadius="lg"
-          role="group"
-          cursor="pointer"
-          _hover={{
-            bg: 'gray.600',
+        <NavIcon
+          mr="4"
+          fontSize="16"
+          _groupHover={{
             color: 'white',
           }}
-          bg={current ? 'gray.300' : undefined}
-          _dark={{
-            bg: current ? 'gray.700' : undefined,
-          }}
-          onClick={onClose}
-          {...rest}
-          w="100%"
-        >
-          <NavIcon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: 'white',
-            }}
-          />
-          {children}
-        </Flex>
-      </Link>
-    )
-  }
+        />
+        {children}
+      </Flex>
+    </Link>
+  )
+}
+
+function SidebarContent({ onClose, ...rest }: SidebarProps) {
+  const todoTransactionCount = useUncategorizedTransactionCount()
 
   return (
     <Box
@@ -126,35 +127,35 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
 
-      <NavItem NavIcon={HomeIcon} href="/dashboard">
+      <NavItem NavIcon={HomeIcon} href="/dashboard" onClose={onClose}>
         Dashboard
       </NavItem>
 
-      <NavItem NavIcon={DollarIcon} href="/income">
+      <NavItem NavIcon={DollarIcon} href="/income" onClose={onClose}>
         Income
       </NavItem>
 
-      <NavItem NavIcon={BankIcon} href="/accounts">
+      <NavItem NavIcon={BankIcon} href="/accounts" onClose={onClose}>
         Accounts
       </NavItem>
 
-      <NavItem NavIcon={CreditCardIcon} href="/statements">
+      <NavItem NavIcon={CreditCardIcon} href="/statements" onClose={onClose}>
         Statements
       </NavItem>
 
-      <NavItem NavIcon={TransactionIcon} href="/transactions">
+      <NavItem NavIcon={TransactionIcon} href="/transactions" onClose={onClose}>
         Transactions
       </NavItem>
 
-      <NavItem NavIcon={CategoriesIcon} href="/categories">
+      <NavItem NavIcon={CategoriesIcon} href="/categories" onClose={onClose}>
         Categories
       </NavItem>
 
-      <NavItem NavIcon={CodeIcon} href="/rules">
+      <NavItem NavIcon={CodeIcon} href="/rules" onClose={onClose}>
         Rules
       </NavItem>
 
-      <NavItem NavIcon={ListIcon} href="/uncategorized">
+      <NavItem NavIcon={ListIcon} href="/uncategorized" onClose={onClose}>
         Uncategorized
         {todoTransactionCount > 0 ? (
           <Badge ml={2} colorPalette="red" variant="solid">

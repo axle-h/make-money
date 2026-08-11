@@ -1,11 +1,11 @@
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 import { Stat } from '@chakra-ui/react'
 import { currency } from '@/components/currency'
 import React from 'react'
 
-export function CashFlow({ amount }: { amount: Prisma.Decimal | number }) {
+export function CashFlow({ amount }: { amount: Decimal | number }) {
   const [absAmount, isPos, isZero] =
-    amount instanceof Prisma.Decimal
+    amount instanceof Decimal
       ? [amount.abs(), amount.isPos(), amount.isZero()]
       : [Math.abs(amount), amount > 0, amount === 0]
 

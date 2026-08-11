@@ -1,5 +1,5 @@
 import { Statement } from '@/app/api/schema'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useStatements } from '@/api-client'
 import { ErrorAlert, Loading, NoData } from '@/components/alert'
 import { Dialog, IconButton, Menu, Table } from '@chakra-ui/react'
@@ -26,7 +26,6 @@ export function StatementTable({
   onViewTransactions,
 }: StatementTableProps) {
   const limit = 20
-  const [pageCount, updatePageCount] = useState<number | null>(null)
   const { statements, isLoading, error } = useStatements({
     page,
     limit,
@@ -34,11 +33,11 @@ export function StatementTable({
     orderByDescending: true,
   })
 
-  useEffect(() => {
-    if (statements?.count) {
-      updatePageCount(Math.ceil(statements.count / limit))
-    }
-  }, [statements?.count, limit])
+  // Derived rather than held in state and synced from an effect, which would
+  // render once with a stale count before correcting itself.
+  const pageCount = statements?.count
+    ? Math.ceil(statements.count / limit)
+    : null
 
   if (isLoading) {
     return <Loading />
@@ -95,8 +94,10 @@ export function StatementTable({
   )
 }
 
-interface StatementMenuProps
-  extends Pick<StatementTableProps, 'onDelete' | 'onViewTransactions'> {
+interface StatementMenuProps extends Pick<
+  StatementTableProps,
+  'onDelete' | 'onViewTransactions'
+> {
   statement: Statement
 }
 

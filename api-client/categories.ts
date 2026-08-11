@@ -1,60 +1,63 @@
-import {Category, CategoryStats, NewCategory} from "@/app/api/schema";
-import {assertOk} from "@/api-client/error";
-import useSWR, {mutate} from "swr";
-import {apiQuery, ApiRequest, isApiKey} from "@/api-client/request";
-import {Prisma} from "@prisma/client";
+import { Category, CategoryStats, NewCategory } from '@/app/api/schema'
+import { assertOk } from '@/api-client/error'
+import useSWR, { mutate } from 'swr'
+import { apiQuery, ApiRequest, isApiKey } from '@/api-client/request'
+import { Decimal } from '@prisma/client-runtime-utils'
 
 export class CategoriesApi {
-    async list(): Promise<Category[]> {
-        const response = await fetch('/api/categories')
-        await assertOk(response, 'list categories')
-        return await response.json()
-    }
+  async list(): Promise<Category[]> {
+    const response = await fetch('/api/categories')
+    await assertOk(response, 'list categories')
+    return await response.json()
+  }
 
-    async stats(): Promise<CategoryStats[]> {
-        const response = await fetch('/api/categories/stats')
-        await assertOk(response, 'list category stats')
-        const categories: CategoryStats[] = await response.json()
-        return categories.map(cat => ({
-            ...cat,
-            totalCredits: new Prisma.Decimal(cat.totalCredits),
-            totalDebits: new Prisma.Decimal(cat.totalDebits)
-        }))
-    }
+  async stats(): Promise<CategoryStats[]> {
+    const response = await fetch('/api/categories/stats')
+    await assertOk(response, 'list category stats')
+    const categories: CategoryStats[] = await response.json()
+    return categories.map((cat) => ({
+      ...cat,
+      totalCredits: new Decimal(cat.totalCredits),
+      totalDebits: new Decimal(cat.totalDebits),
+    }))
+  }
 
-    async create(newCategory: NewCategory) {
-        const response = await fetch('/api/categories',
-            { method: 'POST', body: JSON.stringify(newCategory) })
-        await assertOk(response, 'create new category')
-    }
+  async create(newCategory: NewCategory) {
+    const response = await fetch('/api/categories', {
+      method: 'POST',
+      body: JSON.stringify(newCategory),
+    })
+    await assertOk(response, 'create new category')
+  }
 
-    async update(id: number, values: NewCategory) {
+  async update(id: number, values: NewCategory) {
+    const response = await fetch(`/api/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(values),
+    })
+    await assertOk(response, 'update category')
+  }
 
-        const response = await fetch(`/api/categories/${id}`,
-            { method: 'PUT', body: JSON.stringify(values) })
-        await assertOk(response, 'update category')
-    }
-
-    async delete(id: number) {
-        const response = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
-        await assertOk(response, 'delete category')
-    }
+  async delete(id: number) {
+    const response = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+    await assertOk(response, 'delete category')
+  }
 }
 
 export const categoriesApi = new CategoriesApi()
 
 export function useCategories() {
-    const key = apiQuery('list-categories', {})
-    const {data: categories, ...rest} = useSWR(key, () => categoriesApi.list())
-    return {categories, ...rest}
+  const key = apiQuery('list-categories', {})
+  const { data: categories, ...rest } = useSWR(key, () => categoriesApi.list())
+  return { categories, ...rest }
 }
 
 export function useCategoryStats() {
-    const key = apiQuery('list-category-stats', {})
-    const {data: categories, ...rest} = useSWR(key, () => categoriesApi.stats())
-    return {categories, ...rest}
+  const key = apiQuery('list-category-stats', {})
+  const { data: categories, ...rest } = useSWR(key, () => categoriesApi.stats())
+  return { categories, ...rest }
 }
 
 export async function mutateCategories() {
-    await mutate(key => isApiKey(key, 'list-categories', 'list-category-stats'))
+  await mutate((key) => isApiKey(key, 'list-categories', 'list-category-stats'))
 }

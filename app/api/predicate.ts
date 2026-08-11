@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client-runtime-utils'
 
 export type ConditionalOperator = '==' | '!=' | '>' | '<' | '>=' | '<=' | 'LIKE'
 export type LogicalOperator = 'AND' | 'OR'
@@ -15,7 +15,7 @@ export interface Parameter {
   name: string
 }
 
-export type Leaf = string | number | Prisma.Decimal | null
+export type Leaf = string | number | Decimal | null
 
 export interface Literal {
   type: 'LITERAL'
@@ -140,25 +140,19 @@ function evaluateSyntaxTree(node: PNode, obj: Record<string, Leaf>): boolean {
 
       function relational(
         fn: (
-          left: string | number | Prisma.Decimal,
-          right: string | number | Prisma.Decimal
+          left: string | number | Decimal,
+          right: string | number | Decimal
         ) => boolean,
-        decimalFn: (
-          left: Prisma.Decimal,
-          right: string | number | Prisma.Decimal
-        ) => boolean,
-        decimalFn2: (
-          left: string | number | Prisma.Decimal,
-          right: Prisma.Decimal
-        ) => boolean
+        decimalFn: (left: Decimal, right: string | number | Decimal) => boolean,
+        decimalFn2: (left: string | number | Decimal, right: Decimal) => boolean
       ): boolean {
         if (left === null || right === null) {
           return false
         }
-        if (left instanceof Prisma.Decimal) {
+        if (left instanceof Decimal) {
           return decimalFn(left, right)
         }
-        if (right instanceof Prisma.Decimal) {
+        if (right instanceof Decimal) {
           return decimalFn2(left, right)
         }
         return fn(left, right)

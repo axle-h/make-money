@@ -16,7 +16,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   CodeIcon,
   MoreVerticalIcon,
@@ -36,6 +36,38 @@ import { TransactionName } from '../transactions/transaction-summary'
 import { CashFlow } from '@/components/cash-flow'
 
 type OrderByField = Required<PaginatedTransactionQuery>['orderBy']
+
+interface SortableHeaderProps {
+  title: string
+  field: OrderByField
+  orderBy?: OrderByField
+  orderByDescending?: boolean
+  onSort(orderBy: OrderByField, orderByDescending: boolean): void
+}
+
+function SortableHeader({
+  title,
+  field,
+  orderBy,
+  orderByDescending,
+  onSort,
+  ...props
+}: Table.ColumnHeaderProps & SortableHeaderProps) {
+  const sorted = orderBy === field ? (orderByDescending ? 'desc' : 'asc') : null
+  return (
+    <Table.ColumnHeader
+      {...props}
+      onClick={() => {
+        const nextSorted = sorted === null || sorted === 'desc' ? 'asc' : 'desc'
+        return onSort(field, nextSorted === 'desc')
+      }}
+      cursor="pointer"
+    >
+      {title}
+      <SortChevron sorted={sorted} />
+    </Table.ColumnHeader>
+  )
+}
 
 interface TransactionTableProps {
   queryParams: PaginatedParams
@@ -63,7 +95,6 @@ export function TransactionTable({
   onCreateCategory,
 }: TransactionTableProps) {
   const limit = 20
-  const [pageCount, updatePageCount] = useState<number | null>(null)
   const query: PaginatedTransactionQuery = {
     page: queryParams.page,
     limit,
@@ -76,11 +107,17 @@ export function TransactionTable({
   const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
   const transactionCount = transactions?.count || null
 
-  useEffect(() => {
-    if (transactionCount) {
-      updatePageCount(Math.ceil(transactionCount / limit))
-    }
-  }, [transactionCount, limit])
+  // Derived rather than held in state and synced from an effect, which would
+  // render once with a stale count before correcting itself.
+  const pageCount = transactionCount
+    ? Math.ceil(transactionCount / limit)
+    : null
+
+  const sortProps = {
+    orderBy: queryParams.orderBy,
+    orderByDescending: queryParams.orderByDescending,
+    onSort: updateSort,
+  }
 
   if (isLoading) {
     return <Loading />
@@ -129,42 +166,20 @@ export function TransactionTable({
     )
   })
 
-  function SortableHeader({
-    title,
-    field,
-    ...props
-  }: Table.ColumnHeaderProps & { title: string; field: OrderByField }) {
-    const sorted =
-      queryParams.orderBy === field
-        ? queryParams.orderByDescending
-          ? 'desc'
-          : 'asc'
-        : null
-    return (
-      <Table.ColumnHeader
-        {...props}
-        onClick={() => {
-          const nextSorted =
-            sorted === null || sorted === 'desc' ? 'asc' : 'desc'
-          return updateSort(field, nextSorted === 'desc')
-        }}
-        cursor="pointer"
-      >
-        {title}
-        <SortChevron sorted={sorted} />
-      </Table.ColumnHeader>
-    )
-  }
-
   return (
     <>
       <Table.Root variant="line">
         <Table.Header>
           <Table.Row>
-            <SortableHeader title="Date" field="date" />
-            <SortableHeader title="Name" field="name" />
-            <SortableHeader title="Account" field="accountId" />
-            <SortableHeader textAlign="end" title="Amount" field="amount" />
+            <SortableHeader title="Date" field="date" {...sortProps} />
+            <SortableHeader title="Name" field="name" {...sortProps} />
+            <SortableHeader title="Account" field="accountId" {...sortProps} />
+            <SortableHeader
+              textAlign="end"
+              title="Amount"
+              field="amount"
+              {...sortProps}
+            />
             <Table.ColumnHeader mx={0}></Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
