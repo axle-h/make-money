@@ -58,9 +58,13 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
             itemStyle={{
               color: stroke,
             }}
-            formatter={(_1, _2, { payload }) =>
-              label(payload as FrequencyTableEntry)
-            }
+            formatter={(_1, _2, { payload }) => {
+              const entry = payload as FrequencyTableEntry
+              // recharts 3 no longer takes the tooltip name from <Cell name>,
+              // so the formatter has to return it as [value, name] or every
+              // slice is labelled with its index.
+              return [label(entry), entry.label]
+            }}
           />
           <Legend
             formatter={(_, { payload }) => {
