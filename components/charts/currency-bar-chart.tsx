@@ -1,3 +1,5 @@
+'use client'
+
 import {
   BarChart,
   Bar,
@@ -85,7 +87,7 @@ export function CurrencyBarChart({ data }: { data: TimeSeriesEntry[] }) {
             }}
             formatter={(v) => currency(v as number)}
           />
-          <Legend stroke={stroke} wrapperStyle={{ bottom: 0 }} />
+          <Legend wrapperStyle={{ bottom: 0 }} />
           <ReferenceLine y={0} stroke={stroke} />
           <Bar name="Credit" dataKey="credit" fill={CREDIT_COLOR_CSS} />
           <Bar name="Debit" dataKey="debit" fill={DEBIT_COLOR_CSS} />

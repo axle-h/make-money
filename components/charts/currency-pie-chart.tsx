@@ -34,7 +34,10 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
             data={data}
             outerRadius={150}
             dataKey="value"
-            label={(entry) => entry.emoji || entry.label}
+            label={({ payload }) => {
+              const entry = payload as FrequencyTableEntry
+              return entry.emoji || entry.label
+            }}
             stroke={strokeAlt}
           >
             {data.map((entry, index) => (
@@ -61,7 +64,7 @@ export function CurrencyPieChart({ data }: { data: FrequencyTableEntry[] }) {
           />
           <Legend
             formatter={(_, { payload }) => {
-              const entry = payload as unknown as FrequencyTableEntry
+              const entry = payload as FrequencyTableEntry
               return [entry.label, entry.emoji, label(entry)]
                 .filter((x) => x)
                 .join(' ')
