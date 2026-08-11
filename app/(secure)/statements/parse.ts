@@ -1,6 +1,6 @@
 import { NewStatement, NewTransaction, Schema } from '@/app/api/schema'
 import { z } from 'zod'
-import { parse as parseOfx } from 'ofx-js'
+import { parseStrict as parseOfxStrict } from 'ofx-js'
 import { deserializeQif, QifType } from 'qif-ts'
 import { compareDesc } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
@@ -25,7 +25,7 @@ export async function parseStatementFile(file: File): Promise<ParsedStatement> {
   let partial: PartialParsedStatement
   switch (match[1]) {
     case '.ofx':
-      partial = await parseOfxFile(await file.text())
+      partial = parseOfxFile(await file.text())
       break
     case '.qif':
       partial = await parseQifFile(await file.text())
@@ -183,33 +183,52 @@ async function parseQifFile(text: string): Promise<PartialParsedStatement> {
   return { transactions }
 }
 
-async function parseOfxFile(text: string): Promise<PartialParsedStatement> {
-  const ofx = await parseOfx(text)
-  // const currency = ofx.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.CURDEF
-  const { BANKID: sortCode, ACCTID } =
-    ofx.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKACCTFROM
+/**
+ * OFX returns a single occurrence as an object and multiple occurrences as an
+ * array, so every repeatable aggregate has to be normalised before use.
+ */
+function toArray<T>(value: T | T[] | undefined): T[] {
+  if (value === undefined) {
+    return []
+  }
+  return Array.isArray(value) ? value : [value]
+}
+
+function parseOfxFile(text: string): PartialParsedStatement {
+  const ofx = parseOfxStrict(text)
+
+  const [statementResponse] = toArray(ofx.OFX.BANKMSGSRSV1?.STMTTRNRS)
+  const statement = statementResponse?.STMTRS
+  if (!statement) {
+    throw new Error('no bank statement in ofx file')
+  }
+
+  const { BANKID: sortCode, ACCTID } = statement.BANKACCTFROM
   const accountNumber = ACCTID.startsWith(sortCode)
     ? ACCTID.substring(sortCode.length)
     : ACCTID
-  const {
-    DTSTART: startDate,
-    DTEND: endDate,
-    STMTTRN,
-  } = ofx.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
-  const transactions: NewTransaction[] = STMTTRN.map((t) => ({
-    externalId: t.FITID,
-    type: t.TRNTYPE.trim(),
-    date: parseOfxDate(t.DTPOSTED),
-    amount: t.TRNAMT,
-    name: t.NAME.trim(),
-    description: t.MEMO.replace(/\s*\)+$/, '').trim(),
-  }))
+
+  const transactionList = statement.BANKTRANLIST
+  if (!transactionList) {
+    throw new Error('no transaction list in ofx file')
+  }
+
+  const transactions: NewTransaction[] = toArray(transactionList.STMTTRN).map(
+    (t) => ({
+      externalId: t.FITID,
+      type: t.TRNTYPE.trim(),
+      date: parseOfxDate(t.DTPOSTED),
+      amount: t.TRNAMT,
+      name: (t.NAME ?? UNKNOWN).trim(),
+      description: (t.MEMO ?? '').replace(/\s*\)+$/, '').trim(),
+    })
+  )
 
   return {
     sortCode,
     accountNumber: accountNumber.trim(),
-    startDate: parseOfxDate(startDate),
-    endDate: parseOfxDate(endDate),
+    startDate: parseOfxDate(transactionList.DTSTART),
+    endDate: parseOfxDate(transactionList.DTEND),
     transactions,
   }
 }

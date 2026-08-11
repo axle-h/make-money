@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: 'standalone',
+    // ofx-js is published as pure ESM. next/jest derives its
+    // transformIgnorePatterns from this list, so it also lets Jest load it.
+    transpilePackages: ['ofx-js'],
     async redirects() {
         return [
             {
