@@ -95,8 +95,10 @@ export function StatementTable({
   )
 }
 
-interface StatementMenuProps
-  extends Pick<StatementTableProps, 'onDelete' | 'onViewTransactions'> {
+interface StatementMenuProps extends Pick<
+  StatementTableProps,
+  'onDelete' | 'onViewTransactions'
+> {
   statement: Statement
 }
 

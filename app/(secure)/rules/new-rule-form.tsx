@@ -30,7 +30,9 @@ export const NewRuleForm = React.forwardRef<HTMLInputElement, NewRuleFormProps>(
           }
           validate={(values) => {
             const result = Schema.NewCategoryRule.safeParse(values)
-            return result.success ? {} : z.flattenError(result.error).fieldErrors
+            return result.success
+              ? {}
+              : z.flattenError(result.error).fieldErrors
           }}
           onSubmit={async (values, actions) => {
             if (await onSubmit(values)) {
