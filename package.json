@@ -2,6 +2,7 @@
   "name": "make-money",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,7 @@
     "lint": "eslint .",
     "test": "jest",
     "prisma": "prisma",
-    "migrate:dev": "dotenv -e .env.development -- npm run prisma migrate dev"
+    "migrate:dev": "dotenv -e .env.development -- prisma migrate dev"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.36.1",
@@ -34,7 +35,7 @@
     "react-dom": "^19.2.8",
     "react-icons": "^5.7.0",
     "recharts": "^3.10.1",
-    "swr": "^2.5.0",
+    "swr": "^2.5.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

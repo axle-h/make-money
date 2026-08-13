@@ -1,0 +1,20 @@
+# pnpm blocks dependency build scripts by default. These four need to run:
+#
+#   better-sqlite3    native module, node-gyp compiles it from source. The
+#                     Prisma 7 driver adapter needs it, so without this the
+#                     install succeeds and the app dies at runtime.
+#   prisma            postinstall wiring for the CLI.
+#   @prisma/engines   places the query/schema engine binaries.
+#   unrs-resolver     native resolver binary used by eslint-plugin-import.
+allowBuilds:
+  '@prisma/engines': true
+  better-sqlite3: true
+  prisma: true
+  unrs-resolver: true
+# pnpm 11 refuses packages published within its minimumReleaseAge cooldown, a
+# supply-chain guard against freshly compromised releases. swr 2.5.1 shipped
+# 2026-08-12 and was still inside that window, so taking it required an opt-out.
+# It fixes no vulnerability -- drop this entry and pnpm settles on 2.5.1 anyway
+# once the cooldown elapses.
+minimumReleaseAgeExclude:
+  - swr@2.5.1
