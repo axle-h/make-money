@@ -4,6 +4,8 @@ metadata:
   name: make-money
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: make-money
