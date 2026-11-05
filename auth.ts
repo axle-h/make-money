@@ -10,6 +10,7 @@ function AxhSso(): OIDCConfig<{ sub: string }> {
     id: 'axh-sso',
     name: 'AxhSso',
     type: 'oidc',
+    checks: ['pkce', 'state'],
     authorization: {
       params: {
         scope: 'openid email profile roles',
