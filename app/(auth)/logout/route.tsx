@@ -4,7 +4,7 @@ import { auth, signOut } from '@/auth'
 export const dynamic = 'force-dynamic'
 
 /**
- * log out the user and redirect to /logout-oidc?id_token_hint={id_token}
+ * log out the user and redirect to /logout-oidc to end the sso session
  */
 export async function GET() {
   const session = await auth()
@@ -14,9 +14,5 @@ export async function GET() {
     return redirect('/')
   }
 
-  const params = new URLSearchParams()
-  if ('id_token' in session.user) {
-    params.set('id_token_hint', session.user.id_token as string)
-  }
-  return await signOut({ redirectTo: '/logout-oidc?' + params })
+  return await signOut({ redirectTo: '/logout-oidc' })
 }

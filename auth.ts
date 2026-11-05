@@ -18,7 +18,7 @@ function AxhSso(): OIDCConfig<{ sub: string }> {
     },
     async profile(profile, tokens) {
       const userInfo = await getUserInfo(profile.sub, tokens.access_token || '')
-      return { ...userInfo, id_token: tokens.id_token }
+      return { ...userInfo }
     },
     clientId: process.env.AUTH_AXH_SSO_ID,
     clientSecret: process.env.AUTH_AXH_SSO_SECRET,
@@ -26,12 +26,42 @@ function AxhSso(): OIDCConfig<{ sub: string }> {
   }
 }
 
-export function ssoEndSessionUrl(): string | null {
-  return issuer() + 'connect/endsession'
+/**
+ * Authelia has no OIDC end-session endpoint, so end its session via its
+ * logout page, which redirects back to `rd` (allowed as it is under ax-h.com).
+ */
+export function ssoLogoutUrl(): string {
+  const url = new URL('logout', issuer())
+  if (process.env.NEXTAUTH_URL) {
+    url.searchParams.set('rd', process.env.NEXTAUTH_URL)
+  }
+  return url.href
+}
+
+let userInfoEndpoint: Promise<string> | undefined
+function getUserInfoEndpoint(): Promise<string> {
+  userInfoEndpoint ??= fetch(
+    new URL('.well-known/openid-configuration', issuer())
+  )
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`OIDC discovery failed: ${response.status}`)
+      }
+      const { userinfo_endpoint } = await response.json()
+      if (typeof userinfo_endpoint !== 'string') {
+        throw new Error('OIDC discovery has no userinfo_endpoint')
+      }
+      return userinfo_endpoint
+    })
+    .catch((error) => {
+      userInfoEndpoint = undefined // retry on next sign-in
+      throw error
+    })
+  return userInfoEndpoint
 }
 
 async function getUserInfo(subject: string, accessToken: string) {
-  const response = await fetch(issuer() + 'connect/userinfo', {
+  const response = await fetch(await getUserInfoEndpoint(), {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -51,7 +81,8 @@ export function isAuthorized(user: User): boolean {
     return false
   }
 
-  const roles = user.role as string[]
+  const role = user.role
+  const roles = Array.isArray(role) ? role : [role]
   return roles.includes(APP_ROLE)
 }
 
